@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Registro proceso CCYGA</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <h:form id="formProceso">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Configuración de procesos</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <h:outputLabel value="Nombre del proceso:"/>
+                            <h:inputText id="txt_nombre" styleClass="form-control input-lg noround" value="#{maestroProcesoMBean.nombre}" pt:placeholder="Nombre del proceso" 
+                                         style="margin-bottom: 5px;" maxlength="12"/>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <p:remoteCommand name="seleccionarPermitirSimultaneos" actionListener="#{maestroProcesoMBean.seleccionarPermitirSimultaneos}"
+                                         update=":formProceso:simultaneos" oncomplete="cerrarModalEspera();"/>
+                        <div class="form-group">
+                            <h:outputLabel value="Permite simultáneos:"/>
+                            <h:panelGroup id="simultaneos">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                            id="selSimultaneos" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        #{maestroProcesoMBean.simultaneosSeleccionado}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="selSimultaneos" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                        <li>
+                                            <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarPermitirSimultaneos([{name: 'permiteSimultaneos', value: '1'}]);">
+                                                Sí
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarPermitirSimultaneos([{name: 'permiteSimultaneos', value: '0'}]);">
+                                                No
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <p:remoteCommand name="seleccionarRequiereProducto" actionListener="#{maestroProcesoMBean.seleccionarRequiereProducto}"
+                                         update=":formProceso:requiere" oncomplete="cerrarModalEspera();"/>
+                        <div class="form-group">
+                            <h:outputLabel value="Requiere producto:"/>
+                            <h:panelGroup id="requiere">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                            id="selRequiere" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        #{maestroProcesoMBean.requiereSeleccionado}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="selRequiere" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                        <li>
+                                            <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarRequiereProducto([{name: 'requiereProducto', value: '1'}]);">
+                                                Sí
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarRequiereProducto([{name: 'requiereProducto', value: '0'}]);">
+                                                No
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 right-component">
+                        <p:remoteCommand name="cancelar" actionListener="#{maestroProcesoMBean.limpiar}"
+                                         update=":formProceso:txt_nombre :formProceso:simultaneos :formProceso:requiere :formProceso:procesos"/>
+                        <p:remoteCommand name="guardar" actionListener="#{maestroProcesoMBean.guardar}" update=":formProceso" oncomplete="cerrarModalEspera();"/>
+                        <button type="button" class="btn btn-default btn-lg noround" onclick="cancelar();">
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); guardar();">
+                            Guardar
+                        </button>
+                    </div>
+                </div>
+                <p:messages showDetail="true" showSummary="true"/>
+                <hr/>
+                <div class="row">
+                    <p:remoteCommand name="seleccionarProceso" actionListener="#{maestroProcesoMBean.seleccionarProceso}"
+                                     update=":formProceso:txt_nombre :formProceso:simultaneos :formProceso:requiere :formProceso:procesos"/>
+                    <h:panelGroup id="procesos">
+                        <ui:repeat value="#{maestroProcesoMBean.procesos}" var="proceso">
+                            <div class="col-xs-4" style="min-height: 79px">
+                                <div class="#{proceso.idProceso eq maestroProcesoMBean.idProceso ? 'proceso-ccyga-small-activo' : 'proceso-ccyga-small'}"
+                                     onclick="seleccionarProceso([{name: 'idProceso', value: '#{proceso.idProceso}'}, {name: 'nombre', value: '#{proceso.nombre}'},
+                                                 {name: 'simultaneos', value: '#{proceso.permiteSimultaneos}'}, {name: 'producto', value: '#{proceso.requiereProducto}'}])">
+                                    <div class="row" style="border-bottom: 1px solid #DDDDDD; margin-left: -5px !important; margin-right: -2px !important">
+                                        <div class="col-xs-12 center-component" style="font-size: 20px; font-weight: bold">
+                                            #{proceso.nombre}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <div class="row">
+                                                <div class="col-xs-12 center-component">
+                                                    Simultáneos
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 center-component">
+                                                    <span class="glyphicon #{proceso.permiteSimultaneos ? 'glyphicon-ok' : 'glyphicon-remove'}"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <div class="row">
+                                                <div class="col-xs-12 center-component">
+                                                    Producto
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 center-component">
+                                                    <span class="glyphicon #{proceso.requiereProducto ? 'glyphicon-ok' : 'glyphicon-remove'}"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </h:panelGroup>
+                </div>
+            </div>
+        </h:form>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

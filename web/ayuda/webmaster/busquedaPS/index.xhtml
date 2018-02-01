@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Ayuda Búsqueda Prestashop</title>
+    </h:head>
+    <h:body>
+        <m:navbar/>
+        <div class="panel-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h1>Consulta productos SAP-Prestashop</h1>
+                        En esta página se le permite al usuario realizar consultas que validen si un producto está siendo enviado a la página web. La consulta se puede realizar de dos maneras, que se explican a continuación.
+                    </div>
+                </div>
+                <!-- inicia seccion busqueda por referencia -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2>Búsqueda por referencia</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-3" style="padding: 0;">
+                        <img class="img-responsive" src="/360/images/ayuda/webmaster/busquedaPS/busquedaReferencia.png"></img>
+                    </div>
+                    <div class="col-xs-12 col-sm-9">
+                        El usuario puede ingresar una referencia completa o abreviada para realizar la consulta. Sólo se mostrará como resultado el producto consultado con todos sus atributos y respectivos valores, si es que dicho producto se encuentra habilitado para web. Los siguientes son ejemplos de búsquedas por referencia.<br/>
+                    </div>
+                </div>
+                <div class="row table-padding-top">
+                    <table class="table table-responsive">
+                        <tr>
+                            <th>Entrada</th>
+                            <th>Resultado</th>
+                        </tr>
+                        <tr class="alert-success">
+                            <td>
+                                <strong>107*123</strong>
+                            </td>
+                            <td>
+                                La referencia se completa usando el asterisco como comodín.
+                            </td>
+                        </tr>
+                        <tr class="alert-success">
+                            <td>
+                                <strong>105.1243</strong>
+                            </td>
+                            <td>
+                                La referencia se completa usando el punto como comodín.
+                            </td>
+                        </tr>
+                        <tr class="alert-success">
+                            <td>
+                                <strong>11800000000000000908</strong>
+                            </td>
+                            <td>
+                                Referencia completa, se busca sin modificaciones.
+                            </td>
+                        </tr>
+                        <tr class="alert-danger">
+                            <td>
+                                <strong>118-209</strong>
+                            </td>
+                            <td>
+                                Se busca como modelo, ya que el caracter guión no se considera un comodín válido.
+                            </td>
+                        </tr>
+                        <tr class="alert-danger">
+                            <td>
+                                <strong>1050000000000000192</strong>
+                            </td>
+                            <td>
+                                Se usa como modelo, ya que el texto tiene menos de 20 caracteres y no contiene ningún comodín válido.
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <!-- finaliza seccion busqueda por referencia -->
+
+                <!-- inicia seccion busqueda por modelo -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2>Búsqueda por modelo</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-3" style="padding: 0;">
+                        <img class="img-responsive" src="/360/images/ayuda/webmaster/busquedaPS/busquedaModelo.png"></img>
+                    </div>
+                    <div class="col-xs-12 col-sm-9">
+                        Cuando el texto ingresado no puede ser identificado como una referencia, se asume que se ingresó un modelo. Cuando se ejecuta la búsqueda por modelo, el sistema primero consulta todas las referencias que pertenecen a dicho modelo y luego, internamente, realiza la búsqueda por referencia.
+                    </div>
+                </div>
+                <!-- finaliza seccion busqueda por modelo -->
+
+                <!-- inicia seccion condiciones -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2>Condiciones para que un producto se encuentre publicado en la página web</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        Las siguientes son las condiciones que debe cumplir un artículo para que éste sea visible en la página web de Matisses:
+                        <ul>
+                            <li>
+                                El producto debe tener saldo disponible para la venta. Esto significa que debe tener al menos una unidad en algún almacén cuyo código comience con el número cero.
+                            </li>
+                            <li>
+                                El producto debe tener la información básica para web completa. Esta información incluye los campos <strong>nombre web, descripción, descripción corta, departamento, grupo, subgrupo, materiales <sup><a href="#detalleMateriales">(1)</a></sup>, colores, combinación principal, nombre, nombre extranjero, palabras clave, modelo, precio de venta, fecha de procesamiento de imágenes <sup><a href="#procesarImagenes">(2)</a></sup> y activador para web.</strong>
+                            </li>
+                            <li>
+                                Se debe haber copiado previamente la carpeta con fotos en la ruta indicada del servidor hercules.
+                            </li>
+                        </ul>
+                        <p id="detalleMateriales">
+                            <strong>(1)</strong> Aunque los materiales no son obligatorios, se recomienda que se encuentren habilitados ya que al realizar esta relación se cargan también de manera automática los cuidados del producto.
+                        </p>
+                        <p id="procesarImagenes">
+                            <strong>(2)</strong> Se requiere que la fecha de procesamiento de imágenes sea la fecha en la cual se va a realizar la sincronización cuando el producto se va a cargar por primera vez a la página web. Si es un producto que ya se ha cargado con anterioridad, esta fecha solo debe ser actualizada si se desean reprocesar las fotos para el producto.
+                        </p>
+                    </div>
+                </div>
+                <!-- finaliza seccion condiciones -->
+
+                <!-- inicia seccion resultados -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2>Resultado de búsqueda</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        Una vez se realice una búsqueda usando una referencia o un modelo válidos, el sistema mostrará de manera estructural la información completa de los productos encontrados. Los atributos que se muestran son construidos de manera dinámica y por lo tanto pueden diferir con los de la imagen de ejemplo. Asimismo, la estructura mostrada depende del dispositivo que se use, ya que ésta se ajusta automáticamente a la resolución del equipo del usuario.
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <img class="img-responsive" src="/360/images/ayuda/webmaster/busquedaPS/resultado.png"></img>
+                    </div>
+                </div>
+                <!-- finaliza seccion resultados -->
+            </div>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

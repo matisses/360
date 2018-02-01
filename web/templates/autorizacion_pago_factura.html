@@ -1,0 +1,55 @@
+<style type="text/css">
+    body, html, .body {
+        /*background: #f3f3f3 !important; */
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+        color: #444;
+    }
+
+    .advertencia{
+        color: #1F497D;
+    }
+</style>
+<container>
+    <spacer size="16"></spacer>
+    <row>
+        <columns>
+            <center>
+                <img src="https://www.matisses.co/360/360_150h.png" alt="logo">
+            </center>
+        </columns>
+    </row>
+    <row>
+        <columns large="8">
+            <table style="width: 100%">
+                <tr>
+                    <td style="width: 100%; text-align: center;">
+                        <br/>
+                        <h1>Solicitud aprobaci&oacute;n</h1>
+                    </td>
+                </tr>
+            </table>
+        </columns>
+        <columns large="8">
+            <table style="width: 100%">
+                <tr>
+                    <td style="width: 100%; text-align: center;">
+                        <br/>
+                        El usuario <b>${usuario}</b> solicita su aprobaci&oacute;n para usar el tipo de pago <b>PENDIENTE</b>, para poder continuar con la facturaci&oacute;n.
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 100%; text-align: center;">
+                        Para aprobar o rechazar, por favor haga clic <a href="${url}">aqu&iacute;</a>.
+                    </td>
+                </tr>
+                <tr>
+                    <td class="advertencia" style="width: 100%; text-align: center;">
+                        <br/>
+                        <br/>
+                        Este es un correo generado autom&aacute;ticamente, por favor evite responderlo.
+                    </td>
+                </tr>
+            </table>
+        </columns>
+    </row>
+</container>

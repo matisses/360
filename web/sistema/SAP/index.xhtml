@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script src="/360/js/arriba.js"></script>
+        <script type="text/javascript">
+            function abrirModalConfirmacion() {
+                $('#modalConfirmacion').modal('show');
+            }
+
+            function cerrarModalConfirmacion() {
+                $('modalConfirmacion').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Sesiones SAP</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <span class="ir-arriba">
+            <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+        </span>
+
+        <div class="container">
+
+            <h:panelGroup id="panelConfirmacion">
+                <h:form id="formConfirmacion">
+                    <div class="modal fade" id="modalConfirmacion">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header-advertencia">
+                                    <h4 class="modal-title">
+                                        Advertencia
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            <p>
+                                                <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                ¿Desea eliminar #{sesionesSAPMBean.idSesionSAP ne null and sesionesSAPMBean.idSesionSAP gt 0 ? 'la sesión seleccionada' : 'las sesiones actuales'}?
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <p:remoteCommand name="eliminarSesionSeleccionada" actionListener="#{sesionesSAPMBean.eliminarSesionSeleccionada}" oncomplete="cerrarModalConfirmacion();"
+                                                             update=":formSesiones :panelConfirmacion"/>
+                                            <p:remoteCommand name="eliminarSesiones" actionListener="#{sesionesSAPMBean.eliminarSesiones}" oncomplete="cerrarModalConfirmacion();"
+                                                             update=":formSesiones :panelConfirmacion"/>
+                                            <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                Cancelar
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-lg noround"
+                                                    onclick="#{sesionesSAPMBean.idSesionSAP ne null and sesionesSAPMBean.idSesionSAP gt 0 ? 'eliminarSesionSeleccionada();' : 'eliminarSesiones();'}">
+                                                Continuar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:form id="formSesiones">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Sesiones actuales SAP</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 right-component">
+                        <p:remoteCommand name="eliminarSesion" oncomplete="abrirModalConfirmacion();" update=":panelConfirmacion"/>
+                        <ui:fragment rendered="#{sesionesSAPMBean.sesiones ne null and not empty sesionesSAPMBean.sesiones and (sesionesSAPMBean.idSesionSAP eq null or sesionesSAPMBean.idSesionSAP eq 0)}">
+                            <button type="button" class="btn btn-primary btn-lg noround" onclick="eliminarSesion();">
+                                Borrar sesiones
+                            </button>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{sesionesSAPMBean.sesiones ne null and not empty sesionesSAPMBean.sesiones and (sesionesSAPMBean.idSesionSAP ne null and sesionesSAPMBean.idSesionSAP gt 0)}">
+                            <button type="button" class="btn btn-primary btn-lg noround" onclick="eliminarSesion();">
+                                Borrar sesion
+                            </button>
+                        </ui:fragment>
+                    </div>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                <hr/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <p:remoteCommand name="seleccionarSesion" actionListener="#{sesionesSAPMBean.seleccionarSesion}" update=":formSesiones" oncomplete="cerrarModalEspera();"/>
+                            <h:panelGroup id="sesiones">
+                                <ui:repeat value="#{sesionesSAPMBean.sesiones}" var="sesion">
+                                    <div class="col-xs-12 col-sm-6 col-md-4" onclick="abrirModalEspera(); seleccionarSesion([{name: 'id', value: '#{sesion.id}'}]);">
+                                        <div class="#{sesion.id eq sesionesSAPMBean.idSesionSAP ? 'contenedor-sesion-SAP-activo' : 'contenedor-sesion-SAP'} pointer-cursor">
+                                            <div class="row">
+                                                <div class="col-xs-12 center-component" style="font-size: 20px">
+                                                    #{sesion.usuario}
+                                                </div>
+                                            </div>
+                                            <hr style="border-bottom: 1px solid #BF0039; margin-top: 15px; margin-bottom: 15px"/>
+                                            <div class="row">
+                                                <div class="col-xs-12 center-component">
+                                                    <span style="font-size: 13px">#{sesion.idSesionSAP}</span>
+                                                    <br/>
+                                                    <b>Sesión SAP</b>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

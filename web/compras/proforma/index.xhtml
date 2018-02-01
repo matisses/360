@@ -1,0 +1,2216 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" http-equiv="Content-Type"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script src="/360/js/proforma.js"></script>
+        <title>360 - Proforma</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <h:panelGroup id="modalImagenes">
+            <div class="modal fade" id="modalImg">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content dialog-content noround">
+                        <div class="modal-body">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <div class="row">
+                                <div class="col-xs-12 center-component">
+                                    <img src="#{proformaMBean.imgVista}" style="max-height: 470px"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </h:panelGroup>
+
+        <h:panelGroup id="panelCrearNuevoItem">
+            <h:form id="formCrearNuevoItem">
+                <div class="modal fade" id="modalCrearNuevoItem">
+                    <div class="modal-dialog">
+                        <div class="modal-content dialog-content noround">
+                            <div class="modal-header dialog-header-advertencia">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">
+                                    Agregar Item
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-12 center-component">
+                                        <p>
+                                            ¿Está seguro que desea agregar una nueva linea a la proforma?
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <p:remoteCommand name="agregarItem" update=":formProforma" actionListener="#{proformaMBean.agregarItem}"
+                                                         oncomplete="cerrarModalEspera(); cerrarModalCrearNuevoItem();"/>
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                            No
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="agregarItem(); abrirModalEspera();">
+                                            Sí
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </h:panelGroup>
+
+        <h:panelGroup id="panelEliminarItem">
+            <h:form id="formEliminarItem">
+                <div class="modal fade" id="modalEliminarItem">
+                    <div class="modal-dialog">
+                        <div class="modal-content dialog-content noround">
+                            <div class="modal-header dialog-header-alerta">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">
+                                    Eliminar Item
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-12 center-component">
+                                        <p>
+                                            ¿Está seguro que desea eliminar este ítem por completo de la proforma?
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <p:remoteCommand name="eliminarItem" actionListener="#{proformaMBean.eliminarItem}" update=":formProforma"
+                                                         oncomplete="cerrarModalEspera(); cerrarModalEliminarItem();"/>
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                            No
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="eliminarItem(); abrirModalEspera();">
+                                            Sí
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </h:panelGroup>
+
+        <h:panelGroup id="panelAgregarColumna">
+            <h:form id="formAgregarColumna">
+                <div class="modal fade" id="modalAgregarColumna">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content dialog-content noround">
+                            <div class="modal-header dialog-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">
+                                    Agregar Columna
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-12 center-component">
+                                        <p>
+                                            <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                            Si la columna elegida contiene operaciones, serán agregadas automáticamente las columnas necesarias para el cálculo.
+                                        </p>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <h:panelGroup id="seleccionarColumna">
+                                            <h:panelGroup rendered="#{proformaMBean.elegirColumna}">
+                                                <div class="form-group">
+                                                    <p:remoteCommand name="seleccionarColumna" actionListener="#{proformaMBean.seleccionarColumnaAsociada}"/>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon input-group-matisses noround">Seleccione columna</span>
+                                                        <div class="dropdown">
+                                                            <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                    id="selColumna" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                #{proformaMBean.columnaSeleccionada}
+                                                                <span class="caret"></span>
+                                                            </button>
+                                                            <ul class="dropdown-menu" aria-labelledby="selColumna" style="height: 145px; overflow-y: auto; width: 100%">
+                                                                <ui:repeat value="#{proformaMBean.columnas}" var="col">
+                                                                    <li>
+                                                                        <a onclick="seleccionarColumna([{name: 'idColumna', value: '#{col.idColumna}'}]);" class="pointer-cursor">
+                                                                            <ui:fragment rendered="#{col.nombre2 != null and not empty col.nombre2}">
+                                                                                #{col.nombre1} - #{col.nombre2}
+                                                                            </ui:fragment>
+                                                                            <ui:fragment rendered="#{col.nombre2 == null or empty col.nombre2}">
+                                                                                #{col.nombre1}
+                                                                            </ui:fragment>
+                                                                        </a>
+                                                                    </li>
+                                                                </ui:repeat>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </h:panelGroup>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <p:remoteCommand name="administrarColumna" actionListener="#{proformaMBean.administrarColumna}" update=":formProforma"
+                                                         oncomplete="cerrarModalEspera();"/>
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                            Cancelar
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="cerrarModalAgregarColumna(); administrarColumna(); abrirModalEspera();">
+                                            Asignar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </h:panelGroup>
+
+        <h:panelGroup id="modalAsignar">
+            <h:form id="formAsignarImagenes">
+                <div class="modal fade" id="modalAsignarImagenes">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content dialog-content noround">
+                            <div class="modal-header dialog-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">
+                                    Asignar Fotos
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row" style="overflow: auto; height: 210px">
+                                    <h:panelGroup id="galery">
+                                        <ui:repeat value="#{proformaMBean.galeria}" var="galery">
+                                            <div class="col-xs-4 center-component">
+                                                <div class="row" style="height: 198px; margin-top: 5px">
+                                                    <div class="col-xs-12">
+                                                        <img src="#{galery.url}" style="width: 100%; max-height: 198px"/>
+                                                    </div>
+                                                    <p:remoteCommand name="seleccionarImagen" actionListener="#{proformaMBean.seleccionarImgDuplicar}"
+                                                                     update=":formAsignarImagenes:galery :formProforma:msg"/>
+                                                    <div class="img-seleccionar pointer-cursor #{galery.seleccionada ? 'img-seleccionar-active' : ''}"
+                                                         onclick="seleccionarImagen([{name: 'pos', value: '#{galery.posicion}'}]);"
+                                                         style="margin-top: 5px">
+                                                        <span class="glyphicon glyphicon-ok"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                    </h:panelGroup>
+                                </div>
+                                <hr/>
+                                <div class="row">
+                                    <div class="col-xs-12 center-component">
+                                        <h3>
+                                            Items disponibles para asignar las fotos
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="row" style="overflow: auto; height: 140px">
+                                            <h:panelGroup id="items">
+                                                <p:remoteCommand name="seleccionarItem" actionListener="#{proformaMBean.seleccionarItemAsignarFoto}"
+                                                                 update=":formAsignarImagenes:items :formProforma:msg"/>
+                                                <ui:repeat value="#{proformaMBean.items}" var="item">
+                                                    <div class="col-xs-6 center-component">
+                                                        <div class="proforma-seleccionada #{item.aplicar ? 'proforma-activa' : ''}" style="max-height: 36px"
+                                                             onclick="seleccionarItem([{name: 'item', value: '#{item.idColumna}'}])">
+                                                            #{item.valor}
+                                                        </div>
+                                                    </div>
+                                                </ui:repeat>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <div class="row">
+                                    <div class="col-xs-12 right-component">
+                                        <p:remoteCommand name="cancelarAsignacion" actionListener="#{proformaMBean.cancelarAsignacionFoto}"/>
+                                        <p:remoteCommand name="asignarImagenes" actionListener="#{proformaMBean.asignarFoto}" update=":formProforma:msg"/>
+                                        <button type="button" class="btn btn-default btn-lg noround" onclick="cancelarAsignacion();" data-dismiss="modal">
+                                            Cancelar
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="asignarImagenes(); cerrarModalAsignarImagenes();">
+                                            Asignar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </h:panelGroup>
+
+        <h:panelGroup id="panelCrearItem">
+            <h:form id="formCrearItem">
+                <div class="modal fade" id="modalCrearItem">
+                    <div class="modal-dialog">
+                        <div class="modal-content dialog-content noround">
+                            <div class="modal-header dialog-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">
+                                    Crear Copia Item
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-12 center-component">
+                                        <p>
+                                            Crear item apartir de una de las siguientes propiedades:
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-offset-3 col-xs-6 margin-bottom-10">
+                                        <h:panelGroup id="campos">
+                                            <p:remoteCommand name="seleccionarCampoCrear" actionListener="#{proformaMBean.seleccionarCampoCrear}" update=":formCrearItem:campos :formProforma:msg"/>
+                                            <div class="input-group">
+                                                <span class="input-group-addon input-group-matisses noround">
+                                                    Seleccione campo
+                                                </span>
+                                                <div class="dropdown">
+                                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                            id="selCampo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                        #{proformaMBean.campoSeleccionado}
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="selCampo">
+                                                        <ui:repeat value="#{proformaMBean.camposCrear}" var="campo">
+                                                            <li>
+                                                                <a onclick="seleccionarCampoCrear([{name: 'campoSeleccionadoCrear', value: '#{campo.valor}'}, {name: 'idColumna', value: '#{campo.idColumna}'}])"
+                                                                   class="pointer-cursor">
+                                                                    #{campo.valor}
+                                                                </a>
+                                                            </li>
+                                                        </ui:repeat>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                    <div class="col-xs-offset-3 col-xs-6 margin-bottom-10">
+                                        <h:inputText class="form-control input-lg noround" value="#{proformaMBean.nuevoValorCampoSeleccionado}" pt:placeholder="Nuevo valor"
+                                                     autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                 return false;
+                                                             }"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <div class="row">
+                                    <div class="col-xs-12 right-component">
+                                        <p:remoteCommand name="limpiarCopiaItem" actionListener="#{proformaMBean.limpiarCopiaItem}"/>
+                                        <p:remoteCommand name="crearCopiaItem" actionListener="#{proformaMBean.crearCopiaItem}" oncomplete="cerrarModalEspera(); cerrarModalCrearItem();"
+                                                         update=":formProforma"/>
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="limpiarCopiaItem();">
+                                            Cancelar
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); crearCopiaItem();">
+                                            Crear
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </h:panelGroup>
+
+        <h:panelGroup id="panelContenedores">
+            <h:form id="formContenedores">
+                <div class="modal fade" id="modalContenedores">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content dialog-content noround">
+                            <div class="modal-header dialog-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">
+                                    Cantidades Contenedor
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-12 right-component">
+                                        <b>Cantidad necesaria: </b>#{proformaMBean.lineaProforma.cantidadNecesaria}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <h:panelGroup id="cantidadAsignada">
+                                        <div class="col-xs-12 right-component">
+                                            <b>Cantidad asignada: </b>#{proformaMBean.lineaProforma.cantidadUsada}
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                                <br/>
+                                <p:messages id="msgCantidadContenedor" showDetail="true" showSummary="true"/>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <table class="table table-bordered table-striped">
+                                            <tr>
+                                                <th class="head-tabla">
+                                                    Contenedor
+                                                </th>
+                                                <th class="head-tabla">
+                                                    Cantidad
+                                                </th>
+                                            </tr>
+                                            <ui:repeat value="#{proformaMBean.lineaProforma.contenedores}" var="linea">
+                                                <tr>
+                                                    <td class="center-component">
+                                                        <div class="row" style="padding-top: 6px">
+                                                            <div class="col-xs-12 center-component">
+                                                                #{linea.contenedorProforma.contenedorProveedor.contenedor.nombreCorto}
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <h:inputText value="#{linea.cantidad}" class="form-control noround"
+                                                                     pt:placeholder="Cantidad" onkeypress="if (event.keyCode === 13) {
+                                                                                 return false;
+                                                                             }"/>
+                                                    </td>
+                                                </tr>
+                                            </ui:repeat>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <p:remoteCommand name="asignarCantidadContenedor" actionListener="#{proformaMBean.asignarCantidadContenedor}" oncomplete="cerrarModalEspera();"
+                                                 update=":formProforma:contenedoresAsignados :formProforma:msg :formContenedores:msgCantidadContenedor
+                                                 :formContenedores:cantidadAsignada :formProforma:btnsIzquierda"/>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal"
+                                                onclick="cerrarModalContenedores(); abrirModalEspera(); asignarCantidadContenedor();">
+                                            Cerrar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </h:panelGroup>
+
+        <h:panelGroup id="panelCrearCuenta">
+            <h:panelGroup rendered="#{proformaMBean.dlgCrearCuenta}">
+                <h:form id="formCrearCuenta">
+                    <div class="modal fade" id="modalCrearCuenta">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Crear Cuenta
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h:panelGroup id="crearCuenta">
+                                        <h:panelGroup rendered="#{proformaMBean.pasoCrearCuenta == 1}">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <h3>
+                                                        BANCO
+                                                    </h3>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <div class="form-group">
+                                                        <h:outputLabel value="Razon social banco" for="txt_banco"/>
+                                                        <h:inputText id="txt_banco" class="form-control input-lg noround" pt:placeholder="Razón social banco"
+                                                                     value="#{proformaMBean.razonSocialBanco}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                 return false;
+                                                                             }"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-10 margin-bottom-10">
+                                                    <p:remoteCommand name="seleccionarBancoCompras" actionListener="#{proformaMBean.seleccionarBancoCompras}"
+                                                                     update=":formCrearCuenta:bancos :formCrearCuenta:txt_banco :formCrearCuenta:btn"/>
+                                                    <h:panelGroup id="bancos">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Bancos
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                        id="selBancos" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{proformaMBean.bancoSeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu" aria-labelledby="selBancos" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                                    <ui:repeat value="#{proformaMBean.bancos}" var="banco">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarBancoCompras([{name: 'idBanco', value: '#{banco.idBanco}'}])">
+                                                                                #{banco.razonSocial}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="seleccionarBancoCompras([{name: 'idBanco', value: '-1'}])">
+                                                                            Nuevo banco
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-2 right-component">
+                                                    <p:remoteCommand name="guardarBancoCompras" actionListener="#{proformaMBean.guardarBancoCompras}"
+                                                                     update=":formCrearCuenta:bancos :formCrearCuenta:txt_banco :formCrearCuenta:btn"/>
+                                                    <button type="button" class="btn btn-default btn-lg noround" onclick="guardarBancoCompras();">
+                                                        Guardar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{proformaMBean.pasoCrearCuenta == 2}">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <h3>
+                                                        SUCURSAL
+                                                    </h3>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-6">
+                                                    <div class="form-group">
+                                                        <h:outputLabel value="Dirección" for="txt_direccion"/>
+                                                        <h:inputText id="txt_direccion" class="form-control input-lg noround" pt:placeholder="Dirección sucursal"
+                                                                     value="#{proformaMBean.direccionSucursal}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                 return false;
+                                                                             }"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-6">
+                                                    <div class="form-group">
+                                                        <h:outputLabel value="Swift" for="txt_swift"/>
+                                                        <h:inputText id="txt_swift" class="form-control input-lg noround" pt:placeholder="Swift"
+                                                                     value="#{proformaMBean.swiftSucursal}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                 return false;
+                                                                             }"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-4 margin-bottom-10">
+                                                    <p:remoteCommand name="seleccionarPais" actionListener="#{proformaMBean.seleccionarPais}"
+                                                                     update=":formCrearCuenta:paises :formCrearCuenta:estados"/>
+                                                    <h:panelGroup id="paises">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                País
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                        id="selPaises" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{proformaMBean.paisSeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu" aria-labelledby="selPaises" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                                    <ui:repeat value="#{proformaMBean.paises}" var="pais">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarPais([{name: 'idPais', value: '#{pais.idPais}'}]);">
+                                                                                #{pais.nombre}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-4 margin-bottom-10">
+                                                    <p:remoteCommand name="seleccionarEstado" actionListener="#{proformaMBean.seleccionarEstado}"
+                                                                     update=":formCrearCuenta:estados :formCrearCuenta:ciudades"/>
+                                                    <h:panelGroup id="estados">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Estado
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg #{proformaMBean.idPais == null ? 'disabled' : ''} noround"
+                                                                        style="width: 100%" id="selEstados" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{proformaMBean.estadoSeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu" aria-labelledby="selEstados" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                                    <ui:repeat value="#{proformaMBean.estados}" var="estado">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarEstado([{name: 'idEstado', value: '#{estado.idEstado}'}]);">
+                                                                                #{estado.nombre}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-4 margin-bottom-10">
+                                                    <p:remoteCommand name="seleccionarCiudad" actionListener="#{proformaMBean.seleccionarCiudad}"
+                                                                     update=":formCrearCuenta:ciudades"/>
+                                                    <h:panelGroup id="ciudades">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Ciudad
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg #{proformaMBean.idEstado == null ? 'disabled' : ''} noround"
+                                                                        style="width: 100%" id="selCiudades" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{proformaMBean.ciudadSeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu" aria-labelledby="selCiudades" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                                    <ui:repeat value="#{proformaMBean.ciudades}" var="ciudad">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarCiudad([{name: 'idCiudad', value: '#{ciudad.idCiudad}'}])">
+                                                                                #{ciudad.nombre}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-10 margin-bottom-10">
+                                                    <p:remoteCommand name="seleccionarSucursalBanco" actionListener="#{proformaMBean.seleccionarSucursalBanco}"
+                                                                     update=":formCrearCuenta:crearCuenta :formCrearCuenta:btn"/>
+                                                    <h:panelGroup id="sucursales">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Sucursales
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                        id="selSucursales" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{proformaMBean.sucursalBancoSeleccionada}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu" aria-labelledby="selSucursales" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                                    <ui:repeat value="#{proformaMBean.sucursalesBanco}" var="sucursal">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarSucursalBanco([{name: 'idSucursalBanco', value: '#{sucursal.idSucursalBanco}'}])">
+                                                                                #{sucursal.direccion}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="seleccionarSucursalBanco([{name: 'idSucursalBanco', value: '-1'}])">
+                                                                            Nueva sucursal
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-2 right-component">
+                                                    <p:remoteCommand name="guardarSucursalBanco" actionListener="#{proformaMBean.guardarSucursalBanco}"
+                                                                     update=":formCrearCuenta:btn :formCrearCuenta:crearCuenta :formCrearCuenta:msgCrearcuenta"/>
+                                                    <button type="button" class="btn btn-default btn-lg noround" onclick="guardarSucursalBanco();">
+                                                        Guardar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{proformaMBean.pasoCrearCuenta == 3}">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <h3>
+                                                        CUENTA
+                                                    </h3>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-4">
+                                                    <div class="form-group">
+                                                        <h:outputLabel value="Cuenta bancaria" for="txt_cuenta"/>
+                                                        <h:inputText id="txt_cuenta" class="form-control input-lg noround" pt:placeholder="Cuenta bancaria"
+                                                                     value="#{proformaMBean.cuentaBancaria}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                 return false;
+                                                                             }"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-4">
+                                                    <div class="form-group">
+                                                        <h:outputLabel value="Iban" for="txt_iban"/>
+                                                        <h:inputText id="txt_iban" class="form-control input-lg noround" pt:placeholder="Iban"
+                                                                     value="#{proformaMBean.ibanCuentaBancaria}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                 return false;
+                                                                             }"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-4">
+                                                    <div class="form-group">
+                                                        <h:outputLabel value="Aba" for="txt_aba"/>
+                                                        <h:inputText id="txt_aba" class="form-control input-lg noround" pt:placeholder="Aba"
+                                                                     value="#{proformaMBean.abaCuentaBancaria}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                 return false;
+                                                                             }"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-10">
+                                                    <p:remoteCommand name="seleccionarCuentaSucursal" actionListener="#{proformaMBean.seleccionarCuentaSucursal}"
+                                                                     update=":formCrearCuenta:crearCuenta"/>
+                                                    <h:panelGroup id="cuentas">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Cuentas
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                        id="selCuentas" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{proformaMBean.cuentaSucursalSeleccionada}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu" aria-labelledby="selCuentas" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                                    <ui:repeat value="#{proformaMBean.cuentas}" var="cuenta">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarCuentaSucursal([{name: 'idCuentaSucursal', value: '#{cuenta.idCuentaBancaria}'}])">
+                                                                                #{cuenta.cuentaBancaria}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="seleccionarCuentaSucursal([{name: 'idCuentaSucursal', value: '-1'}])">
+                                                                            Nueva cuenta
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-2 right-component">
+                                                    <p:remoteCommand name="guardarCuentaBancaria" actionListener="#{proformaMBean.guardarCuentaBancaria}"
+                                                                     update=":formCrearCuenta:crearCuenta :formCrearCuenta:btn :formCrearCuenta:msgCrearcuenta"/>
+                                                    <button type="button" class="btn btn-default btn-lg noround" onclick="guardarCuentaBancaria();">
+                                                        Guardar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                    </h:panelGroup>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <div class="row">
+                                        <p:messages id="msgCrearcuenta" showDetail="true" showSummary="true" class="left-component"/>
+                                        <div class="col-xs-12">
+                                            <h:panelGroup id="btn">
+                                                <ui:fragment rendered="#{(proformaMBean.pasoCrearCuenta == 2 and proformaMBean.idBancoCuenta != null and proformaMBean.idBancoCuenta != 0) ? 'true' :
+                                                                         (proformaMBean.pasoCrearCuenta == 3 and proformaMBean.idSucursalBanco != null and proformaMBean.idSucursalBanco != 0) ? 'true' : 'false'}">
+                                                    <p:remoteCommand name="irAnteriorPaso" actionListener="#{proformaMBean.irAnteriorPaso}"
+                                                                     update=":formCrearCuenta:crearCuenta :formCrearCuenta:btn"/>
+                                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="irAnteriorPaso();">
+                                                        Anterior
+                                                    </button>
+                                                </ui:fragment>
+                                                <p:remoteCommand name="cerrarCreacionCuentaBancaria" actionListener="#{proformaMBean.cerrarCreacionCuentaBancaria}" update=":formProforma:cuentas"/>
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="cerrarCreacionCuentaBancaria();"
+                                                        style="margin-left: 0 !important">
+                                                    Cerrar
+                                                </button>
+                                                <ui:fragment rendered="#{(proformaMBean.pasoCrearCuenta == 1 and proformaMBean.idBancoCuenta != null and proformaMBean.idBancoCuenta != 0) ? 'true' :
+                                                                         (proformaMBean.pasoCrearCuenta == 2 and proformaMBean.idSucursalBanco != null and proformaMBean.idSucursalBanco gt 0) ? 'true' : 'false'}">
+                                                    <p:remoteCommand name="irSiguientePaso" actionListener="#{proformaMBean.irSiguientePaso}"
+                                                                     update=":formCrearCuenta:crearCuenta :formCrearCuenta:btn :formCrearCuenta:msgCrearcuenta"/>
+                                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="irSiguientePaso();">
+                                                        Siguiente
+                                                    </button>
+                                                </ui:fragment>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+        </h:panelGroup>
+
+        <h:panelGroup id="panelMoneda">
+            <h:panelGroup rendered="#{proformaMBean.dlgMoneda}">
+                <h:form id="formMoneda">
+                    <div class="modal fade" id="modalMoneda" data-keyboard="false" data-backdrop="static">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <p:remoteCommand name="cerrarDlgMoneda" update=":formProforma" oncomplete="cerrarModalEspera();"/>
+                                <div class="modal-header dialog-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="abrirModalEspera(); cerrarDlgMoneda();">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Moneda Proforma
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 justify-component">
+                                            <p>
+                                                <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                Para poder agregar pagos a la proforma, debe asignarle a está el tipo de moneda que va a usar.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                    <br/>
+                                    <h:panelGroup id="pasosMoneda">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <p:remoteCommand name="seleccionarMoneda" actionListener="#{proformaMBean.seleccionarMoneda}"
+                                                                 update=":formMoneda:pasosMoneda :formMoneda:btns :formMoneda:msg"/>
+                                                <h:panelGroup id="monedas">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon input-group-matisses noround">
+                                                            Monedas
+                                                        </span>
+                                                        <div class="dropdown">
+                                                            <button type="button" class="btn btn-default dropdown-toggle input-lg noround"
+                                                                    style="width: 100%" id="selMonedas" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                #{proformaMBean.monedaSeleccionada}
+                                                                <span class="caret"></span>
+                                                            </button>
+                                                            <ul class="dropdown-menu" aria-labelledby="selMonedas" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                                <ui:repeat value="#{proformaMBean.monedas}" var="moneda">
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="seleccionarMoneda([{name: 'idMoneda', value: '#{moneda.idTipoMoneda}'}])">
+                                                                            (#{moneda.simbolo}) #{moneda.moneda}
+                                                                        </a>
+                                                                    </li>
+                                                                </ui:repeat>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <h:panelGroup id="btns">
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="abrirModalEspera(); cerrarDlgMoneda();">
+                                            Cerrar
+                                        </button>
+                                        <p:remoteCommand name="usarMonedaSeleccionada" actionListener="#{proformaMBean.usarMonedaSeleccionada}"
+                                                         update=":formMoneda:pasosMoneda :formMoneda:btns :formMoneda:msg" oncomplete="cerrarModalEspera();"/>
+                                        <button type="button" class="btn btn-primary btn-lg
+                                                #{proformaMBean.proforma.idTipoMoneda != null and proformaMBean.proforma.idTipoMoneda.idTipoMoneda != 0 ? 'disabled btn-deshabilitado' : ''} noround"
+                                                onclick="cerrarDlgMoneda(); abrirModalEspera(); usarMonedaSeleccionada();">
+                                            Usar
+                                        </button>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+        </h:panelGroup>
+
+        <h:panelGroup id="panelTransaccion">
+            <h:form id="formTransaccion" enctype="multipart/form-data">
+                <div class="modal fade" id="modalTransaccion">
+                    <div class="modal-dialog">
+                        <div class="modal-content dialog-content noround">
+                            <div class="modal-header dialog-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">
+                                    Cargar Transacción Bancaria Autorizada
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-12 justify-component">
+                                        <p>
+                                            <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                            Recuerde que este proceso debe ser realizado únicamente cuando el documento este firmado por completo.
+                                        </p>
+                                    </div>
+                                </div>
+                                <h:panelGroup id="inspeccionar">
+                                    <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                    <div class="row">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <div class="input-group file-caption-main">
+                                                <div class="form-control noround" tabindex="500">
+                                                    <div class="file-caption-name">
+                                                        <ui:fragment rendered="#{proformaMBean.fileName(proformaMBean.documentoTransaccion) != ''}">
+                                                            <i class="glyphicon glyphicon-file"></i>
+                                                            #{proformaMBean.fileName(proformaMBean.documentoTransaccion)}
+                                                        </ui:fragment>
+                                                    </div>
+                                                </div>
+                                                <div class="input-group-btn">
+                                                    <div class="btn btn-primary btn-file noround" tabindex="500">
+                                                        <i class="glyphicon glyphicon-folder-open"></i>
+                                                        &nbsp;
+                                                        <span>Navegar</span>
+                                                        <h:inputFile class="file" value="#{proformaMBean.documentoTransaccion}" pt:accept=".pdf">
+                                                            <f:ajax event="change" render=":formTransaccion:inspeccionar" listener="#{proformaMBean.validarDocumentoCargado}"/>
+                                                        </h:inputFile>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </h:panelGroup>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <div class="row">
+                                    <div class="col-xs-12 right-component">
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                            Cancelar
+                                        </button>
+                                        <h:commandButton class="btn btn-primary btn-lg noround" value="Guardar" action="#{proformaMBean.guardarDocumento}"
+                                                         onclick="cerrarModalTransaccion();"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </h:panelGroup>
+
+        <h:panelGroup id="panelCancelarTransaccion">
+            <h:form id="formCancelarTransaccion">
+                <div class="modal fade" id="modalCancelarTransaccion">
+                    <div class="modal-dialog">
+                        <div class="modal-content dialog-content noround">
+                            <div class="modal-header dialog-header-alerta">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">
+                                    Cancelar Transacción
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-12 center-component">
+                                        <p>
+                                            ¿Está seguro de que desea cancelar la transacción bancaria seleccionada?
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <div class="row">
+                                    <div class="col-xs-12 right-component">
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                            No
+                                        </button>
+                                        <p:remoteCommand name="cancelarTransaccionBancaria" actionListener="#{proformaMBean.cancelarTransaccionBancaria}"
+                                                         update=":formProforma" oncomplete="cerrarModalEspera();"/>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="cerrarModalCancelarTransaccion(); abrirModalEspera(); cancelarTransaccionBancaria();">
+                                            Sí
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </h:panelGroup>
+
+        <h:panelGroup id="panelDescargar">
+            <h:form id="formDescargar">
+                <div class="modal fade" id="modalDescargar">
+                    <div class="modal-dialog">
+                        <div class="modal-content dialog-content noround">
+                            <div class="modal-header dialog-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">
+                                    Descargar Proforma
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-12 justify-component">
+                                        <p>
+                                            <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                            Recuerde que la proforma se descargara en inglés.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <p:remoteCommand name="seleccionarTipoDescarga" actionListener="#{proformaMBean.seleccionarTipoDescarga}"
+                                                         update=":formDescargar:tiposDescargas"/>
+                                        <h:panelGroup id="tiposDescargas">
+                                            <div class="input-group">
+                                                <span class="input-group-addon input-group-matisses noround">
+                                                    Tipo descarga
+                                                </span>
+                                                <div class="dropdown">
+                                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                            id="selTipo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                        #{proformaMBean.tipoDescargaSeleccionada}
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="selTipo" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                        <li>
+                                                            <a class="pointer-cursor" onclick="seleccionarTipoDescarga([{name: 'tipoDescarga', value: '-1'}])">
+                                                                Proforma completa
+                                                            </a>
+                                                        </li>
+                                                        <ui:repeat value="#{proformaMBean.contenedoresDescarga}" var="cont">
+                                                            <li>
+                                                                <a class="pointer-cursor" onclick="seleccionarTipoDescarga([{name: 'tipoDescarga', value: '#{cont.idContenedorProforma}'}])">
+                                                                    #{cont.nombreContenedor}
+                                                                </a>
+                                                            </li>
+                                                        </ui:repeat>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <div class="row">
+                                    <div class="col-xs-12 right-component">
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                            Cerrar
+                                        </button>
+                                        <h:commandButton class="btn btn-primary btn-lg noround" value="Descargar">
+                                            <p:fileDownload value="#{proformaMBean.descargarProforma}"/>
+                                        </h:commandButton>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </h:panelGroup>
+
+        <h:panelGroup id="panelCargaSuelta">
+            <h:panelGroup rendered="#{proformaMBean.dlgCargaSuelta}">
+                <div class="modal fade" id="modalCargaSuelta">
+                    <div class="modal-dialog">
+                        <div class="modal-content dialog-content noround">
+                            <div class="modal-header dialog-header-advertencia">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">
+                                    Validar Contenedor
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-12 justify-component">
+                                        <p>
+                                            <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                            Los datos actuales encontrados en el total del CBM y con respeto al contenedor actual <b class="color-360-original">CARGA SUELTA</b>,
+                                            demuestran que este se puede asignar a un contenedor <b class="color-360-original">20 PIES STANDAR</b>.
+                                        </p>
+                                        <p>
+                                            Asigne el contenedor solicitado para dejar de ver este mensaje.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <div class="row">
+                                    <div class="col-xs-12 right-component">
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                            Cerrar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </h:panelGroup>
+
+        <h:panelGroup id="panelCantidad">
+            <h:panelGroup rendered="#{proformaMBean.lineaProforma.cantidadUsada > proformaMBean.lineaProforma.cantidadNecesaria}">
+                <div class="modal fade" id="modalCantidad">
+                    <div class="modal-dialog">
+                        <div class="modal-content dialog-content noround">
+                            <div class="modal-header dialog-header-advertencia">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">
+                                    Validar Cantidad
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-12 justify-component">
+                                        <p>
+                                            <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                            La cantidad asignada a los contenedores, no coincide con la cantidad solicitada. Por favor corríjala.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <div class="row">
+                                    <div class="col-xs-12 right-component">
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                            Cerrar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </h:panelGroup>
+
+        <h:panelGroup id="panelCierre">
+            <h:form id="formCierre">
+                <p:remoteCommand name="cancelarCierreProforma" actionListener="#{proformaMBean.cancelarCierreProforma}" oncomplete="cerrarModalEspera();"
+                                 update=":formProforma:msg :formProforma:tabs :formProforma:proforma"/>
+                <div class="modal fade" id="modalCierre" data-keyboard="false" data-backdrop="static">
+                    <div class="modal-dialog">
+                        <div class="modal-content dialog-content noround">
+                            <div class="modal-header dialog-header">
+                                <button type="button" class="close" aria-hidden="true" onclick="cerrarModalCierre(); abrirModalEspera(); cancelarCierreProforma();">
+                                    &times;
+                                </button>
+                                <h4 class="modal-title">
+                                    Cerrar Proforma
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                <h:panelGroup id="pasos">
+                                    <h:panelGroup rendered="#{proformaMBean.pasoCerrarPI == 1}">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <h4>
+                                                    <p>
+                                                        Terminos
+                                                    </p>
+                                                </h4>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Terminos de pago:"/>
+                                                    <h:inputTextarea class="form-control input-lg noround" style="resize: none" value="#{proformaMBean.proforma.terminosPago}"
+                                                                     pt:placeholder="Terminos de pago"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Terminos de entrega:"/>
+                                                    <h:inputTextarea class="form-control input-lg noround" style="resize: none" value="#{proformaMBean.proforma.terminosEntrega}"
+                                                                     pt:placeholder="Terminos de entrega"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{proformaMBean.pasoCerrarPI == 2}">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <h4>
+                                                    <p>
+                                                        Puertos
+                                                    </p>
+                                                </h4>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <p:remoteCommand name="seleccionarPaisPuertoSalida" actionListener="#{proformaMBean.seleccionarPaisPuertoSalida}"
+                                                                 update=":formCierre:paisSalida :formCierre:puertosProveedor"/>
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Pais salida:"/>
+                                                    <h:panelGroup id="paisSalida">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Paises
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                        id="selPaisPuertoSalida" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{proformaMBean.paisPuertoSalidaSeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selPaisPuertoSalida">
+                                                                    <ui:repeat value="#{proformaMBean.paises}" var="pais">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarPaisPuertoSalida([{name: 'idPais', value: '#{pais.idPais}'}])">
+                                                                                #{pais.nombre}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12">
+                                                <p:remoteCommand name="seleccionarPuertoSalida" actionListener="#{proformaMBean.seleccionarPuertoSalida}" update=":formCierre:puertosProveedor"/>
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Puerto salida:"/>
+                                                    <h:panelGroup id="puertosProveedor">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Puertos proveedor
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                        id="selPuertosProveedor" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{proformaMBean.idPuertoSalidaSeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selPuertosProveedor">
+                                                                    <ui:repeat value="#{proformaMBean.puertosProveedor}" var="puerto">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarPuertoSalida([{name: 'idPuertoMundo', value: '#{puerto.idPuertoMundo}'}]);">
+                                                                                #{puerto.nombrePuerto}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12">
+                                                <p:remoteCommand name="seleccionarPuertoLlegada" actionListener="#{proformaMBean.seleccionarPuertoLlegada}" update=":formCierre:puertosColombianos"/>
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Puerto llegada:"/>
+                                                    <h:panelGroup id="puertosColombianos">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Puertos colombianos
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                        id="selPuertosColombianos" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{proformaMBean.idPuertoLlegadaSeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selPuertosColombianos">
+                                                                    <ui:repeat value="#{proformaMBean.puertosColombianos}" var="puerto">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarPuertoLlegada([{name: 'idPuertoMundo', value: '#{puerto.idPuertoMundo}'}]);">
+                                                                                #{puerto.nombrePuerto}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{proformaMBean.pasoCerrarPI == 3}">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <h4>
+                                                    <p>
+                                                        INCOTERM
+                                                    </p>
+                                                </h4>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <p:remoteCommand name="seleccionarIncoterm" actionListener="#{proformaMBean.seleccionarIncoterm}" update=":formCierre:incoterms"/>
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Incoterms:"/>
+                                                    <h:panelGroup id="incoterms">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Inconterms
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                        id="selInconterms" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{proformaMBean.idIncotermSeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selInconterms">
+                                                                    <ui:repeat value="#{proformaMBean.incoterms}" var="incoterm">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarIncoterm([{name: 'idIncoterm', value: '#{incoterm.idIncoterm}'}]);">
+                                                                                #{incoterm.codigo}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <h:panelGroup id="btns">
+                                    <div class="row">
+                                        <div class="col-xs-6 left-component">
+                                            <ui:fragment rendered="#{proformaMBean.pasoCerrarPI gt 1}">
+                                                <p:remoteCommand name="aplicarAnteriorPasoCerrarPI" actionListener="#{proformaMBean.aplicarAnteriorPasoCerrarPI}"
+                                                                 update=":formCierre:pasos :formCierre:btns :formCierre:msg"/>
+                                                <button type="button" class="btn btn-default btn-lg noround" onclick="aplicarAnteriorPasoCerrarPI();">
+                                                    Anterior
+                                                </button>
+                                            </ui:fragment>
+                                        </div>
+                                        <div class="col-xs-6 right-component">
+                                            <ui:fragment rendered="#{proformaMBean.pasoCerrarPI lt 3}">
+                                                <p:remoteCommand name="aplicarSiguientePasoCerrarPI" actionListener="#{proformaMBean.aplicarSiguientePasoCerrarPI}"
+                                                                 update=":formCierre:pasos :formCierre:btns :formCierre:msg"/>
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="aplicarSiguientePasoCerrarPI();">
+                                                    Siguiente
+                                                </button>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{proformaMBean.pasoCerrarPI eq 3 and (proformaMBean.proforma.estado eq 'PP' or proformaMBean.proforma.estado eq 'PR')}">
+                                                <p:remoteCommand name="cerrarProforma" actionListener="#{proformaMBean.cerrarProforma}" update=":formProforma:msg"
+                                                                 oncomplete="cerrarModalEspera();"/>
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="cerrarModalCierre(); abrirModalEspera(); cerrarProforma();">
+                                                    Cerrar proforma
+                                                </button>
+                                            </ui:fragment>
+                                        </div>
+                                    </div>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </h:panelGroup>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <ol class="breadcrumb">
+                        <li class="active">
+                            <a>Proformas</a>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+            <h:form id="formProforma">
+                <p:remoteCommand name="cambiarTag" actionListener="#{proformaMBean.asignarTagSeleccionado(false)}" oncomplete="abrirModalCargaSuelta(); abrirModalCantidad();"
+                                 update=":formProforma:tabs :formProforma:msg :panelCargaSuelta :formProforma:tabContent :panelCantidad"/>
+                <p:remoteCommand name="reCalcularDatos" actionListener="#{proformaMBean.reCalcularDatos}"
+                                 update=":formProforma:detalleEspecial :formProforma:detalleGeneral :formProforma:msg" oncomplete="cerrarModalEspera();"/>
+                <p:remoteCommand name="validarMoneda" actionListener="#{proformaMBean.validarMoneda}" oncomplete="cerrarModalEspera(); abrirModalMoneda();"
+                                 update=":panelMoneda"/>
+                <p:remoteCommand name="descargar" oncomplete="abrirModalDescargar();" update=":panelDescargar"/>
+                <p:remoteCommand name="validarCierreProforma" actionListener="#{proformaMBean.validarCierreProforma}" oncomplete="cerrarModalEspera(); abrirModalCierre();"
+                                 update=":formProforma:msg :panelCierre :formProforma:tabs"/>
+                <h:panelGroup id="tabs">
+                    <ul id="listaTags" class="nav nav-pills">
+                        <li id="li_seleccionar" class="#{proformaSessionMBean.tagEnable == 1 ? 'active' : ''} noround">
+                            <a href="#tab_seleccionar" data-toggle="pill" class="input-lg noround" onclick="cambiarTag([{name: 'tag', value: 1}]);" style="font-size: 17px !important">
+                                Seleccionar
+                            </a>
+                        </li>
+                        <li id="li_proforma" class="#{proformaSessionMBean.tagEnable == 2 ? 'active' : ''} noround"
+                            style="visibility: #{proformaMBean.idProforma eq null ? 'hidden' : 'visible'}">
+                            <a href="#tab_proforma" data-toggle="pill" class="input-lg noround" onclick="cambiarTag([{name: 'tag', value: 2}]);" style="font-size: 17px !important">
+                                Proforma
+                            </a>
+                        </li>
+                        <li id="li_contenedor" class="#{proformaSessionMBean.tagEnable == 3 ? 'active' : ''} noround"
+                            style="visibility: #{proformaMBean.idProforma eq null ? 'hidden' : 'visible'}">
+                            <a href="#tab_contenedor" data-toggle="pill" class="input-lg noround" onclick="cambiarTag([{name: 'tag', value: 3}]);" style="font-size: 17px !important">
+                                Contenedor
+                            </a>
+                        </li>
+                        <li id="li_pagos" class="#{proformaSessionMBean.tagEnable == 4 ? 'active' : ''} noround pointer-cursor"
+                            style="visibility: #{proformaMBean.idProforma eq null ? 'hidden' : 'visible'}">
+                            <a href="#tab_pagos" class="input-lg noround" data-toggle="pill" onclick="abrirModalEspera(); validarMoneda();" style="font-size: 17px !important">
+                                Pagos
+                            </a>
+                        </li>
+                        <li class="noround" style="cursor: not-allowed; visibility: #{proformaMBean.idProforma eq null ? 'hidden' : 'visible'}">
+                            <a class="input-lg noround" data-toggle="pill" style="background-color: #FFFFFF !important; color: #000000 !important; font-size: 17px !important">
+                                CBM: #{baruGenericMBean.getValorFormateado('Double', proformaMBean.proforma.cbmTotal, 2)}
+                                <span class="glyphicon #{proformaMBean.proforma.cbmTotal == 0 ? 'glyphicon-alert' : 
+                                                         proformaMBean.proforma.cbmTotal gt proformaMBean.cbmMaximo ? 'glyphicon-remove' :
+                                                         proformaMBean.proforma.cbmTotal gt proformaMBean.cbmMinimo ? 'glyphicon-alert' : 'glyphicon-ok'}"
+                                      style="color: #{proformaMBean.proforma.cbmTotal == 0 ? '#F0AD4E' : 
+                                                      proformaMBean.proforma.cbmTotal gt proformaMBean.cbmMaximo ? '#FF0000' :
+                                                      proformaMBean.proforma.cbmTotal gt proformaMBean.cbmMinimo ? '#F0AD4E' : '#5BC0DE'}"></span>
+                            </a>
+                        </li>
+                        <li class="noround" style="cursor: not-allowed; visibility: #{proformaMBean.idProforma eq null ? 'hidden' : 'visible'}">
+                            <ui:fragment rendered="#{proformaMBean.proforma.valorTotalDescuento == null or proformaMBean.proforma.valorTotalDescuento == 0}">
+                                <a class="input-lg noround" data-toggle="pill" style="background-color: #FFFFFF !important; color: #000000 !important; font-size: 17px !important">
+                                    Total: #{baruGenericMBean.getValorFormateado('Double', proformaMBean.proforma.valorTotal, 2)}
+                                </a>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{proformaMBean.proforma.valorTotalDescuento gt 0}">
+                                <p:remoteCommand name="seleccionarValorMostrar" actionListener="#{proformaMBean.seleccionarValorMostrar}" update=":formProforma:valores" oncomplete="cerrarModalEspera();"/>
+                                <h:panelGroup id="valores">
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                id="selTotales" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            #{proformaMBean.valorMostrarSeleccionado}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="selTotales" style="min-width: 200px">
+                                            <li>
+                                                <a class="noround" data-toggle="pill" style="background-color: #FFFFFF !important; color: #000000 !important; cursor: pointer !important"
+                                                   onclick="abrirModalEspera(); seleccionarValorMostrar([{name: 'valorMostrar', value: 'total'}]);">
+                                                    <div class="row">
+                                                        <div class="col-xs-6">
+                                                            Total: 
+                                                        </div>
+                                                        <div class="col-xs-6 right-component">
+                                                            #{baruGenericMBean.getValorFormateado('Double', proformaMBean.proforma.valorTotal, 2)}
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="noround" data-toggle="pill" style="background-color: #FFFFFF !important; color: #000000 !important; cursor: pointer !important"
+                                                   onclick="abrirModalEspera(); seleccionarValorMostrar([{name: 'valorMostrar', value: 'descuento'}]);">
+                                                    <div class="row">
+                                                        <div class="col-xs-6">
+                                                            Descuento: 
+                                                        </div>
+                                                        <div class="col-xs-6 right-component">
+                                                            #{baruGenericMBean.getValorFormateado('Double', proformaMBean.proforma.valorTotalDescuento, 2)}
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </h:panelGroup>
+                            </ui:fragment>
+                        </li>
+                        <li class="noround pointer-cursor" style="visibility: #{proformaMBean.idProforma ne null and
+                                                                                (proformaMBean.proforma.estado eq 'PP' or proformaMBean.proforma.estado eq 'PR') ? 'visible' : 'hidden'}">
+                            <a class="input-lg noround" data-toggle="pill" onclick="abrirModalEspera(); reCalcularDatos();" title="Re-calcular datos">
+                                <span class="glyphicon glyphicon-retweet"></span>
+                            </a>
+                        </li>
+                        <li class="noround pointer-cursor" onclick="openRuta('#{proformaMBean.abrirTablaProforma}?idProforma=#{proformaMBean.idProforma}')"
+                            style="visibility: #{proformaMBean.idProforma eq null ? 'hidden' : 'visible'}">
+                            <a class="input-lg noround" data-toggle="pill" title="Vista en tabla" style="font-size: 17px !important">
+                                <span class="glyphicon glyphicon-th-list"></span>
+                            </a>
+                        </li>
+                        <li class="noround pointer-cursor" style="visibility: #{proformaMBean.idProforma eq null ? 'hidden' : 'visible'}"
+                            onclick="descargar();">
+                            <a class="input-lg noround" data-toggle="pill" title="Descargar" style="font-size: 17px !important">
+                                <span class="glyphicon glyphicon-download-alt"></span>
+                            </a>
+                        </li>
+                        <li class="noround pointer-cursor" style="visibility: #{proformaMBean.idProforma eq null ? 'hidden' : 'visible'}"
+                            onclick="abrirModalEspera(); validarCierreProforma();">
+                            <a class="input-lg noround" data-toggle="pill" title="Cerrar proforma" style="font-size: 17px !important">
+                                <span class="glyphicon glyphicon-lock"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </h:panelGroup>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                <h:panelGroup id="tabContent">
+                    <div class="tab-content">
+                        <div class="tab-pane #{proformaSessionMBean.tagEnable == 1 ? 'active' : ''}" id="tab_seleccionar">
+                            <div class="row">
+                                <div class="col-xs-6 col-xs-offset-3">
+                                    <div class="form-group has-feedback">
+                                        <p:remoteCommand name="buscar" actionListener="#{proformaMBean.buscarProforma}"
+                                                         update=":formProforma:proformas :formProforma:tabs :formProforma:msg"/>
+                                        <h:inputText id="txt_parametroBusqueda" class="form-control input-lg noround" pt:placeholder="Parámetro Busqueda"
+                                                     value="#{proformaMBean.parametroBusqueda}" autocomplete="off"
+                                                     onkeypress="if (event.keyCode === 13) {
+                                                                 buscar();
+                                                                 return false;
+
+                                                             }"/>
+                                        <span class="form-control-feedback glyphicon glyphicon-search inline-search" aria-hidden="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <h:panelGroup id="proformas">
+                                <div class="row">
+                                    <p:remoteCommand name="seleccionarProforma" actionListener="#{proformaMBean.seleccionarProforma}"
+                                                     update=":formProforma:proformas :formProforma:tabs :formProforma:proforma :formProforma:msg
+                                                     :formProforma:contenedores :formProforma:contenedoresAsignados :formProforma:pagos"
+                                                     oncomplete="cerrarModalEspera();"/>
+                                    <ui:repeat value="#{proformaMBean.proformas}" var="proforma">
+                                        <div class="col-xs-4 center-component">
+                                            <div class="proforma-seleccionada #{proformaMBean.idProforma eq proforma.idProforma ? 'proforma-activa' : ''}"
+                                                 onclick="abrirModalEspera(); seleccionarProforma([{name: 'idProforma', value: '#{proforma.idProforma}'}])">
+                                                <div class="row" style="border-bottom: 1px solid #DDDDDD; margin: -5px">
+                                                    <div class="col-xs-12">
+                                                        <b>Estado: </b>#{proforma.estado eq 'PP' ? 'PENDIENTE' :
+                                                                         proforma.estado eq 'PA' ? 'APROBADA' :
+                                                                         proforma.estado eq 'AP' ? 'PENDIENTE APROBACIÓN' :
+                                                                         proforma.estado eq 'PR' ? 'NO APROBADA' :
+                                                                         proforma.estado eq 'CP' ? 'CERRADA' : 'SIN ESTADO'}
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12" style="top: 23px">
+                                                        <span>
+                                                            #{proforma.codProveedor}-#{proforma.anio}-#{proforma.consecutivo}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ui:repeat>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+
+                        <div class="tab-pane #{proformaSessionMBean.tagEnable == 2 ? 'active' : ''}" id="tab_proforma">
+                            <h:panelGroup id="proforma">
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <div id="images" class="carousel slide">
+                                                    <ol class="carousel-indicators" style="bottom: -40px !important">
+                                                        <ui:repeat value="#{proformaMBean.galeria}" var="galeriaPoint">
+                                                            <li data-target="#images" data-slide-to="#{galeriaPoint.posicion}" class="#{galeriaPoint.posicion eq '0' ? 'active' : ''}"></li>
+                                                        </ui:repeat>
+                                                    </ol>
+                                                    <p:remoteCommand name="verImg" actionListener="#{proformaMBean.seleccionarImgVer}" oncomplete="abrirModalImg();"
+                                                                     update=":modalImagenes :formProforma:msg"/>
+                                                    <div class="carousel-inner">
+                                                        <ui:repeat value="#{proformaMBean.galeria}" var="galeria">
+                                                            <div class="item #{galeria.posicion eq '0' ? 'active' : ''}">
+                                                                <img src="#{galeria.url}" class="img-responsive pointer-cursor" onclick="verImg([{name: 'img', value: '#{galeria.url}'}]);"
+                                                                     style="max-height: 236px"/>
+                                                            </div>
+                                                        </ui:repeat>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-5">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <div class="form-group">
+                                                    <p:remoteCommand name="primerItem" actionListener="#{proformaMBean.mostrarPrimerItem}"
+                                                                     update=":formProforma:proforma :formProforma:msg" oncomplete="cerrarModalEspera();"/>
+                                                    <p:remoteCommand name="anteriorItem" actionListener="#{proformaMBean.anteriorItem}"
+                                                                     update=":formProforma:proforma :formProforma:msg" oncomplete="cerrarModalEspera();"/>
+                                                    <p:remoteCommand name="itemEspecifico" actionListener="#{proformaMBean.mostrarItemEspecifico}"
+                                                                     update=":formProforma:proforma :formProforma:msg" oncomplete="cerrarModalEspera();"/>
+                                                    <p:remoteCommand name="siguienteItem" actionListener="#{proformaMBean.siguienteItem}"
+                                                                     update=":formProforma:proforma :formProforma:msg" oncomplete="cerrarModalEspera();"/>
+                                                    <p:remoteCommand name="ultimoItem" actionListener="#{proformaMBean.mostrarUltimoItem}"
+                                                                     update=":formProforma:proforma :formProforma:msg" oncomplete="cerrarModalEspera();"/>
+                                                    <div class="btn-group" role="group">
+                                                        <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera();
+                                                                primerItem();">
+                                                            1
+                                                        </button>
+                                                        <button type="button" class="btn btn-default btn-lg noround"
+                                                                onclick="#{proformaMBean.itemActivo == 1 or proformaMBean.itemActivo == 0 ? '' : 'abrirModalEspera(); anteriorItem();'}">
+                                                            <span class="glyphicon glyphicon-chevron-left
+                                                                  #{proformaMBean.itemActivo == 1 or proformaMBean.itemActivo == 0 ? 'navegacion-item-proforma-deshabilitado' : 'navegacion-item-proforma'}"></span>
+                                                        </button>
+                                                        <div class="btn-group" role="group">
+                                                            <button type="button" class="btn btn-default dropdown-toggle btn-lg noround contador-items-proforma" data-toggle="dropdown"
+                                                                    aria-haspopup="true" aria-expanded="false">
+                                                                #{proformaMBean.itemActivo} / #{proformaMBean.itemsDisponibles}
+                                                                <span class="caret" style="color: #000000"></span>
+                                                            </button>
+                                                            <ul class="dropdown-menu" style="max-height: 165px; overflow-y: auto">
+                                                                <ui:repeat value="#{proformaMBean.itemsPaginacion}" var="pagina">
+                                                                    <li>
+                                                                        <a onclick="abrirModalEspera();
+                                                                itemEspecifico([{name: 'item', value: '#{pagina}'}]);" class="pointer-cursor">
+                                                                            #{pagina}
+                                                                        </a>
+                                                                    </li>
+                                                                </ui:repeat>
+                                                            </ul>
+                                                        </div>
+                                                        <button type="button" class="btn btn-default btn-lg noround"
+                                                                onclick="#{proformaMBean.itemActivo == proformaMBean.itemsDisponibles ? '' : 'abrirModalEspera(); siguienteItem();'}">
+                                                            <span class="glyphicon glyphicon-chevron-right
+                                                                  #{proformaMBean.itemActivo == proformaMBean.itemsDisponibles ? 'navegacion-item-proforma-deshabilitado' : 'navegacion-item-proforma'}"></span>
+                                                        </button>
+                                                        <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera();
+                                                                ultimoItem();">
+                                                            #{proformaMBean.itemsDisponibles}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h:panelGroup id="detalleEspecial">
+                                            <div class="row">
+                                                <div class="col-xs-12 center-component">
+                                                    <h:panelGroup id="chk_tipoIdentificador">
+                                                        <p:remoteCommand name="incluirItem" actionListener="#{proformaMBean.marcarLineaIncluida}" oncomplete="cerrarModalEspera();"
+                                                                         update=":formProforma:proforma :formProforma:msg :formProforma:contenedoresAsignados :formProforma:tabs"/>
+                                                        <span class="glyphicon #{proformaMBean.datosProforma.incluir ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                              onclick="#{(proformaMBean.proforma.estado eq 'PP' or proformaMBean.proforma.estado eq 'PR' ? 'abrirModalEspera(); incluirItem();' : '')}"></span>
+                                                        <h:outputLabel value="¿Incluir este item a la proforma?" class="label-normal"
+                                                                       onclick="#{(proformaMBean.proforma.estado eq 'PP' or proformaMBean.proforma.estado eq 'PR' ? 'abrirModalEspera(); incluirItem();' : '')}"/>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 center-component">
+                                                <ui:fragment rendered="#{empty proformaMBean.datosProforma.detalleProformaEspecial}">
+                                                    <h4>No hay columnas disponibles</h4>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{not empty proformaMBean.datosProforma.detalleProformaEspecial}">
+                                                    <ui:repeat value="#{proformaMBean.datosProforma.detalleProformaEspecial}" var="detalleEspecial">
+                                                        <div class="row">
+                                                            <div class="col-xs-12 input-group-proforma">
+                                                                <span class="input-group-addon noround right-component" id="basic-addon" style="width: 170px">
+                                                                    #{proformaSessionMBean.mostrarDatosColumna(detalleEspecial.idConfiguracion, 'vista')}
+                                                                </span>
+                                                                <h:inputText binding="#{proformaMBean.inputTextEspecial}" class="form-control noround"
+                                                                             value="#{detalleEspecial.valorFormateado}" pt:placeholder="Valor" alt="#{detalleEspecial.idDetalleProforma}"
+                                                                             disabled="#{(!detalleEspecial.columna.modificable and !detalleEspecial.columna.modificableSiNuevo)
+                                                                                         or (proformaMBean.proforma.estado ne 'PP' and proformaMBean.proforma.estado ne 'PR') ? 'true' : 'false'}">
+                                                                    <f:ajax render=":formProforma:detalleEspecial :formProforma:msg :formProforma:tabs :formProforma:btnsIzquierda" event="change"
+                                                                            listener="#{proformaMBean.procesarCambioDetalleEspecial}"/>
+                                                                </h:inputText>
+                                                            </div>
+                                                        </div>
+                                                    </ui:repeat>
+                                                </ui:fragment>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                    <div class="col-xs-1">
+                                        <h:panelGroup id="btnsIzquierda">
+                                            <div class="row">
+                                                <div class="col-xs-12 center-component margin-bottom-7">
+                                                    <p:remoteCommand name="obtenerColumnas" actionListener="#{proformaMBean.obtenerColumnas}" oncomplete="abrirModalAgregarColumna();"
+                                                                     update=":panelAgregarColumna"/>
+                                                    <button type="button" class="btn btn-default btn-lg noround #{(proformaMBean.proforma.estado eq 'PP' or proformaMBean.proforma.estado eq 'PR' ? '' : 'disabled')}"
+                                                            onclick="obtenerColumnas();" title="Incluir Columna">
+                                                        <span class="glyphicon glyphicon-saved"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 center-component margin-bottom-7">
+                                                    <button type="button" class="btn btn-default btn-lg noround #{(proformaMBean.proforma.estado eq 'PP' or proformaMBean.proforma.estado eq 'PR' ? '' : 'disabled')}"
+                                                            onclick="abrirModalCrearNuevoItem();" title="Agregar Item">
+                                                        <span class="glyphicon glyphicon-plus"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 center-component margin-bottom-7">
+                                                    <button type="button" class="btn btn-default btn-lg noround #{(proformaMBean.proforma.estado eq 'PP' or proformaMBean.proforma.estado eq 'PR' ? '' : 'disabled')}"
+                                                            onclick="abrirModalEliminarItem();" title="Eliminar Item">
+                                                        <span class="glyphicon glyphicon-remove"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 center-component margin-bottom-7">
+                                                    <p:remoteCommand name="mostrarContenedores" update=":panelContenedores :formProforma:msg" oncomplete="abrirModalContenedores();"/>
+                                                    <button type="button" class="btn btn-default btn-lg noround #{proformaMBean.validarSizeContenedores() ? '' : 'disabled'}
+                                                            #{(proformaMBean.proforma.estado eq 'PP' or proformaMBean.proforma.estado eq 'PR' ? '' : 'disabled')}"
+                                                            onclick="mostrarContenedores();" title="Contenedores">
+                                                        <span class="glyphicon glyphicon-stop"
+                                                              style="color: #{proformaMBean.lineaProforma.cantidadUsada eq proformaMBean.lineaProforma.cantidadNecesaria ? '#5CB85C' : '#BF0039'}"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 center-component">
+                                                    <button type="button" class="btn btn-default btn-lg disabled noround" title="Imagen">
+                                                        <span class="glyphicon glyphicon-picture"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="row">
+                                    <div class="col-xs-4">
+                                        <p:remoteCommand name="asignarFoto" update=":modalAsignar :formProforma:msg" oncomplete="abrirModalAsignarImagenes();"/>
+                                        <p:remoteCommand name="crearItem" update=":panelCrearItem :formProforma:msg" oncomplete="abrirModalCrearItem();"/>
+                                        <button type="button" onclick="asignarFoto();" class="btn btn-default btn-lg
+                                                #{empty proformaMBean.galeria or (proformaMBean.proforma.estado ne 'PP' and proformaMBean.proforma.estado ne 'PR') ? 'disabled' : ''} noround" style="width: 49%">
+                                            Asignar Foto
+                                        </button>
+                                        <button type="button" onclick="crearItem();" class="btn btn-default btn-lg
+                                                #{empty proformaMBean.camposCrear or (proformaMBean.proforma.estado ne 'PP' and proformaMBean.proforma.estado ne 'PR') ? 'disabled' : ''} noround" style="width: 49%">
+                                            Crear Copia
+                                        </button>
+                                    </div>
+                                    <div class="col-xs-4">
+                                        <div class="form-group has-feedback">
+                                            <p:remoteCommand name="buscarDetalle" actionListener="#{proformaMBean.buscarColumna}" update=":formProforma:detalleGeneral :formProforma:msg"/>
+                                            <h:inputText id="txt_buscar" value="#{proformaMBean.parametroBusqueda}" class="form-control input-lg noround"
+                                                         pt:placeholder="Buscar" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                     buscarDetalle();
+                                                                     return false;
+
+                                                                 }"/>
+                                            <span class="form-control-feedback glyphicon glyphicon-search inline-search" aria-hidden="true"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-4">
+                                        <p:remoteCommand name="ordenarDatos" actionListener="#{proformaMBean.ordenarDatos}" update=":formProforma:filtros :formProforma:detalleGeneral :formProforma:msg"/>
+                                        <h:panelGroup id="filtros">
+                                            <div class="input-group">
+                                                <span class="input-group-addon input-group-matisses noround">
+                                                    Ordenar por
+                                                </span>
+                                                <div class="dropdown">
+                                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                            id="selOrdenar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                        #{proformaMBean.ordenarPor}
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="selOrdenar">
+                                                        <li>
+                                                            <a onclick="ordenarDatos([{name: 'orderBy', value: 'Columnas'}])" class="pointer-cursor">
+                                                                Columnas
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a onclick="ordenarDatos([{name: 'orderBy', value: 'Valores'}])" class="pointer-cursor">
+                                                                Valores
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <span class="input-group-btn">
+                                                    <p:remoteCommand name="alternarOrden" actionListener="#{proformaMBean.alternarOrdenDatos}" oncomplete="cerrarModalEspera();"
+                                                                     update=":formProforma:filtros :formProforma:detalleGeneral :formProforma:msg"/>
+                                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); alternarOrden();">
+                                                        <span class="glyphicon
+                                                              #{proformaMBean.sortOrder eq 'ASC' ? 'glyphicon-sort-by-order' : (proformaMBean.sortOrder eq 'DESC' ? 'glyphicon-sort-by-order-alt' :'')}"></span>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <h:panelGroup id="detalleGeneral">
+                                        <ui:fragment rendered="#{empty proformaMBean.datosProforma.detalleProforma}">
+                                            <div class="col-xs-12 center-component">
+                                                <h4>No hay columnas disponibles</h4>
+                                            </div>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{not empty proformaMBean.datosProforma.detalleProforma}">
+                                            <ui:repeat value="#{proformaMBean.datosProforma.detalleProforma}" var="detalleGeneral">
+                                                <div class="col-xs-6 input-group-proforma">
+                                                    <span class="input-group-addon noround right-component" id="basic-addon" style="width: 270px">
+                                                        #{proformaSessionMBean.mostrarDatosColumna(detalleGeneral.idConfiguracion, 'bean')}
+                                                    </span>
+                                                    <h:inputText binding="#{proformaMBean.inputTextGeneral}" class="form-control noround"
+                                                                 value="#{detalleGeneral.valorFormateado}" pt:placeholder="Valor" alt="#{detalleGeneral.idDetalleProforma}"
+                                                                 disabled="#{(!detalleGeneral.columna.modificable and !detalleGeneral.columna.modificableSiNuevo)
+                                                                             or (proformaMBean.proforma.estado ne 'PP' and proformaMBean.proforma.estado ne 'PR') ? 'true' : 'false'}">
+                                                        <f:ajax render=":formProforma:detalleGeneral :formProforma:tabs :formProforma:msg :formProforma:btnsIzquierda" event="change"
+                                                                listener="#{proformaMBean.procesarCambioDetalle}"/>
+                                                    </h:inputText>
+                                                </div>
+                                            </ui:repeat>
+                                        </ui:fragment>
+                                    </h:panelGroup>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                        <div class="tab-pane #{proformaSessionMBean.tagEnable == 3 ? 'active' : ''}" id="tab_contenedor">
+                            <br/>
+                            <br/>
+                            <h:panelGroup id="contenedores">
+                                <ui:fragment rendered="#{proformaMBean.contenedoresAsignados == false}">
+                                    <div class="row">
+                                        <div class="col-xs-12 justify-component">
+                                            <p>
+                                                <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                Seleccione al menos un contenedor para poder trabajar en esta proforma.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{(proformaMBean.proforma.estado eq 'PP' or proformaMBean.proforma.estado eq 'PR')}">
+                                    <div class="row">
+                                        <div class="col-xs-offset-2 col-xs-8">
+                                            <div class="form-group">
+                                                <p:remoteCommand name="seleccionarContenedor" actionListener="#{proformaMBean.seleccionarContenedorProveedor}"
+                                                                 update=":formProforma:contenedores :formProforma:msg"/>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon input-group-matisses noround">Seleccione contenedor</span>
+                                                    <div class="dropdown">
+                                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                id="selContenedor" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                            #{proformaMBean.contenedorSeleccionado}
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu" style="width: 100%">
+                                                            <ui:repeat value="#{proformaMBean.contenedores}" var="contenedor">
+                                                                <li>
+                                                                    <a onclick="seleccionarContenedor([{name: 'idContenedorProveedor', value: '#{contenedor.idContenedorProveedor}'}]);"
+                                                                       class="pointer-cursor">
+                                                                        #{contenedor.contenedor.nombre}
+                                                                    </a>
+                                                                </li>
+                                                            </ui:repeat>
+                                                        </ul>
+                                                    </div>
+                                                    <span class="input-group-btn">
+                                                        <p:remoteCommand name="agregarContenedorProforma" actionListener="#{proformaMBean.agregarContenedorProforma}"
+                                                                         update=":formProforma:contenedoresAsignados :formProforma:contenedores :formProforma:msg
+                                                                         :formProforma:proforma :formProforma:tabs" oncomplete="cerrarModalEspera();"/>
+                                                        <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); agregarContenedorProforma();">
+                                                            Agregar
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:fragment>
+                            </h:panelGroup>
+                            <h:panelGroup id="contenedoresAsignados">
+                                <h:panelGroup rendered="#{not empty proformaMBean.contenedoresProforma}">
+                                    <hr/>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <table class="table table-bordered table-striped">
+                                                <tr>
+                                                    <th class="head-tabla">
+                                                        Contenedor
+                                                    </th>
+                                                    <th class="head-tabla">
+                                                        Fecha Embarque
+                                                    </th>
+                                                    <th class="head-tabla">
+                                                        Valor Total
+                                                    </th>
+                                                    <th class="head-tabla">
+                                                        CBM Total
+                                                    </th>
+                                                    <th class="head-tabla"></th>
+                                                    <th class="head-tabla"></th>
+                                                </tr>
+                                                <ui:repeat value="#{proformaMBean.contenedoresProforma}" var="cont">
+                                                    <tr>
+                                                        <td class="center-component">
+                                                            <div class="row">
+                                                                <div class="col-xs-12" style="top: 13px">
+                                                                    #{cont.contenedorProveedor.contenedor.nombreCorto}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <p:calendar pattern="dd-MM-yyyy" class="input-lg mask" pt:placeholder="Fecha Embarque"
+                                                                        value="#{cont.fechaEmbarque}">
+                                                                <p:ajax event="dateSelect" listener="#{proformaMBean.asignarFechaEmbarque(cont.idContenedorProforma)}"
+                                                                        update=":formProforma:msg"/>
+                                                            </p:calendar>
+                                                        </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div class="col-xs-12 right-component" style="top: 13px">
+                                                                    $ #{baruGenericMBean.getValorFormateado('Double', cont.valorTotal, 2)}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div class="col-xs-12 right-component" style="top: 13px">
+                                                                    <div class="row">
+                                                                        <div class="col-xs-8">
+                                                                            #{baruGenericMBean.getValorFormateado('Double', cont.cbmAcumulado, 2)}
+                                                                        </div>
+                                                                        <div class="col-xs-4 center-component">
+                                                                            <span class="glyphicon #{(cont.cbmAcumulado le cont.contenedorProveedor.contenedor.CBMMinimo and cont.cbmAcumulado gt 0) ? 'glyphicon-ok' : 
+                                                                                                     cont.cbmAcumulado gt cont.contenedorProveedor.contenedor.CBMMaximo ? 'glyphicon-remove' : 'glyphicon-alert'}"
+                                                                                  style="color: #{(cont.cbmAcumulado le cont.contenedorProveedor.contenedor.CBMMinimo and cont.cbmAcumulado gt 0) ? '#5BC0DE' : 
+                                                                                                  cont.cbmAcumulado ge cont.contenedorProveedor.contenedor.CBMMaximo ? '#D9534F' : '#F0AD4E'}"></span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="center-component">
+                                                            <div class="row">
+                                                                <div class="col-xs-12" style="top: 13px">
+                                                                    <span class="glyphicon glyphicon-th-list btn-contenedores" onclick="openRuta('#{cont.urlTabla}');"></span>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="center-component">
+                                                            <ui:fragment rendered="#{(proformaMBean.proforma.estado eq 'PP' or proformaMBean.proforma.estado eq 'PR')}">
+                                                                <p:remoteCommand name="eliminarContenedor" actionListener="#{proformaMBean.eliminarContenedorProforma}"
+                                                                                 update=":formProforma:contenedoresAsignados :formProforma:msg :formProforma:tabs" oncomplete="cerrarModalEspera();"/>
+                                                                <div class="row">
+                                                                    <div class="col-xs-12" style="top: 13px">
+                                                                        <span class="glyphicon glyphicon-remove btn-contenedores"
+                                                                              onclick="abrirModalEspera(); eliminarContenedor([{name: 'idContenedorProforma', value: '#{cont.idContenedorProforma}'}]);"></span>
+                                                                    </div>
+                                                                </div>
+                                                            </ui:fragment>
+                                                        </td>
+                                                    </tr>
+                                                </ui:repeat>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </h:panelGroup>
+                            </h:panelGroup>
+                        </div>
+                        <div class="tab-pane #{proformaSessionMBean.tagEnable == 4 ? 'active' : ''}" id="tab_pagos">
+                            <br/>
+                            <h:panelGroup id="pagos">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <span class="input-lg">
+                                            <b style="color: #Bf0039">Total: </b>#{baruGenericMBean.getValorFormateado('Double', proformaMBean.proforma.valorTotal, 2)}
+                                        </span>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <span class="input-lg">
+                                            <b style="color: #Bf0039">Pendiente: </b>#{baruGenericMBean.getValorFormateado('Double', proformaMBean.proforma.valorPendiente, 2)}
+                                        </span>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <span class="input-lg">
+                                            <b style="color: #Bf0039">Transferido: </b>#{baruGenericMBean.getValorFormateado('Double', proformaMBean.proforma.valorTransferido, 2)}
+                                        </span>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <span class="input-lg">
+                                            <b style="color: #Bf0039">Moneda: </b>#{proformaMBean.proforma.idTipoMoneda.simbolo}
+                                        </span>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="row">
+                                    <div class="col-xs-6 margin-bottom-10">
+                                        <p:remoteCommand name="seleccionarCuenta" actionListener="#{proformaMBean.seleccionarCuenta}"
+                                                         update=":formProforma:cuentas :panelCrearCuenta :formProforma:tiposGiros" oncomplete="cerrarModalEspera(); abrirModalCrearCuenta();"/>
+                                        <h:panelGroup id="cuentas">
+                                            <div class="input-group">
+                                                <span class="input-group-addon input-group-matisses noround">
+                                                    Cuenta
+                                                </span>
+                                                <div class="dropdown">
+                                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                            id="selCuentas" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                        #{proformaMBean.cuentaBancariaSeleccionada}
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="selCuentas" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                        <ui:repeat value="#{proformaMBean.cuentasProveedor}" var="cuenta">
+                                                            <li>
+                                                                <a onclick="abrirModalEspera();
+                                                                        seleccionarCuenta([{name: 'idCuenta', value: '#{cuenta.idCuentaBancaria}'}])" class="pointer-cursor">
+                                                                    <ui:fragment rendered="#{fn:length(cuenta.sucursales.bancoCompras.razonSocial) gt 20}">
+                                                                        #{fn:substring(cuenta.sucursales.bancoCompras.razonSocial, 0, 20)}... - #{cuenta.cuentaBancaria}
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{fn:length(cuenta.sucursales.bancoCompras.razonSocial) le 21}">
+                                                                        #{cuenta.sucursales.bancoCompras.razonSocial} - #{cuenta.cuentaBancaria}
+                                                                    </ui:fragment>
+                                                                </a>
+                                                            </li>
+                                                        </ui:repeat>
+                                                        <li>
+                                                            <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                    seleccionarCuenta([{name: 'idCuenta', value: '-1'}])">
+                                                                Cuenta nueva
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                    <div class="col-xs-6 margin-bottom-10">
+                                        <p:remoteCommand name="seleccionarTipoGiro" actionListener="#{proformaMBean.seleccionarTipoGiro}" oncomplete="cerrarModalEspera();"
+                                                         update=":formProforma:tiposGiros :formProforma:txt_balance :formProforma:txt_anticipo :formProforma:msg
+                                                         :formProforma:txt_porcentajeAnticipo :formProforma:txt_total"/>
+                                        <h:panelGroup id="tiposGiros">
+                                            <div class="input-group">
+                                                <span class="input-group-addon input-group-matisses noround">
+                                                    Tipo Giro
+                                                </span>
+                                                <div class="dropdown">
+                                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround
+                                                            #{proformaMBean.idCuentaBancaria == null || proformaMBean.idCuentaBancaria == 0 ? 'disabled' : ''}"
+                                                            style="width: 100%" id="selTiposGiro" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                        #{proformaMBean.tipoGiroSeleccionado}
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="selTiposGiro" style="width: 100%">
+                                                        <li>
+                                                            <a class="pointer-cursor" onclick="seleccionarTipoGiro([{name: 'tipoGiro', value: 'Anticipo'}])">
+                                                                Anticipo
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="pointer-cursor" onclick="seleccionarTipoGiro([{name: 'tipoGiro', value: 'Balance'}])">
+                                                                Balance
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="pointer-cursor" onclick="seleccionarTipoGiro([{name: 'tipoGiro', value: 'Roll on'}])">
+                                                                Roll on
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <div class="form-group">
+                                            <h:outputLabel value="Anticipo $" for="txt_anticipo"/>
+                                            <h:inputText id="txt_anticipo" class="form-control input-lg noround" pt:placeholder="Anticipo $" disabled="#{proformaMBean.tipoGiro eq 'Anticipo' ? 'false' : 'true'}"
+                                                         value="#{proformaMBean.anticipo}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                     return false;
+
+                                                                 }">
+                                                <f:ajax event="change" render=":formProforma:txt_anticipo :formProforma:txt_total :formProforma:msg :formProforma:txt_porcentajeAnticipo"
+                                                        listener="#{proformaMBean.calcularPorcentajeAnticipo}"/>
+                                            </h:inputText>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="form-group">
+                                            <h:outputLabel value="Anticipo %" for="txt_porcentajeAnticipo"/>
+                                            <h:inputText id="txt_porcentajeAnticipo" class="form-control input-lg noround" pt:placeholder="Anticipo %" disabled="true"
+                                                         value="#{baruGenericMBean.getValorFormateado('Double', proformaMBean.porcentajeAnticipo, 2)}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                     return false;
+                                                                 }"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="form-group">
+                                            <h:outputLabel value="Balance $" for="txt_balance"/>
+                                            <h:inputText id="txt_balance" class="form-control input-lg noround" pt:placeholder="Balance $" disabled="true"
+                                                         value="#{proformaMBean.balance}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                     return false;
+
+                                                                 }"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <div class="form-group">
+                                            <h:outputLabel value="Total $" for="txt_total"/>
+                                            <h:inputText id="txt_total" class="form-control input-lg noround" pt:placeholder="Total girar $"
+                                                         disabled="#{proformaMBean.tipoGiro eq 'Roll on' ? 'false' : 'true'}"
+                                                         value="#{baruGenericMBean.getValorFormateado('Double', proformaMBean.totalGirar, 2)}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                     return false;
+
+                                                                 }"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-10">
+                                        <div class="form-group">
+                                            <h:outputLabel value="Descripción" for="txt_descripcion"/>
+                                            <h:inputText id="txt_descripcion" class="form-control input-lg noround" pt:placeholder="Descripción"
+                                                         value="#{proformaMBean.descripcionTransaccion}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                     return false;
+
+
+                                                                 }"/>
+                                        </div>
+                                    </div>
+                                    <p:remoteCommand name="crearTransaccionBancaria" actionListener="#{proformaMBean.crearTransaccionBancaria}"
+                                                     update=":formProforma:pagos :formProforma:msg" oncomplete="cerrarModalEspera();"/>
+                                    <div class="col-xs-2 right-component" style="padding-top: 24px">
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera();
+                                                crearTransaccionBancaria()
+                                                        ;">
+                                            Crear Pago
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <hr/>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <table class="table table-bordered table-striped">
+                                            <tr>
+                                                <th class="head-tabla">
+                                                    Fecha Giro
+                                                </th>
+                                                <th class="head-tabla">
+                                                    Tipo Giro
+                                                </th>
+                                                <th class="head-tabla">
+                                                    Anticipo $
+                                                </th>
+                                                <th class="head-tabla">
+                                                    Anticipo %
+                                                </th>
+                                                <th class="head-tabla">
+                                                    Balance $
+                                                </th>
+                                                <th class="head-tabla">
+                                                    Total $
+                                                </th>
+                                                <th class="head-tabla"></th>
+                                                <th class="head-tabla"></th>
+                                                <th class="head-tabla"></th>
+                                            </tr>
+                                            <ui:repeat value="#{proformaMBean.transacciones}" var="transaccion">
+                                                <tr>
+                                                    <td class="center-component" style="#{transaccion.cancelado ? 'background-color: #EEEEEE; color: #999999' : ''}">
+                                                        #{transaccion.fechaGiro}
+                                                    </td>
+                                                    <td class="center-component" style="#{transaccion.cancelado ? 'background-color: #EEEEEE; color: #999999' : ''}">
+                                                        #{transaccion.tipoGiro}
+                                                    </td>
+                                                    <td class="right-component" style="#{transaccion.cancelado ? 'background-color: #EEEEEE; color: #999999' : ''}">
+                                                        <ui:fragment rendered="#{transaccion.anticipo gt 0}">
+                                                            #{proformaMBean.proforma.idTipoMoneda.simbolo} #{baruGenericMBean.getValorFormateado('Double', transaccion.anticipo, 2)}
+                                                        </ui:fragment>
+                                                    </td>
+                                                    <td class="right-component" style="#{transaccion.cancelado ? 'background-color: #EEEEEE; color: #999999' : ''}">
+                                                        <ui:fragment rendered="#{transaccion.porcentajeAnticipo gt 0}">
+                                                            #{baruGenericMBean.getValorFormateado('Double', transaccion.porcentajeAnticipo, 2)}%
+                                                        </ui:fragment>
+                                                    </td>
+                                                    <td class="right-component" style="#{transaccion.cancelado ? 'background-color: #EEEEEE; color: #999999' : ''}">
+                                                        <ui:fragment rendered="#{transaccion.balance gt 0}">
+                                                            #{proformaMBean.proforma.idTipoMoneda.simbolo} #{baruGenericMBean.getValorFormateado('Double', transaccion.balance, 2)}
+                                                        </ui:fragment>
+                                                    </td>
+                                                    <td class="right-component" style="#{transaccion.cancelado ? 'background-color: #EEEEEE; color: #999999' : ''}">
+                                                        #{proformaMBean.proforma.idTipoMoneda.simbolo} #{baruGenericMBean.getValorFormateado('Double', transaccion.totalGiro, 2)}
+                                                    </td>
+                                                    <td class="center-component btn-transacciones" style="#{transaccion.cancelado ? 'background-color: #EEEEEE; color: #999999' : ''}">
+                                                        <ui:fragment rendered="#{transaccion.cancelado == false and transaccion.existePdf}">
+                                                            <span class="glyphicon glyphicon-print" onclick="openRuta('#{transaccion.rutaDocumento}')
+
+                                                                            ;"></span>
+                                                        </ui:fragment>
+                                                    </td>
+                                                    <td class="center-component btn-transacciones" style="#{transaccion.cancelado ? 'background-color: #EEEEEE; color: #999999' : ''}">
+                                                        <p:remoteCommand name="seleccionarTransaccion" actionListener="#{proformaMBean.seleccionarTransaccion}" oncomplete="abrirModalTransaccion();"/>
+                                                        <ui:fragment rendered="#{transaccion.firmado == false and transaccion.cancelado == false}">
+                                                            <div class="btn-file" onclick="seleccionarTransaccion([{name: 'idTransaccion', value: '#{transaccion.idTransaccionBancaria}'}])
+                                                                            ;">
+                                                                <i class="glyphicon glyphicon-open"></i>
+                                                            </div>
+                                                        </ui:fragment>
+                                                    </td>
+                                                    <td class="center-component btn-transacciones" style="#{transaccion.cancelado ? 'background-color: #EEEEEE; color: #999999' : ''}">
+                                                        <ui:fragment rendered="#{transaccion.cancelado == false and transaccion.fechaGiro == null}">
+                                                            <p:remoteCommand name="cancelarTransaccion" actionListener="#{proformaMBean.seleccionarTransaccion}" update=":panelCancelarTransaccion"
+                                                                             oncomplete="cerrarModalEspera(); abrirModalCancelarTransaccion();"/>
+                                                            <span class="glyphicon glyphicon-remove"
+                                                                  onclick="abrirModalEspera();
+                                                                          cancelarTransaccion([{name: 'idTransaccion', value: '#{transaccion.idTransaccionBancaria}'}])
+                                                                                  ;"></span>
+                                                        </ui:fragment>
+                                                    </td>
+                                                </tr>
+                                            </ui:repeat>
+                                        </table>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

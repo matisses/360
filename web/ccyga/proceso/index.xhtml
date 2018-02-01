@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Registro producto CCYGA</title>
+    </h:head>
+    <h:body>
+        <m:navbarCcyga />
+        <h:form id="formProducto">
+            <div class="container">
+                <div class="row">
+                    <p:remoteCommand action="#{procesoCcygaMBean.seleccionarProceso}" name="seleccionarProceso" />
+                    <ui:fragment rendered="#{empty procesoCcygaMBean.procesos}">
+                        <span style="font-size: 45px;">No hay procesos para mostrar</span>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{not empty procesoCcygaMBean.procesos}">
+                        <ui:repeat value="#{procesoCcygaMBean.procesos}" var="proceso">
+                            <div class="col-xs-12 col-sm-4">
+                                <div class="proceso-ccyga" onclick="seleccionarProceso([{name: 'codProceso', value: '#{proceso.idProceso}'}, {name: 'nomProceso', value: '#{proceso.nombre}'}])">
+                                    <h:outputText value="#{proceso.nombre}"/>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </ui:fragment>
+                </div>
+            </div>
+        </h:form>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

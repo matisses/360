@@ -1,0 +1,96 @@
+<style type="text/css">
+    body, html, .body {
+        /*background: #f3f3f3 !important; */
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+        color: #444;
+    }
+
+    .advertencia{
+        color: #1F497D;
+    }
+
+    td {
+        width: 100%;
+        text-align: center;
+    }
+    
+    img {
+        width: 103px !important;
+        height: 83px !important;
+    }
+</style>
+<container>
+    <spacer size="16"></spacer>
+    <row>
+        <columns>
+            <center>
+                <img src="https://www.matisses.co/360/360_150h.png" alt="logo">
+            </center>
+        </columns>
+    </row>
+    <row>
+        <columns large="8">
+            <table style="width: 100%">
+                <tr>
+                    <td style="width: 100%; text-align: center;">
+                        <br/>
+                        <h1>Nuevo traslado de mercanc&iacute;a al ${almacen}</h1>
+                    </td>
+                </tr>
+            </table>
+        </columns>
+        <columns large="8">
+            <table style="width: 100%">
+                <tr>
+                    <td>
+                        <br/>
+                        Buen d&iacute;a; se ha creado un traslado para su almac&eacute;n con los siguientes &iacute;tems:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <table style="width: 100%">
+                            <tr>
+                                <td style="width: 50%; text-align: right">
+                                    Usuario crea:
+                                </td>
+                                <td style="text-align: left">
+                                    <b>${usuario}</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 50%; text-align: right">
+                                    Traslado n&uacute;mero:
+                                </td>
+                                <td style="text-align: left">
+                                    <b>${trasladoSAP}</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 50%; text-align: right">
+                                    Almac&eacute;n origen:
+                                </td>
+                                <td style="text-align: left">
+                                    <b>${almacenOrigen}</b>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <br/>
+                        ${tablaReferencias}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="advertencia">
+                        <br/>
+                        <br/>
+                        Este es un correo generado autom&aacute;ticamente, por favor evite responderlo.
+                    </td>
+                </tr>
+            </table>
+        </columns>
+    </row>
+</container>

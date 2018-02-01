@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui" 
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <title>Iniciar sesi&oacute;n</title>
+    </h:head>
+    <h:body>
+        <m:dynamicBackground />
+        <div id="wrap">
+            <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkSessionBeforeLogin}"/>
+            <div id="loginModal" class="modal show" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <img src="/360/images/logo2.png"/>
+                        </div>
+                        <div class="modal-body">
+                            <h:form styleClass="form col-md-12 center-block" id="form1">
+                                <p:messages showDetail="true" showSummary="false" />
+                                <div class="form-group">
+                                    <h:inputText id="txt_usuario" styleClass="form-control input-lg noround" value="#{userSessionInfoMBean.usuario}" pt:placeholder="usuario"/>
+                                </div>
+                                <div class="form-group">
+                                    <p:password styleClass="form-control input-lg focus noround" placeholder="contraseña" value="#{userSessionInfoMBean.clave}"/>
+                                </div>
+                                <div class="form-group">
+                                    <h:selectOneMenu styleClass="form-control input-lg noround" value="#{loginMBean.almacen}">
+                                        <f:selectItem itemLabel="Almacén..." itemValue=""/>
+                                        <f:selectItems value="#{baruApplicationBean.sucursales}" var="sucursal" 
+                                                       itemValue="#{sucursal.codigo}" itemLabel="#{sucursal.nombre}"/>
+                                    </h:selectOneMenu>
+                                </div>
+                                <div class="form-group">
+                                    <h:commandButton styleClass="btn btn-primary btn-lg btn-block noround" value="Ingresar" action="#{userSessionInfoMBean.iniciarSesion}"/>
+                                </div>
+                            </h:form>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="col-md-12">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <composite:interface>
+        <composite:attribute name="paginaActual" type="java.lang.Integer" required="true"/>
+        <composite:attribute name="paginaInicial" type="java.lang.Integer" required="true"/>
+        <composite:attribute name="paginaFinal" type="java.lang.Integer" required="true"/>
+        <composite:attribute name="tamanoPagina" type="java.lang.Integer" required="true"/>
+        <composite:attribute name="metodoPaginaAnterior" method-signature="java.lang.String action()"/>
+        <composite:attribute name="metodoPaginaSiguiente" method-signature="java.lang.String action()"/>
+        <composite:attribute name="cambiarPagina" method-signature="java.lang.String action()"/>
+    </composite:interface>
+    <composite:implementation>
+        <ui:fragment rendered="#{cc.attrs.paginaActual gt 0}">
+            <p:remoteCommand name="cambiarPagina" action="#{cc.attrs.cambiarPagina}" update="@form"/>
+            <p:remoteCommand name="paginaAnterior" action="#{cc.attrs.metodoPaginaAnterior}" update="@form"/>
+            <p:remoteCommand name="paginaSiguiente" action="#{cc.attrs.metodoPaginaSiguiente}" update="@form"/>
+            <nav style="text-align: center;">
+                <ul class="pagination pagination-lg">
+                    <li class="#{productoCcygaMBean.nroPagina eq 1 ? 'disabled' : null}">
+                        <a href="#" aria-label="Previous" onclick="paginaAnterior()">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <c:forEach begin="#{cc.attrs.paginaInicial}" end="#{cc.attrs.paginaFinal}" varStatus="loop">
+                        <li class="#{cc.attrs.paginaActual eq loop.index ? 'active' : null}">
+                            <a href="#" onclick="cambiarPagina([{name: 'pagina', value: '#{loop.index}'}])">#{loop.index}</a>
+                        </li>
+                    </c:forEach>
+                    <li class="#{productoCcygaMBean.nroPagina eq productoCcygaMBean.paginas ? 'disabled' : null}">
+                        <a href="#" aria-label="Next" onclick="paginaSiguiente()">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </ui:fragment>
+    </composite:implementation>
+</html>

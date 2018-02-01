@@ -1,0 +1,447 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script src="/360/js/arriba.js"></script>
+        <script type="text/javascript">
+            $(window).load(function () {
+                $('#modalDocumentoRelacionado').modal('show');
+            });
+        </script>
+        <title>360 - Crear Nota Crédito</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <span class="ir-arriba hidden-sm hidden-xs">
+                <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+            </span>
+
+            <h:panelGroup id="panelAsignacion">
+                <h:panelGroup rendered="#{crearNotaCreditoMBean.dlgNotaCredito}">
+                    <h:form id="formAsignacion">
+                        <div id="modalAsignacion" class="modal fade" tabindex="-1" role="dialog">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content dialog-content">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">Crear devolución</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h:panelGroup id="pasos">
+                                            <h:panelGroup rendered="#{crearNotaCreditoMBean.pasoNotaCredito == 1}">
+                                                <h:panelGroup id="items">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component margin-bottom-10" style="font-size: 18px">
+                                                            <b>Referencia: </b>#{baruGenericMBean.convertirARefCorta(crearNotaCreditoMBean.item.referencia)}
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 col-md-6">
+                                                            <div id="images" class="carousel slide">
+                                                                <ol class="carousel-indicators">
+                                                                    <ui:repeat value="#{crearNotaCreditoMBean.imagenes}" var="imageIndicator">
+                                                                        <li data-target="#images" data-slide-to="#{imageIndicator[1]}" class="#{imageIndicator[1] eq '0' ? 'active' : ''}"></li>
+                                                                    </ui:repeat>
+                                                                </ol>
+
+                                                                <div class="carousel-inner">
+                                                                    <ui:repeat value="#{crearNotaCreditoMBean.imagenes}" var="image">
+                                                                        <div class="item #{image[1] eq '0' ? 'active' : ''}">
+                                                                            <img src="#{image[0]}" class="img-responsive" style="max-width: 416px"/>
+                                                                        </div>
+                                                                    </ui:repeat>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                                            <ui:fragment rendered="#{ventasSessionMBean.creaNotaCredito}">
+                                                                <div class="row">
+                                                                    <h:panelGroup id="cantidades">
+                                                                        <div style="background-color: #DDDDDD; height: 37px; padding: 8px; margin: 0px 15px 5px 15px">
+                                                                            <div class="col-xs-4 center-component">
+                                                                                <span>
+                                                                                    <b>Cantidad: </b>#{crearNotaCreditoMBean.item.cantidadUsada}
+                                                                                </span>
+                                                                            </div>
+                                                                            <div class="col-xs-4 center-component">
+                                                                                <span>
+                                                                                    <b>Asignado: </b>#{crearNotaCreditoMBean.item.cantidadUbicaciones}
+                                                                                </span>
+                                                                            </div>
+                                                                            <div class="col-xs-4 center-component">
+                                                                                <span>
+                                                                                    <b>Restante: </b>#{crearNotaCreditoMBean.item.cantidadUsada - crearNotaCreditoMBean.item.cantidadUbicaciones}
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </h:panelGroup>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-xs-12">
+                                                                        <p:remoteCommand name="asignarUbicacion" actionListener="#{crearNotaCreditoMBean.asignarUbicacion}"
+                                                                                         update=":formAsignacion:ubicaciones :formAsignacion:msg :formAsignacion:cantidades"/>
+                                                                        <p:remoteCommand name="quitarUbicacion" actionListener="#{crearNotaCreditoMBean.quitarUbicacion}"
+                                                                                         update=":formAsignacion:ubicaciones :formAsignacion:msg :formAsignacion:cantidades"/>
+
+                                                                        <h:panelGroup id="ubicaciones">
+                                                                            <table class="table table-striped">
+                                                                                <tr>
+                                                                                    <th class="head-tabla">
+                                                                                        Ubicación
+                                                                                    </th>
+                                                                                    <th class="head-tabla">
+                                                                                        Disponible
+                                                                                    </th>
+                                                                                    <th class="head-tabla">
+                                                                                        Usado
+                                                                                    </th>
+                                                                                    <th class="head-tabla"></th>
+                                                                                </tr>
+                                                                                <ui:repeat value="#{crearNotaCreditoMBean.item.ubicaciones}" var="ubicacion">
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <div class="row">
+                                                                                                <div>
+                                                                                                    <div class="col-xs-12">
+                                                                                                        #{ubicacion.binCode}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <div class="row">
+                                                                                                <div>
+                                                                                                    <div class="col-xs-12 center-component">
+                                                                                                        #{ubicacion.onHandQty}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <div class="row">
+                                                                                                <div>
+                                                                                                    <div class="col-xs-12 center-component">
+                                                                                                        #{ubicacion.onHandQtyUsado}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <div class="row">
+                                                                                                <div>
+                                                                                                    <div class="col-xs-6 center-component pointer-cursor">
+                                                                                                        <span class="glyphicon glyphicon-chevron-down"
+                                                                                                              onclick="quitarUbicacion([{name: 'ubicacion', value: '#{ubicacion.ubicacion}'}]);"></span>
+                                                                                                    </div>
+                                                                                                    <div class="col-xs-6 center-component pointer-cursor">
+                                                                                                        <span class="glyphicon glyphicon-chevron-up"
+                                                                                                              onclick="asignarUbicacion([{name: 'ubicacion', value: '#{ubicacion.ubicacion}'}]);"></span>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </ui:repeat>
+                                                                            </table>
+                                                                        </h:panelGroup>
+                                                                    </div>
+                                                                </div>
+                                                            </ui:fragment>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </h:panelGroup>
+                                            <h:panelGroup rendered="#{crearNotaCreditoMBean.pasoNotaCredito == 2}">
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+                                                        <label>Comentario:</label>
+                                                        <h:inputTextarea value="#{crearNotaCreditoMBean.comentario}" class="form-control input-lg noround textarea-static" style="height: 210px"/>
+                                                    </div>
+                                                </div>
+                                            </h:panelGroup>
+                                        </h:panelGroup>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <p:remoteCommand name="obtenerSiguientePasoNotaCredito" actionListener="#{crearNotaCreditoMBean.obtenerSiguientePasoNotaCredito}"
+                                                         update=":formAsignacion:pasos :formAsignacion:msg :formAsignacion:btns"/>
+                                        <p:remoteCommand name="obtenerAnteriorPasoNotaCredito" actionListener="#{crearNotaCreditoMBean.obtenerAnteriorPasoNotaCredito}"
+                                                         update=":formAsignacion:pasos :formAsignacion:msg :formAsignacion:btns"/>
+                                        <p:remoteCommand name="validarNotaCredito" actionListener="#{crearNotaCreditoMBean.validarNotaCredito}"
+                                                         update=":panelAsignacion :panelCrearNota" oncomplete="cerrarModalAsignacion(); abrirModalCrearNota();"/>
+
+                                        <div class="row">
+                                            <div class="col-xs-12 left-component">
+                                                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                            </div>
+                                        </div>
+                                        <h:panelGroup id="btns">
+                                            <p:remoteCommand name="cancelarCreacionNotaCredito" actionListener="#{crearNotaCreditoMBean.cancelarCreacionNotaCredito}"
+                                                             update=":panelDocumentoRelacionado :formNotaCredito" oncomplete="cerrarModalAsignacion();"/>
+
+                                            <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="cancelarCreacionNotaCredito();">
+                                                Cerrar
+                                            </button>
+                                            <ui:fragment rendered="#{crearNotaCreditoMBean.pasoNotaCredito == 1 and crearNotaCreditoMBean.posicionItem gt 0}">
+                                                <button type="button" class="btn btn-default btn-lg noround" onclick="obtenerAnteriorPasoNotaCredito();">
+                                                    Atrás
+                                                </button>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{crearNotaCreditoMBean.pasoNotaCredito == 1}">
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="obtenerSiguientePasoNotaCredito();" style="margin-left: 0px">
+                                                    Siguiente
+                                                </button>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{crearNotaCreditoMBean.pasoNotaCredito == 2}">
+                                                <button type="button" class="btn btn-primary btn-lg noround" style="margin-left: 0px" onclick="validarNotaCredito();">
+                                                    Crear Nota
+                                                </button>
+                                            </ui:fragment>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelCrearNota">
+                <h:panelGroup rendered="#{crearNotaCreditoMBean.dlgCrearNotaCredito}">
+                    <h:form id="formCrearNota">
+                        <div class="modal fade" id="modalCrearNota" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header-advertencia">
+                                        <h4 class="modal-title">
+                                            Advertencia
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <p>
+                                                    <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                    Este documento no puede modificarse tras la creación. ¿Desea continuar?.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <p:remoteCommand name="validarNotaCredito" actionListener="#{crearNotaCreditoMBean.validarNotaCredito}"
+                                                                 update=":panelAsignacion :panelCrearNota" oncomplete="cerrarModalCrearNota(); abrirModalAsignacion();"/>
+                                                <p:remoteCommand name="modal" update=":panelCrearNota" oncomplete="cerrarModalCrearNota(); abrirModalEspera(); crearNotaCredito();"/>
+                                                <p:remoteCommand name="crearNotaCredito" actionListener="#{crearNotaCreditoMBean.crearNotaCredito}"
+                                                                 update=":panelAsignacion :panelCrearNota :formNotaCredito" oncomplete="cerrarModalEspera(); abrirModalAsignacion();"/>
+
+                                                <button type="button" class="btn btn-default btn-lg noround" onclick="validarNotaCredito();">
+                                                    No
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="modal();" style="margin-left: 0px">
+                                                    Sí
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelDocumentoRelacionado">
+                <h:panelGroup rendered="#{crearNotaCreditoMBean.dlgDocumentoRelacionado}">
+                    <h:form id="formDocumentoRelacionado">
+                        <div class="modal fade" id="modalDocumentoRelacionado" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog modal-sm">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">
+                                            Documento relacionado
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <p:focus context="formDocumentoRelacionado" for="txt_documento"/>
+                                                <h:inputText id="txt_documento" class="form-control input-lg noround" value="#{crearNotaCreditoMBean.documentoRelacionado}" autocomplete="off"
+                                                             onkeypress="if (event.keyCode === 13) {
+                                                                         return false;
+                                                                     }">
+                                                    <f:ajax event="change"/>
+                                                </h:inputText>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <p:remoteCommand name="cerrarModalDocumento" actionListener="#{crearNotaCreditoMBean.cerrarModalDocumentoRelacionado}"
+                                                                 update=":panelDocumentoRelacionado :formNotaCredito" oncomplete="cerrarModalDocumentoRelacionado();"/>
+
+                                                <button type="button" class="btn btn-default btn-lg noround" onclick="cerrarModalDocumento();">
+                                                    Cancelar
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="iniciarCreacion();" style="margin-left: 0px">
+                                                    Continuar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:form id="formNotaCredito">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Crear nota crédito</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-4 col-md-offset-2" style="height: 70px">
+                        <p:remoteCommand name="agregarReferencia" actionListener="#{crearNotaCreditoMBean.agregarReferencia}" oncomplete="cerrarModalEspera();"
+                                         update=":formNotaCredito:items :formNotaCredito:msg :formNotaCredito:txt_referencia :formNotaCredito:total"/>
+
+                        <h:panelGroup rendered="#{ventasSessionMBean.numeroFactura == null or empty ventasSessionMBean.numeroFactura}">
+                            <p:focus context="formNotaCredito" for="txt_referencia"/>
+                            <label>Referencia:</label>
+                            <div class="input-group">
+                                <h:inputText id="txt_referencia" class="form-control input-lg noround" value="#{crearNotaCreditoMBean.referencia}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                            abrirModalEspera();
+                                            agregarReferencia();
+                                            return false;
+                                        }"/>
+                                <div class="input-group-btn">
+                                    <button class="btn btn-primary btn-lg noround" type="button" style="font-size: 23px; padding: 9.5px 10px 4.5px 10px" onclick="abrirModalEspera(); agregarReferencia();">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                    <h:panelGroup id="total">
+                        <div class="hidden-xs col-sm-6 col-md-4 center-component">
+                            <h:panelGroup style="position: relative; top: 40px; font-size: 20px">
+                                <b>Total: </b><span style="color: #BF0039">COP #{baruGenericMBean.getValorFormateado('Double', crearNotaCreditoMBean.totalNotaCredito, 2)}</span>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 hidden-sm hidden-md hidden-lg center-component">
+                            <span style="font-size: 20px">
+                                <b>Total: </b><span style="color: #BF0039">COP #{baruGenericMBean.getValorFormateado('Double', crearNotaCreditoMBean.totalNotaCredito, 2)}</span>
+                            </span>
+                        </div>
+                    </h:panelGroup>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                <hr/>
+
+                <div class="row">
+                    <div class="col-xs-12 right-component">
+                        <p:remoteCommand name="cancelarNotaCredito" action="#{crearNotaCreditoMBean.cancelarNotaCredito}" update=":formNotaCredito" oncomplete="cerrarModalEspera();"/>
+                        <p:remoteCommand name="iniciarCreacion" action="#{crearNotaCreditoMBean.iniciarCreacion}" update=":panelAsignacion :panelDocumentoRelacionado :formNotaCredito:msg"
+                                         oncomplete="cerrarModalEspera(); abrirModalAsignacion(); abrirModalDocumentoRelacionado();"/>
+
+                        <button type="button" class="btn btn-default btn-lg noround margin-bottom-10" onclick="abrirModalEspera(); cancelarNotaCredito();">
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg noround margin-bottom-10" onclick="abrirModalEspera(); iniciarCreacion();">
+                            Crear
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <p:remoteCommand name="aumentarCantidadUsado" actionListener="#{crearNotaCreditoMBean.aumentarCantidadUsado}" update=":formNotaCredito:items :formNotaCredito:msg :formNotaCredito:total"/>
+                            <p:remoteCommand name="reducirCantidadUsado" actionListener="#{crearNotaCreditoMBean.reducirCantidadUsado}" update=":formNotaCredito:items :formNotaCredito:msg :formNotaCredito:total"/>
+
+                            <h:panelGroup id="items">
+                                <ui:repeat value="#{crearNotaCreditoMBean.items}" var="item">
+                                    <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                        <div style="border: 1px solid #DDDDDD; margin: 5px; padding: 10px; height: 185px">
+                                            <div class="row">
+                                                <div class="col-xs-5 col-md-6 center-component">
+                                                    <img src="#{imagenProductoMBean.obtenerUrlProducto(item.referencia, true)}" class="img-mini"/>
+                                                </div>
+                                                <div class="col-xs-7 col-md-6 center-component">
+                                                    <div class="row">
+                                                        <div class="col-xs-12" style="font-size: 27px">
+                                                            <b>#{baruGenericMBean.convertirARefCorta(item.referencia)}</b>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component" style="font-size: 25px">
+                                                            <ui:fragment rendered="#{ventasSessionMBean.numeroFactura != null and not empty ventasSessionMBean.numeroFactura}">
+                                                                #{item.cantidadUsada} / #{item.cantidadDisponible}
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{ventasSessionMBean.numeroFactura == null or empty ventasSessionMBean.numeroFactura}">
+                                                                #{item.cantidadUsada}
+                                                            </ui:fragment>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-5 col-md-6 center-component" style="font-size: 15px">
+                                                    <span style="color: #BF0039">COP #{baruGenericMBean.getValorFormateado('Double', item.price, 2)}</span>
+                                                </div>
+                                                <ui:fragment rendered="#{ventasSessionMBean.numeroFactura != null and not empty ventasSessionMBean.numeroFactura}">
+                                                    <div class="col-xs-7 col-md-6 center-component">
+                                                        <div class="row">
+                                                            <div class="col-xs-6 center-component" style="border-right: 1px solid #BF0039; font-size: 20px">
+                                                                <span class="glyphicon glyphicon-minus pointer-cursor" onclick="reducirCantidadUsado([{name: 'linea', value: '#{item.linea}'}]);"></span>
+                                                            </div>
+                                                            <div class="col-xs-6 center-component" style="font-size: 20px">
+                                                                <span class="glyphicon glyphicon-plus pointer-cursor" onclick="aumentarCantidadUsado([{name: 'linea', value: '#{item.linea}'}]);"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 justify-component">
+                                                    #{baruGenericMBean.obtenerNombreReferencia(item.referencia)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+        <script src="/360/js/ventas.js"></script>
+    </h:body>
+</html>

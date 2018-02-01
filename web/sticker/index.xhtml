@@ -1,0 +1,391 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Impresión Sticker</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        <div class="container">
+            <h:panelGroup id="panelCambiarTipoSticker">
+                <h:panelGroup rendered="#{impresionStickerMBean.dlgCambiarTipoSticker}">
+                    <h:form id="formCambiarTipoSticker">
+                        <div class="modal fade" id="modalCambiarTipoSticker">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header-advertencia">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                            &times;
+                                        </button>
+                                        <h4 class="modal-title">
+                                            ¡Advertencia!
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <p>
+                                                    ¿Está seguro(a) que quiere cambiar el tipo de sticker?
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                    No
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="seleccionarTipoSticker();">
+                                                    Sí
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="dlgEliminar">
+                <h:form id="formDlgEliminar">
+                    <div class="modal fade" id="modalEliminar">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header-alerta">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Eliminar Referencia
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            <p>
+                                                ¿Está seguro(a) que desea eliminar esta referencia de la impresión de sticker?
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-4 center-component">
+                                            <h:graphicImage value="#{imagenProductoMBean.obtenerUrlProducto(impresionStickerMBean.referencia, true)}"
+                                                            class="img-mini"/>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-8">
+                                            <div class="row">
+                                                <div class="col-xs-5 right-component">
+                                                    <b>Referencia: </b>
+                                                </div>
+                                                <div class="col-xs-7">
+                                                    #{impresionStickerMBean.referencia}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-5 right-component">
+                                                    <b>Cantidad: </b>
+                                                </div>
+                                                <div class="col-xs-7">
+                                                    1
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <p:remoteCommand name="eliminar" actionListener="#{impresionStickerMBean.eliminarReferencia}"
+                                                     update=":formSticker:btns :formSticker:agregar" oncomplete="cerrarModalEspera();"/>
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                        Cancelar
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="cerrarModalEliminar(); abrirModalEspera(); eliminar();">
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelImpresoras">
+                <h:panelGroup rendered="#{impresionStickerMBean.dlgImpresoras}">
+                    <h:form id="formImpresoras">
+                        <div class="modal fade" id="modalImpresoras">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                            &times;
+                                        </button>
+                                        <h4 class="modal-title">
+                                            Impresora
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <p:remoteCommand name="seleccionarImpresora" actionListener="#{impresionStickerMBean.seleccionarImpresora}"
+                                                             update=":formImpresoras:impresoras"/>
+                                            <h:panelGroup id="impresoras">
+                                                <ui:repeat value="#{impresionStickerMBean.impresoras}" var="impresora">
+                                                    <div class="col-xs-12 col-sm-6 center-component">
+                                                        <div class="opcion-sticker #{impresionStickerMBean.idImpresora eq impresora.idImpresora ? 'opcion-sticker-activa' : ''}"
+                                                             onclick="seleccionarImpresora([{name: 'idImpresora', value: '#{impresora.idImpresora}'}])">
+                                                            <h:outputText value="#{impresora.nombreImpresora}" class="input-lg"/>
+                                                        </div>
+                                                    </div>
+                                                </ui:repeat>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <p:remoteCommand name="continuarImpresion" actionListener="#{impresionStickerMBean.continuarImpresion}"
+                                                                 update=":formSticker" oncomplete="cerrarModalEspera();"/>
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                    Cerrar
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="cerrarModalImpresoras(); abrirModalEspera(); continuarImpresion();">
+                                                    Continuar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:form id="formSticker">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Impresión Sticker</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="row">
+                    <h:panelGroup id="tiposSticker">
+                        <p:remoteCommand name="seleccionarTipoSticker" actionListener="#{impresionStickerMBean.seleccionarTipoSticker}"
+                                         update=":formSticker:tiposSticker :formSticker:agregar :panelCambiarTipoSticker"
+                                         oncomplete="#{impresionStickerMBean.dlgCambiarTipoSticker ? 'cerrarModalCambiarTipoSticker();' : 'abrirModalCambiarTipoSticker();'}"/>
+                        <ui:repeat value="#{impresionStickerMBean.tiposSticker}" var="tipo">
+                            <div class="col-xs-12 col-sm-6 col-md-4 center-component margin-bottom-10">
+                                <div class="opcion-sticker #{tipo.idTipoSticker eq impresionStickerMBean.idTipoSticker ? 'opcion-sticker-activa' : ''}"
+                                     onclick="seleccionarTipoSticker([{name: 'idTipoSticker', value: '#{tipo.idTipoSticker}'}]);">
+                                    <h:outputText value="#{tipo.nombreSticker}" class="input-lg"/>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </h:panelGroup>
+                </div>
+                <br/>
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                <br/>
+                <h:panelGroup id="agregar">
+                    <ui:fragment rendered="#{impresionStickerMBean.codigoRevisado == false}">
+                        <h:panelGroup rendered="#{not empty impresionStickerMBean.tiposSticker and impresionStickerMBean.idTipoSticker != null and impresionStickerMBean.idTipoSticker != 0}">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <h:panelGroup id="chk_usarEan">
+                                        <p:remoteCommand name="checkearUsarEan" actionListener="#{impresionStickerMBean.usarEan}" update=":formSticker:chk_usarEan"
+                                                         oncomplete="document.getElementById('formSticker:referencia').focus();"/>
+                                        <div class="tooltip-style">
+                                            <span class="glyphicon #{impresionStickerMBean.usarEan ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                  onclick="checkearUsarEan();"></span>
+                                            <h:outputLabel value="Usar Código Ean" class="label-normal" onclick="checkearUsarEan();"/>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <p:focus context="formSticker" for="referencia"/>
+                                <div class="col-xs-12 col-sm-6">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Referencia:"/>
+                                        <h:inputText id="referencia" pt:placeholder="Referencia" class="form-control input-lg noround"
+                                                     value="#{impresionStickerMBean.referencia}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                 document.getElementById('formSticker:cantidad').focus();
+                                                                 return false;
+                                                             }"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Cantidad:"/>
+                                        <h:inputText id="cantidad" pt:placeholder="Cantidad" class="form-control input-lg noround"
+                                                     value="#{impresionStickerMBean.cantidad}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                 abrirModalEspera();
+                                                                 agregar();
+                                                                 return false;
+                                                             }"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 right-component">
+                                    <p:remoteCommand name="agregar" actionListener="#{impresionStickerMBean.agregarReferencia}"
+                                                     update=":formSticker:msg :formSticker:detalle :formSticker:btns :formSticker:agregar"
+                                                     oncomplete="document.getElementById('formSticker:referencia').focus(); cerrarModalEspera();"/>
+                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); agregar();">
+                                        Agregar
+                                    </button>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="row">
+                                        <h:panelGroup id="detalle">
+                                            <p:remoteCommand name="eliminarReferencia" actionListener="#{impresionStickerMBean.seleccionarReferenciaEliminar}"
+                                                             oncomplete="abrirModalEliminar();" update=":dlgEliminar"/>
+                                            <ui:repeat value="#{impresionStickerMBean.detalleImpresion}" var="detalle">
+                                                <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10 pointer-cursor"
+                                                     onclick="eliminarReferencia([{name: 'referencia', value: '#{detalle.referencia}'}]);">
+                                                    <div class="articulos-ubicacion">
+                                                        <div class="row">
+                                                            <div class="col-xs-6 center-component">
+                                                                <h:graphicImage value="#{imagenProductoMBean.obtenerUrlProducto(detalle.referencia, true)}"
+                                                                                class="img-mini"/>
+                                                            </div>
+                                                            <div class="col-xs-6">
+                                                                <div class="row">
+                                                                    <div class="col-xs-12 right-component">
+                                                                        <h:outputLabel value="#{baruGenericMBean.convertirARefCorta(detalle.referencia)}" style="font-size: 20px"/>
+                                                                    </div>
+                                                                    <div class="col-xs-12 right-component">
+                                                                        <span class="badge badge-gray" style="font-size: 20px">
+                                                                            #{detalle.cantidad}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-xs-12">
+                                                                <h:outputText value="#{baruGenericMBean.obtenerNombreReferencia(detalle.referencia)}"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ui:repeat>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{impresionStickerMBean.codigoRevisado}">
+                        <div class="row">
+                            <div class="col-xs-12 center-component">
+                                <p>
+                                    <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                    Seleccione la cantidad de <b>Stickers</b> a imprimir.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <p:remoteCommand name="seleccionarCantidadCodigosRevisados" actionListener="#{impresionStickerMBean.seleccionarCantidadCodigosRevisados}" oncomplete="cerrarModalEspera();"
+                                             update=":formSticker:msg :formSticker:btns :formSticker:agregar"/>
+                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10 pointer-cursor">
+                                <div class="#{impresionStickerMBean.cantidad eq '15' ? 'articulos-ubicacion-activo' : 'articulos-ubicacion'} center-component"
+                                     onclick="abrirModalEspera(); seleccionarCantidadCodigosRevisados([{name: 'cantidad', value: '15'}]);">
+                                    <span style="font-size: 96px">
+                                        15
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10 pointer-cursor">
+                                <div class="#{impresionStickerMBean.cantidad eq '30' ? 'articulos-ubicacion-activo' : 'articulos-ubicacion'} center-component"
+                                     onclick="abrirModalEspera(); seleccionarCantidadCodigosRevisados([{name: 'cantidad', value: '30'}]);">
+                                    <span style="font-size: 96px">
+                                        30
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10 pointer-cursor">
+                                <div class="#{impresionStickerMBean.cantidad eq '45' ? 'articulos-ubicacion-activo' : 'articulos-ubicacion'} center-component"
+                                     onclick="abrirModalEspera(); seleccionarCantidadCodigosRevisados([{name: 'cantidad', value: '45'}]);">
+                                    <span style="font-size: 96px">
+                                        45
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10 pointer-cursor">
+                                <div class="#{impresionStickerMBean.cantidad eq '60' ? 'articulos-ubicacion-activo' : 'articulos-ubicacion'} center-component"
+                                     onclick="abrirModalEspera(); seleccionarCantidadCodigosRevisados([{name: 'cantidad', value: '60'}]);">
+                                    <span style="font-size: 96px">
+                                        60
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10 pointer-cursor">
+                                <div class="#{impresionStickerMBean.cantidad eq '75' ? 'articulos-ubicacion-activo' : 'articulos-ubicacion'} center-component"
+                                     onclick="abrirModalEspera(); seleccionarCantidadCodigosRevisados([{name: 'cantidad', value: '75'}]);">
+                                    <span style="font-size: 96px">
+                                        75
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10 pointer-cursor">
+                                <div class="#{impresionStickerMBean.cantidad eq '90' ? 'articulos-ubicacion-activo' : 'articulos-ubicacion'} center-component"
+                                     onclick="abrirModalEspera(); seleccionarCantidadCodigosRevisados([{name: 'cantidad', value: '90'}]);">
+                                    <span style="font-size: 96px">
+                                        90
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </ui:fragment>
+                </h:panelGroup>
+                <br/>
+                <h:panelGroup id="btns">
+                    <h:panelGroup rendered="#{not empty impresionStickerMBean.detalleImpresion}">
+                        <div class="row">
+                            <div class="col-xs-12 right-component margin-bottom-10">
+                                <p:remoteCommand name="cancelar" actionListener="#{impresionStickerMBean.cancelarSolicitudStickers}" update=":formSticker"/>
+                                <p:remoteCommand name="imprimirStickers" actionListener="#{impresionStickerMBean.mandarImpresion}" update=":formSticker :panelImpresoras"
+                                                 oncomplete="cerrarModalEspera(); abrirModalImpresoras();"/>
+                                <button type="button" class="btn btn-default btn-lg noround" onclick="cancelar();">
+                                    Cancelar
+                                </button>
+                                <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); imprimirStickers();">
+                                    Generar
+                                </button>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+        <script src="/360/js/stickers.js"></script>
+    </h:body>
+</html>
+

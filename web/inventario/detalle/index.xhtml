@@ -1,0 +1,349 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <script type="text/javascript">
+            function abrirModalDetalle() {
+                $('#modalDetalle').modal('show');
+            }
+
+            function cerrarModalDetalle() {
+                $('#modalDetalle').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Detalle Inventario</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        <div class="container">
+            <h:panelGroup id="panelDetalle">
+                <h:form id="formModalDetalle">
+                    <div class="modal fade" id="modalDetalle">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Detalle Referencia
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-6">
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-6 center-component">
+                                                    <h:graphicImage value="#{imagenProductoMBean.obtenerUrlProducto(detalleConteosMBean.referencia, true)}" class="img-mini"/>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 center-component">
+                                                    <b style="font-size: 28px">
+                                                        #{baruGenericMBean.convertirARefCorta(detalleConteosMBean.referencia)}
+                                                    </b>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 justify-component">
+                                                    #{baruGenericMBean.obtenerNombreReferencia(detalleConteosMBean.referencia)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-6">
+                                            <div class="form-group">
+                                                <h:outputLabel value="Comentario:"/>
+                                                <h:inputTextarea class="form-control input-lg noround" style="resize: none" pt:placeholder="Comentario" value="#{detalleConteosMBean.comentario}">
+                                                    <f:ajax event="change" listener="#{detalleConteosMBean.guardarComentario}"/>
+                                                </h:inputTextarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <div class="row">
+                                        <div style="max-height: 85px; overflow: auto">
+                                            <ui:repeat value="#{detalleConteosMBean.detalle}" var="detalle">
+                                                <div class="col-xs-12 col-sm-6 center-component">
+                                                    <div style="margin: 5px; border: 1px solid #DDDDDD; padding: 5px">
+                                                        <span>
+                                                            #{detalle.usuario} <b style="color: #DDDDDD">|</b> #{detalle.fecha}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </ui:repeat>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                        Cerrar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:form id="formDetalle">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li>
+                                <h:commandLink class="miga" value="Conteos Inventario" action="conteos"/>
+                            </li>
+                            <li class="active">
+                                <a>Conteo Inventario #{detalleConteosMBean.idConteo}</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <h:panelGroup id="filtros">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-4">
+                            <div class="form-group">
+                                <p:remoteCommand name="ordenarConteos" actionListener="#{detalleConteosMBean.ordenarProductos}" update=":formDetalle:filtros :formDetalle:diferencias :formDetalle:msg"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <div class="input-group">
+                                    <span class="input-group-addon input-group-matisses noround">Filtrar por</span>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                id="selOrdenar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            #{detalleConteosMBean.ordenarPor}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="selOrdenar">
+                                            <li>
+                                                <a onclick="abrirModalEspera(); ordenarConteos([{name: 'orderBy', value: 'Falta'}])" style="cursor: pointer">
+                                                    Falta
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); ordenarConteos([{name: 'orderBy', value: 'Sobra'}])" style="cursor: pointer">
+                                                    Sobra
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); ordenarConteos([{name: 'orderBy', value: 'Esperado'}])" style="cursor: pointer">
+                                                    Esperado
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); ordenarConteos([{name: 'orderBy', value: 'Encontrado'}])" style="cursor: pointer">
+                                                    Encontrado
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <span class="input-group-btn">
+                                        <p:remoteCommand name="alternarOrden" actionListener="#{detalleConteosMBean.alternarOrden}" update=":formDetalle:filtros :formDetalle:diferencias :formDetalle:msg"
+                                                         oncomplete="cerrarModalEspera();"/>
+                                        <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); alternarOrden();">
+                                            <span class="glyphicon #{conteosMBean.sortOrder eq 'ASC' ? 'glyphicon-sort-by-order' : (conteosMBean.sortOrder eq 'DESC' ? 'glyphicon-sort-by-order-alt' : '')}"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-4">
+                            <div class="form-group">
+                                <p:remoteCommand name="cambiarSizePage" actionListener="#{detalleConteosMBean.cambiarSizePage}" update=":formDetalle:filtros :formDetalle:diferencias :formDetalle:msg"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <div class="input-group">
+                                    <span class="input-group-addon input-group-matisses noround">Mostrar</span>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                id="selSizePage" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            #{detalleConteosMBean.sizePage}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="selSizePage">
+                                            <li>
+                                                <a onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '12'}])" style="cursor: pointer">
+                                                    12
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '24'}])" style="cursor: pointer">
+                                                    24
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '48'}])" style="cursor: pointer">
+                                                    48
+                                                </a>
+                                            </li>
+                                            <li class="hidden-xs hidden-sm">
+                                                <a onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '100000'}])" style="cursor: pointer">
+                                                    Todos
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <span class="input-group-addon input-group-matisses noround">x pag.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-4">
+                            <div class="form-group has-feedback">
+                                <p:remoteCommand name="buscar" actionListener="#{detalleConteosMBean.buscarConteo}" update=":formDetalle:filtros :formDetalle:diferencias :formDetalle:msg"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <h:inputText id="txt_buscar" class="form-control input-lg noround" value="#{detalleConteosMBean.parametroBusqueda}"
+                                             pt:placeholder="Parámetro Busqueda" autocomplete="off"
+                                             onkeypress="if (event.keyCode === 13) {
+                                                         abrirModalEspera();
+                                                         buscar();
+                                                         return false;
+                                                     }"/>
+                                <span class="form-control-feedback glyphicon glyphicon-search inline-search" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-offset-3 col-sm-6 center-component">
+                            <div class="form-group">
+                                <p:remoteCommand name="mostrarPrimeraPagina" actionListener="#{detalleConteosMBean.mostrarPrimeraPagina}"
+                                                 update=":formDetalle:filtros :formDetalle:diferencias :formDetalle:msg"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <p:remoteCommand name="mostrarPaginaAnterior" actionListener="#{detalleConteosMBean.mostrarPaginaAnterior}"
+                                                 update=":formDetalle:filtros :formDetalle:diferencias :formDetalle:msg"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <p:remoteCommand name="mostrarPaginaEspecifica" actionListener="#{detalleConteosMBean.mostrarPaginaEspecifica}"
+                                                 update=":formDetalle:filtros :formDetalle:diferencias :formDetalle:msg"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <p:remoteCommand name="mostrarPaginaSiguiente" actionListener="#{detalleConteosMBean.mostrarPaginaSiguiente}"
+                                                 update=":formDetalle:filtros :formDetalle:diferencias :formDetalle:msg"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <p:remoteCommand name="mostrarUltimaPagina" actionListener="#{detalleConteosMBean.mostrarUltimaPagina}"
+                                                 update=":formDetalle:filtros :formDetalle:diferencias :formDetalle:msg"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarPrimeraPagina();">
+                                        1
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarPaginaAnterior();">
+                                        <span class="glyphicon glyphicon-chevron-left"></span>
+                                    </button>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-default dropdown-toggle btn-lg noround" data-toggle="dropdown"
+                                                aria-haspopup="true" aria-expanded="false">
+                                            #{detalleConteosMBean.pagina} de #{detalleConteosMBean.totalPaginas}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" style="max-height: 165px; overflow-y: auto">
+                                            <ui:repeat value="#{detalleConteosMBean.paginas}" var="pagina">
+                                                <li>
+                                                    <a onclick="abrirModalEspera(); mostrarPaginaEspecifica([{name: 'pagina', value: '#{pagina}'}])" style="cursor: pointer">
+                                                        #{pagina}
+                                                    </a>
+                                                </li>
+                                            </ui:repeat>
+                                        </ul>
+                                    </div>
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarPaginaSiguiente();">
+                                        <span class="glyphicon glyphicon-chevron-right"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarUltimaPagina();">
+                                        #{detalleConteosMBean.totalPaginas}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-3 center-component">
+                            <p:remoteCommand name="reprocesar" action="#{detalleConteosMBean.reprocesarConteo}" update=":formDetalle:msg" oncomplete="cerrarModalEspera();"/>
+                            <button type="button" class="btn btn-lg btn-default noround margin-bottom-10" onclick="abrirModalEspera(); reprocesar();">
+                                Re procesar
+                            </button>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                <h:panelGroup id="diferencias">
+                    <div class="row">
+                        <p:remoteCommand name="seleccionarReferencia" actionListener="#{detalleConteosMBean.obtenerDetalleReferencia}" update=":formDetalle:diferencias :formDetalle:msg :panelDetalle"
+                                         oncomplete="cerrarModalEspera(); abrirModalDetalle();"/>
+                        <ui:repeat value="#{detalleConteosMBean.diferencias}" var="diferencia">
+                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10 contenedor-contar" style="height: 185px; max-height: 185px; border: 1px solid #D7D7D7"
+                                 onclick="abrirModalEspera(); seleccionarReferencia([{name: 'referencia', value: '#{diferencia.referencia}'}, {name: 'idDiferencia', value: '#{diferencia.idDiferenciaConteo}'}]);">
+                                <div class="row">
+                                    <div class="col-xs-12 center-component"
+                                         style="background-color: #{diferencia.tipo eq 'F' ? '#F0AD4E' : '#BF0039'}; font-weight: bold; font-size: 25px; color: #FFFFFF">
+                                        <span>
+                                            #{diferencia.tipo eq 'F' ? 'Falta' : 'Sobra'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        <h:graphicImage value="#{imagenProductoMBean.obtenerUrlProducto(diferencia.referencia, true)}" class="img-mini"/>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component" style="font-weight: bold">
+                                                <h:outputText value="#{baruGenericMBean.convertirARefCorta(diferencia.referencia)}" style="font-size: 20px"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-6" style="font-weight: bold">
+                                                <div class="row">
+                                                    <div class="col-xs-12 center-component">
+                                                        Esp
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12 center-component">
+                                                        #{diferencia.esperado}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6" style="font-weight: bold">
+                                                <div class="row">
+                                                    <div class="col-xs-12 center-component">
+                                                        Enc
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12 center-component">
+                                                        #{diferencia.encontrado}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 justify-component">
+                                        <h:outputText value="#{baruGenericMBean.obtenerNombreReferencia(diferencia.referencia)}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </div>
+                </h:panelGroup>
+                <br/>
+                <br/>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

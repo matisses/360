@@ -1,0 +1,186 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Registrar Ip POS</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <h:form id="formIp">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Registrar Ip POS</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3>
+                            IP
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <h:panelGroup id="chk_manual">
+                        <div class="col-xs-12">
+                            <p:remoteCommand name="checkearModoManual" actionListener="#{registrarIpMBean.seleccionarModoManual}"
+                                             update=":formIp:manual :formIp:chk_manual :formIp:chk_automatico :formIp:automatico :formIp:propiedades"/>
+                            <span class="glyphicon #{registrarIpMBean.manual ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                  onclick="checkearModoManual();"></span>
+                            <h:outputLabel value="Manual" class="label-normal" onclick="checkearModoManual();"/>
+                        </div>
+                    </h:panelGroup>
+                </div>
+                <div class="row">
+                    <h:panelGroup id="manual">
+                        <p:remoteCommand name="consultar" actionListener="#{registrarIpMBean.consultarIp}" update=":formIp:propiedades"/>
+                        <div class="col-xs-12">
+                            <div class="row">
+                                <div class="col-xs-12 col-md-1 right-component">
+                                    <h:outputLabel class="input-lg" value="IPv4:"/>
+                                </div>
+                                <div class="col-xs-6 col-md-3 margin-bottom-10">
+                                    <div class="input-group">
+                                        <h:inputText id="octeto1" class="form-control input-lg noround" value="#{registrarIpMBean.octeto1}"
+                                                     pt:type="number" pt:placeholder="Octeto 1°" disabled="#{not registrarIpMBean.manual}"
+                                                     onkeypress="if (event.keyCode === 13) {
+                                                                 consultar();
+                                                                 document.getElementById('formIp:octeto2').focus();
+                                                                 return false;
+                                                             }"/>
+                                        <h:outputLabel class="input-group-addon input-lg noround" value="."/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-md-3 margin-bottom-10">
+                                    <div class="input-group">
+                                        <h:inputText id="octeto2" class="form-control input-lg noround" value="#{registrarIpMBean.octeto2}"
+                                                     pt:type="number" pt:placeholder="Octeto 2°" disabled="#{not registrarIpMBean.manual}"
+                                                     onkeypress="if (event.keyCode === 13) {
+                                                                 consultar();
+                                                                 document.getElementById('formIp:octeto3').focus();
+                                                                 return false;
+                                                             }"/>
+                                        <h:outputLabel class="input-group-addon input-lg noround" value="."/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-md-3 margin-bottom-10">
+                                    <div class="input-group">
+                                        <h:inputText id="octeto3" class="form-control input-lg noround" value="#{registrarIpMBean.octeto3}"
+                                                     pt:type="number" pt:placeholder="Octeto 3°" disabled="#{not registrarIpMBean.manual}"
+                                                     onkeypress="if (event.keyCode === 13) {
+                                                                 consultar();
+                                                                 document.getElementById('formIp:octeto4').focus();
+                                                                 return false;
+                                                             }"/>
+                                        <h:outputLabel class="input-group-addon input-lg noround" value="."/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-md-2 margin-bottom-10">
+                                    <h:inputText id="octeto4" class="form-control input-lg noround" value="#{registrarIpMBean.octeto4}"
+                                                 pt:type="number" pt:placeholder="Octeto 4°" disabled="#{not registrarIpMBean.manual}"
+                                                 onkeypress="if (event.keyCode === 13) {
+                                                             consultar();
+                                                             return false;
+                                                         }"/>
+                                </div>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </div>
+                <div class="row">
+                    <h:panelGroup id="chk_automatico">
+                        <div class="col-xs-12">
+                            <p:remoteCommand name="checkearModoAuto" actionListener="#{registrarIpMBean.seleccionarModoAutomatico}"
+                                             update=":formIp:manual :formIp:chk_manual :formIp:chk_automatico :formIp:automatico :formIp:propiedades"/>
+                            <span class="glyphicon #{registrarIpMBean.automatico ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                  onclick="checkearModoAuto();"></span>
+                            <h:outputLabel value="Automatico" class="label-normal" onclick="checkearModoAuto();"/>
+                        </div>
+                    </h:panelGroup>
+                </div>
+                <div class="row">
+                    <h:panelGroup id="automatico">
+                        <div class="col-xs-12 col-md-4 col-md-offset-4"
+                             style="#{registrarIpMBean.automatico ? 'background-color: #BF0039; color: #FFFFFF' : 'background-color: #D3D3D3; color: #000000'}">
+                            <div class="row">
+                                <div class="col-xs-12 center-component">
+                                    <h:outputLabel class="input-lg" value="Registrar mi IP"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 center-component">
+                                    <h:outputLabel class="input-lg" value="#{userSessionInfoMBean.ip}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3>
+                            Propiedades
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <h:panelGroup id="propiedades">
+                        <div class="col-xs-12 col-sm-4 margin-bottom-10">
+                            <p:remoteCommand name="checkearActivo" actionListener="#{registrarIpMBean.seleccionarActivo}"
+                                             update=":formIp:manual :formIp:chk_manual :formIp:chk_automatico :formIp:automatico :formIp:propiedades"/>
+                            <span class="glyphicon #{registrarIpMBean.activo ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                  onclick="checkearActivo();"></span>
+                            <h:outputLabel value="Activa" class="label-normal" onclick="checkearActivo();"/>
+                        </div>
+                        <div class="col-xs-12 col-sm-4 margin-bottom-10">
+                            <div class="form-group">
+                                <h:outputLabel value="Cuenta Efectivo" for="cuenta"/>
+                                <h:inputText id="cuenta" class="form-control input-lg noround" pt:placeholder="Cuenta Efectivo" value="#{registrarIpMBean.cuentaEfectivo}"/>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-4 margin-bottom-10">
+                            <div class="form-group">
+                                <h:outputLabel value="Alias" for="alias"/>
+                                <h:inputText id="alias" class="form-control input-lg noround" pt:placeholder="Alias" value="#{registrarIpMBean.alias}"/>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </div>
+                <br/>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                <div class="row">
+                    <div class="col-xs-12 center-component">
+                        <h:commandButton class="btn btn-primary btn-lg noround" value="Guardar" action="#{registrarIpMBean.agregarIpPos}"/>
+                    </div>
+                </div>
+                <br/>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

@@ -1,0 +1,413 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" http-equiv="Content-Type"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script type="text/javascript">
+            function abrirModalVideo() {
+                $('#modalVideo').modal('show');
+            }
+        </script>
+        <title>360 - Firma Correo</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+
+            <h:panelGroup id="panelVideo">
+                <h:form id="formVideo">
+                    <div class="modal fade" id="modalVideo">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Usar firma
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            <div class="embed-responsive embed-responsive-16by9">
+                                                <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/avhXnVY_uXc" frameborder="0" allowfullscreen=""></iframe>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="row">
+                                        <div class="col-xs-12 right-component">
+                                            <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                Cerrar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:form id="formFirmaCorreo">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Firma correo</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <h:panelGroup id="firma">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-md-offset-2 center-component margin-bottom-10">
+                            <p:remoteCommand name="seleccionarFirmaGeneral" actionListener="#{generarFirmaCorreoMBean.seleccionarFirmaGeneral}" update=":formFirmaCorreo:firma"/>
+                            <div class="#{generarFirmaCorreoMBean.firmaGeneral ? 'contenedor-firma-activa' : 'contenedor-firma'} pointer-cursor" onclick="seleccionarFirmaGeneral();">
+                                <span style="font-size: 20px">
+                                    Firma general
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 center-component margin-bottom-10">
+                            <p:remoteCommand name="seleccionarFirmaImportaciones" actionListener="#{generarFirmaCorreoMBean.seleccionarFirmaImportaciones}" update=":formFirmaCorreo:firma"/>
+                            <div class="#{generarFirmaCorreoMBean.firmaImports ? 'contenedor-firma-activa' : 'contenedor-firma'} pointer-cursor" onclick="seleccionarFirmaImportaciones();">
+                                <span style="font-size: 20px">
+                                    Firma imports
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ui:fragment rendered="#{generarFirmaCorreoMBean.firmaGeneral}">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-sm-offset-3 center-component margin-bottom-10">
+                                <table style="width: 100%">
+                                    <tr>
+                                        <td style="padding: 0 5px 0 0">
+                                            <img class="empleado-firma" src="http://192.168.5.56:8080/shared/empleados/firmas/#{generarFirmaCorreoMBean.empleado.cedula}-1.jpg"/>
+                                        </td>
+                                        <td>
+                                            <table style="width: 100%">
+                                                <tr>
+                                                    <td class="center-component">
+                                                        <img src="http://192.168.5.56:8080/shared/matissesLogoNuevo1.png" style="width: 189px"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="center-component" style="height: 26px; color: #FFFFFF; background-color: #5E5E5E; font-family: Verdana; font-size: 13px">
+                                                        #{generarFirmaCorreoMBean.empleado.departamento}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <table>
+                                                            <tr>
+                                                                <td style="width: 20px"></td>
+                                                                <td style="color: #5E5E5E; font-family: Verdana; font-size: 13px; padding: 5px">
+                                                                    #{generarFirmaCorreoMBean.empleado.nombre}
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <table>
+                                                            <tr>
+                                                                <td style="width: 20px"></td>
+                                                                <td style="color: #5E5E5E; font-family: Verdana; font-size: 13px; padding: 5px">
+                                                                    #{generarFirmaCorreoMBean.empleado.funcion}
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="center-component">
+                                                        <table style="width: 100%">
+                                                            <tr>
+                                                                <ui:fragment rendered="#{(not empty generarFirmaCorreoMBean.empleado.celularCorporativo and generarFirmaCorreoMBean.empleado.celularCorporativo ne null)
+                                                                                         and (not empty generarFirmaCorreoMBean.empleado.skypeCorporativo and generarFirmaCorreoMBean.empleado.skypeCorporativo ne null)}">
+                                                                    <td>
+                                                                        <table style="width: 100%">
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <img src="http://192.168.5.56:8080/shared/logoPhone3.png" alt="" style="width: 20px"/>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <a style="color: #5E5E5E; font-family: Verdana; font-size: 11px" href="tel:+57#{generarFirmaCorreoMBean.empleado.celularCorporativo}">
+                                                                                        #{generarFirmaCorreoMBean.empleado.celularCorporativo}
+                                                                                    </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </td>
+                                                                    <td>
+                                                                        <table style="width: 100%">
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <img src="http://192.168.5.56:8080/shared/logoSkype3.png" alt="" style="width: 20px"/>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <a style="color: #5E5E5E; font-family: Verdana; font-size: 11px" href="skype:#{generarFirmaCorreoMBean.empleado.skypeCorporativo}">
+                                                                                        #{generarFirmaCorreoMBean.empleado.skypeCorporativo}
+                                                                                    </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </td>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{(not empty generarFirmaCorreoMBean.empleado.celularCorporativo and generarFirmaCorreoMBean.empleado.celularCorporativo ne null)
+                                                                                         and (empty generarFirmaCorreoMBean.empleado.skypeCorporativo or generarFirmaCorreoMBean.empleado.skypeCorporativo eq null)}">
+                                                                    <td>
+                                                                        <table style="width: 100%">
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <img src="http://192.168.5.56:8080/shared/logoPhone3.png" alt="" style="width: 20px"/>
+                                                                                    <a style="color: #5E5E5E; font-family: Verdana; font-size: 11px" href="tel:+57#{generarFirmaCorreoMBean.empleado.celularCorporativo}">
+                                                                                        #{generarFirmaCorreoMBean.empleado.celularCorporativo}
+                                                                                    </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </td>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{(empty generarFirmaCorreoMBean.empleado.celularCorporativo or generarFirmaCorreoMBean.empleado.celularCorporativo eq null)
+                                                                                         and (not empty generarFirmaCorreoMBean.empleado.skypeCorporativo and generarFirmaCorreoMBean.empleado.skypeCorporativo ne null)}">
+                                                                    <td>
+                                                                        <table style="width: 100%">
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <img src="http://192.168.5.56:8080/shared/logoSkype3.png" alt="" style="width: 20px"/>
+                                                                                    <a style="color: #5E5E5E; font-family: Verdana; font-size: 11px" href="skype:#{generarFirmaCorreoMBean.empleado.skypeCorporativo}">
+                                                                                        #{generarFirmaCorreoMBean.empleado.skypeCorporativo}
+                                                                                    </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </td>
+                                                                </ui:fragment>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{generarFirmaCorreoMBean.firmaImports}">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-sm-offset-3 center-component margin-bottom-10">
+                                <table style="width: 100%">
+                                    <tr>
+                                        <td style="padding: 0 5px 0 0">
+                                            <img class="empleado-firma" src="http://192.168.5.56:8080/shared/empleados/firmas/#{generarFirmaCorreoMBean.empleado.cedula}-1.jpg"/>
+                                        </td>
+                                        <td>
+                                            <table style="width: 100%">
+                                                <tr>
+                                                    <td class="center-component">
+                                                        <img src="http://192.168.5.56:8080/shared/matissesLogoNuevo1.png" style="width: 189px"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="center-component" style="height: 26px; color: #FFFFFF; background-color: #5E5E5E; font-family: Verdana; font-size: 13px">
+                                                        #{generarFirmaCorreoMBean.empleado.departamento}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <table>
+                                                            <tr>
+                                                                <td style="width: 20px"></td>
+                                                                <td style="color: #5E5E5E; font-family: Verdana; font-size: 13px">
+                                                                    #{generarFirmaCorreoMBean.empleado.nombre}
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <table>
+                                                            <tr>
+                                                                <td style="width: 20px"></td>
+                                                                <td style="color: #5E5E5E; font-family: Verdana; font-size: 13px">
+                                                                    #{generarFirmaCorreoMBean.empleado.funcion}
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="center-component">
+                                                        <table style="width: 100%">
+                                                            <tr>
+                                                                <ui:fragment rendered="#{(not empty generarFirmaCorreoMBean.empleado.celularCorporativo and generarFirmaCorreoMBean.empleado.celularCorporativo ne null)
+                                                                                         and (not empty generarFirmaCorreoMBean.empleado.skypeCorporativo and generarFirmaCorreoMBean.empleado.skypeCorporativo ne null)}">
+                                                                    <td>
+                                                                        <table style="width: 100%">
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <img src="http://192.168.5.56:8080/shared/logoPhone3.png" alt="" style="width: 20px"/>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <a style="color: #5E5E5E; font-family: Verdana; font-size: 11px" href="tel:+57#{generarFirmaCorreoMBean.empleado.celularCorporativo}">
+                                                                                        #{generarFirmaCorreoMBean.empleado.celularCorporativo}
+                                                                                    </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </td>
+                                                                    <td>
+                                                                        <table style="width: 100%">
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <img src="http://192.168.5.56:8080/shared/logoSkype3.png" alt="" style="width: 20px"/>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <a style="color: #5E5E5E; font-family: Verdana; font-size: 11px" href="skype:#{generarFirmaCorreoMBean.empleado.skypeCorporativo}">
+                                                                                        #{generarFirmaCorreoMBean.empleado.skypeCorporativo}
+                                                                                    </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </td>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{(not empty generarFirmaCorreoMBean.empleado.celularCorporativo and generarFirmaCorreoMBean.empleado.celularCorporativo ne null)
+                                                                                         and (empty generarFirmaCorreoMBean.empleado.skypeCorporativo or generarFirmaCorreoMBean.empleado.skypeCorporativo eq null)}">
+                                                                    <td>
+                                                                        <table style="width: 100%">
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <img src="http://192.168.5.56:8080/shared/logoPhone3.png" alt="" style="width: 20px"/>
+                                                                                    <a style="color: #5E5E5E; font-family: Verdana; font-size: 11px" href="tel:+57#{generarFirmaCorreoMBean.empleado.celularCorporativo}">
+                                                                                        #{generarFirmaCorreoMBean.empleado.celularCorporativo}
+                                                                                    </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </td>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{(empty generarFirmaCorreoMBean.empleado.celularCorporativo or generarFirmaCorreoMBean.empleado.celularCorporativo eq null)
+                                                                                         and (not empty generarFirmaCorreoMBean.empleado.skypeCorporativo and generarFirmaCorreoMBean.empleado.skypeCorporativo ne null)}">
+                                                                    <td>
+                                                                        <table style="width: 100%">
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <img src="http://192.168.5.56:8080/shared/logoSkype3.png" alt="" style="width: 20px"/>
+                                                                                    <a style="color: #5E5E5E; font-family: Verdana; font-size: 11px" href="skype:#{generarFirmaCorreoMBean.empleado.skypeCorporativo}">
+                                                                                        #{generarFirmaCorreoMBean.empleado.skypeCorporativo}
+                                                                                    </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </td>
+                                                                </ui:fragment>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="2">
+                                                                    <table style="width: 100%">
+                                                                        <tr>
+                                                                            <td style="color: #5E5E5E; font-family: Verdana; font-size: 11px">
+                                                                                <a style="color: #5E5E5E; font-family: Verdana; font-size: 11px" href="tel:(57-4)4440434">
+                                                                                    <b>PBX</b> (57-4) 444 0434 Opc. 3
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="2">
+                                                                    <table style="width: 100%">
+                                                                        <tr>
+                                                                            <td style="color: #5E5E5E; font-family: Verdana; font-size: 11px">
+                                                                                <a style="color: #5E5E5E; font-family: Verdana; font-size: 11px" href="tel:7862069522">
+                                                                                    <b>USA</b> 786-206-95-22
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <table style="width: 100%">
+                                                                        <tr>
+                                                                            <td style="color: #5E5E5E; font-family: Verdana; font-size: 13px; padding: 5px">
+                                                                                <a style="color: #5E5E5E; font-family: Verdana; font-size: 11px" href="mailto:imports@matisses.co">
+                                                                                    <b>imports@matisses.co</b>
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                                <td>
+                                                                    <table style="width: 100%">
+                                                                        <tr>
+                                                                            <td style="color: #5E5E5E; font-family: Verdana; font-size: 13px; padding: 5px">
+                                                                                <a style="color: #5E5E5E; font-family: Verdana; font-size: 11px" href="http://www.matisses.co">
+                                                                                    <b>www.matisses.co</b>
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </ui:fragment>
+
+                    <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                    <ui:fragment rendered="#{generarFirmaCorreoMBean.firmaGeneral or generarFirmaCorreoMBean.firmaImports}">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-sm-offset-3 right-component margin-bottom-10">
+                                <p:remoteCommand name="modalVideo" update=":panelVideo" oncomplete="abrirModalVideo();"/>
+                                <button type="button" class="btn btn-default btn-lg noround" data-toggle="modal" data-target="#modalVideo" style="margin-right: 3px">
+                                    ¿Como usar?
+                                </button>
+                                <h:commandButton class="btn btn-primary btn-lg noround" value="Usar" onclick="modalVideo();">
+                                    <p:fileDownload value="#{generarFirmaCorreoMBean.signatureDownload}"/>
+                                </h:commandButton>
+                            </div>
+                        </div>
+                    </ui:fragment>
+                </h:panelGroup>
+
+
+            </h:form>
+        </div>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" http-equiv="Content-Type"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script type="text/javascript">
+            function abrirModalEspera() {
+                $('#modalEspera').modal('show');
+            }
+
+            function cerrarModalEspera() {
+                $('#modalEspera').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function seleccionar(url) {
+                window.opener.window.location.href = url;
+                close();
+            }
+        </script>
+        <title>360 - Proforma V-Tabla</title>
+    </h:head>
+    <h:body class="tabla-proforma">
+
+        <div class="modal fade" id="modalEspera" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog">
+                <div class="modal-content dialog-content noround">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12 center-component">
+                                <span class="input-lg">
+                                    Estamos procesando tu solicitud.
+                                </span>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width: 100%; background-color: #BF0039!important"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h:form id="formTablaProforma">
+            <!--Inicia codigo de boton para busqueda-->
+
+            <h:panelGroup id="btnBusqueda">
+                <p:remoteCommand name="aplicarBusqueda" actionListener="#{tablaProformaMBean.aplicarBusqueda}" update=":formTablaProforma:btnBusqueda"
+                                 oncomplete="#{tablaProformaMBean.buscando ? '' : 'document.getElementById(\'formTablaProforma:txt_busqueda\').focus();'}"/>
+                <ui:fragment rendered="#{tablaProformaMBean.buscando == false}">
+                    <span class="btn-flotante glyphicon glyphicon-search" onclick="aplicarBusqueda();"></span>
+                </ui:fragment>
+                <ui:fragment rendered="#{tablaProformaMBean.buscando}">
+                    <p:remoteCommand name="filtrarDatos" actionListener="#{tablaProformaMBean.filtrarDatos}"
+                                     update=":formTablaProforma:tabla" oncomplete="cerrarModalEspera();"/>
+                    <h:inputText id="txt_busqueda" class="form-control input-lg noround input-flotante" pt:placeholder="Parámetro busqueda"
+                                 value="#{tablaProformaMBean.parametroBusqueda}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                             abrirModalEspera();
+                                             filtrarDatos();
+                                             return false;
+                                         }"/>
+                    <span class="btn-flotante glyphicon glyphicon-chevron-right" onclick="aplicarBusqueda();"></span>
+                </ui:fragment>
+            </h:panelGroup>
+
+            <!--Finaliza codigo de boton para busqueda-->
+
+            <div class="row">
+                <p:remoteCommand name="seleccionarLinea" actionListener="#{tablaProformaMBean.seleccionarLinea}"
+                                 oncomplete="cerrarModalEspera(); seleccionar('#{baruApplicationBean.obtenerValorPropiedad('url.web.ruta.proforma')}');"/>
+                <div class="col-xs-12">
+                    <div class="row">
+                        <h:panelGroup id="tabla">
+                            <table class="table table-bordered table-striped" style="text-align: center">
+                                <tr>
+                                    <ui:repeat value="#{tablaProformaMBean.encabezado}" var="encabezado">
+                                        <th class="head-tabla"
+                                            colspan="#{fn:length(encabezado.columnas) gt 0 ? fn:length(encabezado.columnas) : 1}" rowspan="#{fn:length(encabezado.columnas) gt 0 ? 1 : 2}">
+                                            #{encabezado.nombre}
+                                        </th>
+                                    </ui:repeat>
+                                </tr>
+                                <tr>
+                                    <ui:repeat value="#{tablaProformaMBean.encabezado}" var="encabezado">
+                                        <ui:repeat value="#{encabezado.columnas}" var="col">
+                                            <ui:fragment rendered="#{fn:length(encabezado.columnas) gt 0}">
+                                                <th class="head-tabla" style="width: #{col.longitudOcupadaTabla}">
+                                                    #{col.nombre2}
+                                                </th>
+                                            </ui:fragment>
+                                        </ui:repeat>
+                                    </ui:repeat>
+                                </tr>
+                                <ui:repeat value="#{tablaProformaMBean.datosProforma}" var="dato">
+                                    <tr class="#{dato.lineaIncluida ? 'tr-tabla' : 'linea-no-incluida'}" style="cursor: pointer"
+                                        onclick="abrirModalEspera(); seleccionarLinea([{name: 'linea', value: '#{dato.linea}'}]);">
+                                        <ui:repeat value="#{dato.detalleProforma}" var="det">
+                                            <td>
+                                                <div style="width: #{det.longitudOcupadaTabla}; height: 66px">
+                                                    <ui:fragment rendered="#{det.tipoImagen}">
+                                                        <div class="img">
+                                                            <h:graphicImage value="#{dato.imagenObtenida}" style="width: 83px; height: 66px"/>
+                                                            <h:panelGroup id="showOverlay"
+                                                                          rendered="#{dato.imagenObtenida != baruApplicationBean.obtenerValorPropiedad('url.web.noimage')}">
+                                                                <div class="point">
+                                                                    <h:graphicImage value="#{baruApplicationBean.obtenerValorPropiedad('url.local.point')}"/>
+                                                                </div>
+                                                                <div class="showOverlay">
+                                                                    <h:graphicImage value="#{dato.imagenObtenida}" style="width: 442px; height: 356px"/>
+                                                                </div>
+                                                            </h:panelGroup>
+                                                        </div>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{det.tipoImagen == false}">
+                                                        <span>
+                                                            #{det.valorFormateado}
+                                                        </span>
+                                                    </ui:fragment>
+                                                </div>
+                                            </td>
+                                        </ui:repeat>
+                                    </tr>
+                                </ui:repeat>
+                            </table>
+                        </h:panelGroup>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

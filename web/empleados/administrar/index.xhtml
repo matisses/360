@@ -1,0 +1,1454 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <link href="/360/fonts/iconFont.css" rel="stylesheet"/>
+        <link href="/360/css/slick.css" rel="stylesheet"/>
+        <script type="text/javascript">
+            function openRuta(window_src) {
+                ruta = window.open(window_src, 'newwindow', config = 'height=' + window.screen.availHeight + ',width=' + window.screen.availWidth
+                        + ',toolbar=no,menubar=no,resizable=no,location=no,status=no,scrollbars=yes');
+            }
+        </script>
+        <title>360 - Empleados</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <h:panelGroup id="panelBusqueda">
+                <h:panelGroup rendered="#{empleadosMBean.dlgBusquedaEmpleado}">
+                    <h:form id="formBusqueda">
+                        <div id="modalBusqueda" class="modal fade" tabindex="-1" role="dialog">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">Lista de empleados</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p:remoteCommand name="seleccionarEmpleado" actionListener="#{empleadosMBean.seleccionarEmpleado}" update=":panelBusqueda :formEmpleado" oncomplete="cerrarModalEspera();"/>
+
+                                        <div class="row">
+                                            <ui:repeat value="#{empleadosMBean.empleados}" var="empleado">
+                                                <div class="col-xs-6 col-sm-3 col-md-2">
+                                                    <div class="pointer-cursor" style="height: 148px" onclick="seleccionarEmpleado([{name: 'empID', value: '#{empleado.empID}'}])">
+                                                        <div class="row">
+                                                            <div class="col-xs-12 center-component margin-bottom-10">
+                                                                <img src="#{baruGenericMBean.obtenerRutaFotoEmpleado(empleado.officeExt)}" style="height: 100px"/>
+                                                            </div>
+                                                            <div class="col-xs-12 center-component margin-bottom-10" style="font-size: 10px">
+                                                                #{baruGenericMBean.obtenerEmpleado(empleado.empID)}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ui:repeat>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelAusentismos">
+                <h:form id="formAusentismos">
+                    <div id="modalAusentismos" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <h4 class="modal-title">Información de ausentismos</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h:panelGroup id="datos">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10">
+                                                <label>Fecha inicio:</label>
+                                                <p:calendar id="fechaInicio" pattern="dd-MM-yyyy HH:mm" class="input-lg mask" value="#{empleadosMBean.ausentismo.fechaInicio}">
+                                                    <p:ajax event="dateSelect" rendered=":formEmpleado:fechaInicio"/>
+                                                </p:calendar>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10">
+                                                <label>Fecha fin:</label>
+                                                <p:calendar id="fechaFin" pattern="dd-MM-yyyy HH:mm" class="input-lg mask" value="#{empleadosMBean.ausentismo.fechaFin}">
+                                                    <p:ajax event="dateSelect" rendered=":formEmpleado:fechaFin"/>
+                                                </p:calendar>
+                                            </div>
+                                            <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                                <label>Motivo:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.ausentismo.reason}"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-5 margin-bottom-10">
+                                                <label>Aprobado por:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.ausentismo.confirmerNumber}">
+                                                    <f:selectItem itemLabel="Seleccione aprobador" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.jefes}" var="jefe" itemLabel="#{jefe.lastName} #{jefe.firstName}" itemValue="#{jefe.empID}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-5 margin-bottom-10">
+                                                <label>Tipo ausentismo:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.ausentismo.type}">
+                                                    <f:selectItem itemLabel="Seleccione tipo" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.tiposAusentismo}" var="ausentismo" itemLabel="#{ausentismo.descr}" itemValue="#{ausentismo.fldValue}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-2 center-component margin-bottom-10">
+                                                <p:remoteCommand name="agregarAusentismo" actionListener="#{empleadosMBean.agregarAusentismo}"
+                                                                 update=":formAusentismos:paginador :formAusentismos:table :formAusentismos:datos :formAusentismos:msg"/>
+
+                                                <button type="button" class="btn btn-primary btn-lg noround" style="margin-top: 24px" onclick="agregarAusentismo();">
+                                                    Guardar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+
+                                    <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                                    <div class="row">
+                                        <div class="col-xs-12 col-md-offset-7 col-md-5">
+                                            <h:panelGroup id="paginador">
+                                                <nav class="nav-paginator-center">
+                                                    <ul class="pagination pagination-lg">
+                                                        <li class="#{empleadosMBean.paginaModals == 1 ? 'disabled' : ''}" style="cursor: pointer">
+                                                            <a aria-label="Previus" onclick="anteriorPagina([{name: 'tipo', value: 1}]);">
+                                                                <span aria-hidden="true">&laquo;</span>
+                                                            </a>
+                                                        </li>
+                                                        <ui:repeat var="pagina" value="#{empleadosMBean.paginasModals}">
+                                                            <li class="#{empleadosMBean.paginaModals == pagina ? 'active' : ''}" style="cursor: pointer">
+                                                                <a onclick="paginar([{name: 'pagina', value: '#{pagina}'}, {name: 'tipo', value: 1}]);">
+                                                                    #{pagina}
+                                                                </a>
+                                                            </li>
+                                                        </ui:repeat>
+                                                        <li class="#{empleadosMBean.paginaModals == empleadosMBean.totalPaginasModals ? 'disabled' : ''}" style="cursor: pointer">
+                                                            <a aria-label="Next" onclick="siguientePagina([{name: 'tipo', value: 1}]);">
+                                                                <span aria-hidden="true">&raquo;</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h:panelGroup id="table">
+                                                <table class="table table-striped table-bordered">
+                                                    <tr>
+                                                        <th class="head-tabla">Desde</th>
+                                                        <th class="head-tabla">Hasta</th>
+                                                        <th class="head-tabla">Motivo</th>
+                                                        <th class="head-tabla">Aprobador</th>
+                                                        <th class="head-tabla">Tipo</th>
+                                                        <th class="head-tabla">Hs</th>
+                                                        <th class="head-tabla">Min</th>
+                                                        <th class="head-tabla">Días</th>
+                                                    </tr>
+                                                    <ui:repeat value="#{empleadosMBean.empleado.employeeAbsenceInfoLines.ausentimosVisibles}" var="ausentismo">
+                                                        <tr>
+                                                            <td class="center-component">#{baruGenericMBean.getValorFormateado('Date', ausentismo.fechaInicio, 0)}</td>
+                                                            <td class="center-component">#{baruGenericMBean.getValorFormateado('Date', ausentismo.fechaFin, 0)}</td>
+                                                            <td>#{ausentismo.reason}</td>
+                                                            <td>#{baruGenericMBean.obtenerEmpleado(ausentismo.confirmerNumber)}</td>
+                                                            <td>#{empleadosMBean.mostrarNombreTipoAusentismo(ausentismo.type)}</td>
+                                                            <td class="right-component">#{ausentismo.horas}</td>
+                                                            <td class="right-component">#{ausentismo.minutos}</td>
+                                                            <td class="right-component">#{ausentismo.dias}</td>
+                                                        </tr>
+                                                    </ui:repeat>
+                                                </table>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelFormacion">
+                <h:form id="formFormacion">
+                    <div id="modalFormacion" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <h4 class="modal-title">Formación</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h:panelGroup id="datos">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10">
+                                                <label>Fecha inicio:</label>
+                                                <p:calendar id="fechaInicio" pattern="dd-MM-yyyy" class="input-lg mask" value="#{empleadosMBean.formacion.fechaInicio}">
+                                                    <p:ajax event="dateSelect" rendered=":formFormacion:fechaInicio"/>
+                                                </p:calendar>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10">
+                                                <label>Fecha fin:</label>
+                                                <p:calendar id="fechaFin" pattern="dd-MM-yyyy" class="input-lg mask" value="#{empleadosMBean.formacion.fechaFin}">
+                                                    <p:ajax event="dateSelect" rendered=":formFormacion:fechaFin"/>
+                                                </p:calendar>
+                                            </div>
+                                            <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                                <label>Clase de formación:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.formacion.educationType}">
+                                                    <f:selectItem itemLabel="Seleccione tipo" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.clasesFormacion}" var="clase" itemLabel="#{clase.name}" itemValue="#{clase.edType}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-5 margin-bottom-10">
+                                                <label>Entidad:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.formacion.institute}"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-5 margin-bottom-10">
+                                                <label>Título de licenciatura:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.formacion.diploma}"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-2 center-component margin-bottom-10">
+                                                <p:remoteCommand name="agregarFormacion" actionListener="#{empleadosMBean.agregarFormacion}"
+                                                                 update=":formFormacion:paginador :formFormacion:table :formFormacion:datos :formFormacion:msg"/>
+
+                                                <button type="button" class="btn btn-primary btn-lg noround" style="margin-top: 24px" onclick="agregarFormacion();">
+                                                    Guardar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+
+                                    <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                                    <div class="row">
+                                        <div class="col-xs-12 col-md-offset-7 col-md-5">
+                                            <h:panelGroup id="paginador">
+                                                <nav class="nav-paginator-center">
+                                                    <ul class="pagination pagination-lg">
+                                                        <li class="#{empleadosMBean.paginaModals == 1 ? 'disabled' : ''}" style="cursor: pointer">
+                                                            <a aria-label="Previus" onclick="anteriorPagina([{name: 'tipo', value: 2}]);">
+                                                                <span aria-hidden="true">&laquo;</span>
+                                                            </a>
+                                                        </li>
+                                                        <ui:repeat var="pagina" value="#{empleadosMBean.paginasModals}">
+                                                            <li class="#{empleadosMBean.paginaModals == pagina ? 'active' : ''}" style="cursor: pointer">
+                                                                <a onclick="paginar([{name: 'pagina', value: '#{pagina}'}, {name: 'tipo', value: 2}]);">
+                                                                    #{pagina}
+                                                                </a>
+                                                            </li>
+                                                        </ui:repeat>
+                                                        <li class="#{empleadosMBean.paginaModals == empleadosMBean.totalPaginasModals ? 'disabled' : ''}" style="cursor: pointer">
+                                                            <a aria-label="Next" onclick="siguientePagina([{name: 'tipo', value: 2}]);">
+                                                                <span aria-hidden="true">&raquo;</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h:panelGroup id="table">
+                                                <table class="table table-striped table-bordered">
+                                                    <tr>
+                                                        <th class="head-tabla">Desde</th>
+                                                        <th class="head-tabla">Hasta</th>
+                                                        <th class="head-tabla">Clase de formación</th>
+                                                        <th class="head-tabla">Entidad</th>
+                                                        <th class="head-tabla">Título de licenciatura</th>
+                                                    </tr>
+                                                    <ui:repeat value="#{empleadosMBean.empleado.employeeEducationInfoLines.employeeEducationInfo}" var="formacion">
+                                                        <tr>
+                                                            <td class="center-component">#{baruGenericMBean.getValorFormateado('Date', formacion.fechaInicio, 0)}</td>
+                                                            <td class="center-component">#{baruGenericMBean.getValorFormateado('Date', formacion.fechaFin, 0)}</td>
+                                                            <td>#{empleadosMBean.mostrarNombreClaseFormacion(formacion.educationType)}</td>
+                                                            <td>#{formacion.institute}</td>
+                                                            <td>#{formacion.diploma}</td>
+                                                        </tr>
+                                                    </ui:repeat>
+                                                </table>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelValoracion">
+                <h:form id="formValoracion">
+                    <div id="modalValoracion" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <h4 class="modal-title">Valoraciones</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <!--<div class="row">
+                                        <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10">
+                                            <label>Fecha:</label>
+                                            <p:calendar id="fecha" pattern="dd-MM-yyyy" class="input-lg mask">
+                                            </p:calendar>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10">
+                                            <label>Descripción:</label>
+                                            <h:inputText class="form-control input-lg noround"/>
+                                        </div>
+                                        <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                            <label>Gerente:</label>
+                                            <select class="form-control input-lg noround pointer-cursor">
+                                                <option style="display: none" disabled="true" selected="true" value="-1">Seleccione clase de formación</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-5 margin-bottom-10">
+                                            <label>Grupo salarial:</label>
+                                            <h:inputText class="form-control input-lg noround"/>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-5 margin-bottom-10">
+                                            <label>Comentario:</label>
+                                            <h:inputText class="form-control input-lg noround"/>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-2 center-component margin-bottom-10">
+                                            <button type="button" class="btn btn-primary btn-lg noround" style="margin-top: 24px">
+                                                Guardar
+                                            </button>
+                                        </div>
+                                    </div>-->
+                                    <br/>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-md-offset-7 col-md-5">
+                                            <h:panelGroup id="paginador">
+                                                <nav class="nav-paginator-center">
+                                                    <ul class="pagination pagination-lg">
+                                                        <li class="#{empleadosMBean.paginaModals == 1 ? 'disabled' : ''}" style="cursor: pointer">
+                                                            <a aria-label="Previus" onclick="anteriorPagina([{name: 'tipo', value: 3}]);">
+                                                                <span aria-hidden="true">&laquo;</span>
+                                                            </a>
+                                                        </li>
+                                                        <ui:repeat var="pagina" value="#{empleadosMBean.paginasModals}">
+                                                            <li class="#{empleadosMBean.paginaModals == pagina ? 'active' : ''}" style="cursor: pointer">
+                                                                <a onclick="paginar([{name: 'pagina', value: '#{pagina}'}, {name: 'tipo', value: 3}]);">
+                                                                    #{pagina}
+                                                                </a>
+                                                            </li>
+                                                        </ui:repeat>
+                                                        <li class="#{empleadosMBean.paginaModals == empleadosMBean.totalPaginasModals ? 'disabled' : ''}" style="cursor: pointer">
+                                                            <a aria-label="Next" onclick="siguientePagina([{name: 'tipo', value: 3}]);">
+                                                                <span aria-hidden="true">&raquo;</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h:panelGroup id="table">
+                                                <table class="table table-striped table-bordered">
+                                                    <tr>
+                                                        <th class="head-tabla">Fecha</th>
+                                                        <th class="head-tabla">Descripción</th>
+                                                        <th class="head-tabla">Gerente</th>
+                                                        <th class="head-tabla">Grupo salarial</th>
+                                                        <th class="head-tabla">Comentarios</th>
+                                                    </tr>
+                                                    <ui:repeat value="#{empleadosMBean.empleado.employeeReviewsInfoLines.employeeReviewsInfo}" var="valoracion">
+                                                        <tr>
+                                                            <td class="center-component">#{baruGenericMBean.getValorFormateado('Date', valoracion.date, 0)}</td>
+                                                            <td>#{valoracion.reviewDescription}</td>
+                                                            <td>#{baruGenericMBean.obtenerEmpleado(valoracion.manager)}</td>
+                                                            <td>#{valoracion.grade}</td>
+                                                            <td>#{valoracion.remarks}</td>
+                                                        </tr>
+                                                    </ui:repeat>
+                                                </table>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelEmpleoAnterior">
+                <h:form id="formEmpleoAnterior">
+                    <div id="modalEmpleoAnterior" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <h4 class="modal-title">Empleo anterior</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h:panelGroup id="datos">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10">
+                                                <label>Fecha inicio:</label>
+                                                <p:calendar id="fechaInicio" pattern="dd-MM-yyyy" class="input-lg mask" value="#{empleadosMBean.empleo.fechaInicio}">
+                                                </p:calendar>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10">
+                                                <label>Fecha fin:</label>
+                                                <p:calendar id="fechaFin" pattern="dd-MM-yyyy" class="input-lg mask" value="#{empleadosMBean.empleo.fechaFin}">
+                                                </p:calendar>
+                                            </div>
+                                            <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                                <label>Empresario:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleo.employer}"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-5 margin-bottom-10">
+                                                <label>Posición:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleo.position}"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-5 margin-bottom-10">
+                                                <label>Comentarios:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleo.remarks}"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-2 center-component margin-bottom-10">
+                                                <p:remoteCommand name="agregarEmpleo" actionListener="#{empleadosMBean.agregarEmpleo}"
+                                                                 update=":formEmpleoAnterior:paginador :formEmpleoAnterior:table :formEmpleoAnterior:datos :formEmpleoAnterior:msg"/>
+
+                                                <button type="button" class="btn btn-primary btn-lg noround" style="margin-top: 24px" onclick="agregarEmpleo();">
+                                                    Guardar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+
+                                    <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                                    <div class="row">
+                                        <div class="col-xs-12 col-md-offset-7 col-md-5">
+                                            <h:panelGroup id="paginador">
+                                                <nav class="nav-paginator-center">
+                                                    <ul class="pagination pagination-lg">
+                                                        <li class="#{empleadosMBean.paginaModals == 1 ? 'disabled' : ''}" style="cursor: pointer">
+                                                            <a aria-label="Previus" onclick="anteriorPagina([{name: 'tipo', value: 4}]);">
+                                                                <span aria-hidden="true">&laquo;</span>
+                                                            </a>
+                                                        </li>
+                                                        <ui:repeat var="pagina" value="#{empleadosMBean.paginasModals}">
+                                                            <li class="#{empleadosMBean.paginaModals == pagina ? 'active' : ''}" style="cursor: pointer">
+                                                                <a onclick="paginar([{name: 'pagina', value: '#{pagina}'}, {name: 'tipo', value: 4}]);">
+                                                                    #{pagina}
+                                                                </a>
+                                                            </li>
+                                                        </ui:repeat>
+                                                        <li class="#{empleadosMBean.paginaModals == empleadosMBean.totalPaginasModals ? 'disabled' : ''}" style="cursor: pointer">
+                                                            <a aria-label="Next" onclick="siguientePagina([{name: 'tipo', value: 4}]);">
+                                                                <span aria-hidden="true">&raquo;</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h:panelGroup id="table">
+                                                <table class="table table-striped table-bordered">
+                                                    <tr>
+                                                        <th class="head-tabla">Desde</th>
+                                                        <th class="head-tabla">Hasta</th>
+                                                        <th class="head-tabla">Empresario</th>
+                                                        <th class="head-tabla">Posición</th>
+                                                        <th class="head-tabla">Comentarios</th>
+                                                    </tr>
+                                                    <ui:repeat value="#{empleadosMBean.empleado.employeePreviousEmpoymentInfoLines.employeePreviousEmpoymentInfo}" var="empleo">
+                                                        <tr>
+                                                            <td class="center-component">#{baruGenericMBean.getValorFormateado('Date', empleo.fechaInicio, 0)}</td>
+                                                            <td class="center-component">#{baruGenericMBean.getValorFormateado('Date', empleo.fechaFin, 0)}</td>
+                                                            <td>#{empleo.employer}</td>
+                                                            <td>#{empleo.position}</td>
+                                                            <td>#{empleo.remarks}</td>
+                                                        </tr>
+                                                    </ui:repeat>
+                                                </table>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelRecibirCustodia">
+                <h:form id="formRecibirCustodia">
+                    <div id="modalRecibirCustodia" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <h4 class="modal-title">Recibir custodias</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 justify-component">
+                                            <p>
+                                                <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                Seleccione las custodias que desea recibir por parte del empleado, recuerde que estas serán inactivadas.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <p:remoteCommand name="seleccionarCustodiaRecibir" actionListener="#{empleadosMBean.seleccionarCustodiaRecibir}" update=":formRecibirCustodia:datos"/>
+
+                                        <h:panelGroup id="datos">
+                                            <ui:repeat value="#{empleadosMBean.custodiasEmpleado}" var="custodies">
+                                                <ui:fragment rendered="#{custodies.activo and custodies.idCustodia.requiereActa and custodies.idDetalleCustodia != null}">
+                                                    <div class="col-xs-6">
+                                                        <div class="pointer-cursor #{custodies.seleccionado ? 'contenedor-custodia-recibir-activo' : 'contenedor-custodia-recibir'}"
+                                                             onclick="seleccionarCustodiaRecibir([{name: 'idDetalleCustodia', value: '#{custodies.idDetalleCustodia}'}]);">
+                                                            <div class="row">
+                                                                <div class="col-xs-4 center-component">
+                                                                    <span class="#{custodies.idCustodia.imagen}" style="font-size: 80px"></span>
+                                                                </div>
+                                                                <div class="col-xs-8">
+                                                                    <div class="row">
+                                                                        <div class="col-xs-12 center-component">
+                                                                            <b>#{custodies.idCustodia.nombreCustodia}</b>
+                                                                        </div>
+                                                                        <div class="col-xs-12 justify-component">
+                                                                            <b>Comentario:</b>
+                                                                            <br/>
+                                                                            #{custodies.comentario}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                            </ui:repeat>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">                     
+                                    <p:remoteCommand name="modal" update=":panelRecibirCustodia" oncomplete="recibirCustodias(); abrirModalEspera();"/>
+                                    <p:remoteCommand name="recibirCustodias" update=":formEmpleado:custodiasEmpleado" oncomplete="cerrarModalEspera();"/>
+
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                    <h:commandButton class="btn btn-primary btn-lg noround" onclick="modal();" value="Descargar">
+                                        <p:fileDownload value="#{empleadosMBean.signatureDownload}"/>
+                                    </h:commandButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelCustodia">
+                <h:panelGroup rendered="#{empleadosMBean.dlgComponenteCustodia}">
+                    <h:form id="formCustodia">
+                        <div id="modalCustodia" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">Componentes custodia</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <p:remoteCommand name="agregarComponenteCustodia" actionListener="#{empleadosMBean.agregarComponenteCustodia}" update=":formCustodia:tabla :formCustodia:txt_cantidad"/>
+                                            <p:remoteCommand name="eliminarComponenteCustodia" actionListener="#{empleadosMBean.eliminarComponenteCustodia}"
+                                                             update=":formCustodia:tabla :formCustodia:txt_cantidad"/>
+
+                                            <div class="col-xs-9 margin-bottom-10">
+                                                <label>Componente:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.idComponenteCustodia}">
+                                                    <f:selectItems value="#{empleadosMBean.componentesCustodias}" var="componente" itemLabel="#{componente.nombreComponente}"
+                                                                   itemValue="#{componente.idComponenteCustodia}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-3">
+                                                <label>Cantidad:</label>
+                                                <div class="input-group">
+                                                    <h:inputText id="txt_cantidad" class="form-control input-lg noround" value="#{empleadosMBean.cantidadComponente}" autocomplete="off"
+                                                                 onkeypress="if (event.keyCode === 13) {
+                                                                             return false;
+                                                                         }"/>
+                                                    <div class="input-group-btn">
+                                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="agregarComponenteCustodia();">
+                                                            <span class="glyphicon glyphicon-ok"></span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <h:panelGroup id="tabla">
+                                                    <table class="table table-bordered table-striped">
+                                                        <tr>
+                                                            <th class="head-tabla">Componente</th>
+                                                            <th class="head-tabla">Cantidad</th>
+                                                            <th class="head-tabla">Comentario</th>
+                                                            <th class="head-tabla"></th>
+                                                        </tr>
+                                                        <ui:repeat value="#{empleadosMBean.componentesCustodiaEmpleado}" var="componenteEmpleado">
+                                                            <tr>
+                                                                <td>#{componenteEmpleado.idComponente.nombreComponente}</td>
+                                                                <td class="right-component">#{componenteEmpleado.cantidad}</td>
+                                                                <td>
+                                                                    <h:inputText class="form-control input-lg noround" value="#{componenteEmpleado.comentario}" autocomplete="off" onkeypress="if (event.keyCod
+                                                                                    e === 13) {
+                                                                                return false;
+                                                                            }"/>
+                                                                </td>
+                                                                <td class="center-component">
+                                                                    <span class="glyphicon glyphicon-trash pointer-cursor"
+                                                                          onclick="eliminarComponenteCustodia([{name: 'idComponenteCustodia', value: '#{componenteEmpleado.idDetalleComponente}'}]);"></span>
+                                                                </td>
+                                                            </tr>
+                                                        </ui:repeat>
+                                                    </table>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <p:remoteCommand name="modal" update=":panelCustodia" oncomplete="agregarCustodia(); abrirModalEspera();"/>
+                                        <p:remoteCommand name="agregarCustodia" update=":formEmpleado:custodiasEmpleado :formEmpleado:paginador :panelCustodia :formCustodia:msg"
+                                                         actionListener="#{empleadosMBean.agregarCustodia}" oncomplete="cerrarModalEspera(); abrirModalCustodia();"/>
+
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="modal();">Continuar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelEliminarCustodia">
+                <h:panelGroup rendered="#{empleadosMBean.dlgEliminarCustodia}">
+                    <h:form id="formEliminarCustodia">
+                        <div id="modalEliminarCustodia" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">Eliminar custodia</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <p>
+                                                    <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                    ¿Esta segur@ que desea eliminar la custodia?
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <p:remoteCommand name="modal" update=":panelEliminarCustodia" oncomplete="eliminarCustodia(); abrirModalEspera();"/>
+                                        <p:remoteCommand name="eliminarCustodia" update=":formEmpleado:custodiasEmpleado :formEmpleado:paginador"
+                                                         actionListener="#{empleadosMBean.eliminarCustodia}" oncomplete="cerrarModalEspera();"/>
+
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">No</button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="modal();">Sí</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:form id="formEmpleado">
+                <p:remoteCommand name="paginar" actionListener="#{empleadosMBean.mostrarPaginaEspecificaModals}"
+                                 update=":formAusentismos:paginador :formAusentismos:table :formFormacion:paginador :formFormacion:table :formValoracion:paginador :formValoracion:table"/>
+                <p:remoteCommand name="anteriorPagina" actionListener="#{empleadosMBean.mostrarPaginaAnteriorModals}"
+                                 update=":formAusentismos:paginador :formAusentismos:table :formFormacion:paginador :formFormacion:table :formValoracion:paginador :formValoracion:table"/>
+                <p:remoteCommand name="siguientePagina" actionListener="#{empleadosMBean.mostrarPaginaSiguienteModals}"
+                                 update=":formAusentismos:paginador :formAusentismos:table :formFormacion:paginador :formFormacion:table :formValoracion:paginador :formValoracion:table"/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>
+                                    Empleados
+                                </a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <p:remoteCommand name="buscarEmpleado" actionListener="#{empleadosMBean.buscarEmpleado}" update=":formEmpleado :formEmpleado:activo :panelBusqueda"
+                                 oncomplete="cerrarModalEspera(); abrirModalBusqueda();"/>
+
+                <div class="row">
+                    <div class="hidden-md hidden-lg col-xs-12 col-sm-2">
+                        <div class="row">
+                            <div class="col-xs-12 center-component">
+                                <img src="#{baruGenericMBean.obtenerRutaFotoEmpleado(empleadosMBean.empleado.officeExtension)}" style="height: 151px"/>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="row">
+                            <div class="col-xs-6 center-component">
+                                <span class="glyphicon glyphicon-camera pointer-cursor pointer-not-allowed" style="font-size: 41px; color: #CCCCCC"></span>
+                            </div>
+                            <div class="col-xs-6 center-component">
+                                <span class="glyphicon glyphicon-remove pointer-cursor pointer-not-allowed" style="font-size: 41px; color: #CCCCCC"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-10">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 margin-bottom-10 center-component" style="margin-top: 25px">
+                                <p:remoteCommand name="seleccionarEmpleadoActivo" actionListener="#{empleadosMBean.seleccionarEmpleadoActivo}" update=":formEmpleado:activo" oncomplete="cerrarModalEspera();"/>
+
+                                <h:panelGroup id="activo">
+                                    <span class="glyphicon #{empleadosMBean.empleado.active == 'tYES' ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                          onclick="abrirModalEspera(); seleccionarEmpleadoActivo();"></span>
+                                    <h:outputLabel value="Empleado activo" class="label-normal" onclick="abrirModalEspera(); seleccionarEmpleadoActivo();"/>
+                                </h:panelGroup>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                <p:focus for=":formEmpleado:txt_cedula"/>
+
+                                <label>Cedula:</label>
+                                <h:inputText id="txt_cedula" class="form-control input-lg noround" value="#{empleadosMBean.empleado.officeExtension}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                            abrirModalEspera();
+                                            buscarEmpleado();
+
+                                            return false;
+                                        }"/>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                <label>Primer nombre:</label>
+                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.firstName}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                            abrirModalEspera();
+                                            buscarEmpleado();
+
+                                            return false;
+                                        }"/>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                <label>Segundo nombre:</label>
+                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.middleName}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                            abrirModalEspera();
+                                            buscarEmpleado();
+
+                                            return false;
+                                        }"/>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                <label>Apellidos:</label>
+                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.lastName}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                            abrirModalEspera();
+                                            buscarEmpleado();
+                                            return false;
+                                        }"/>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                <label>ID empleado:</label>
+                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.employeeID}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                            abrirModalEspera();
+                                            buscarEmpleado();
+                                            return false;
+                                        }" disabled="#{empleadosMBean.empleado.employeeID eq null or empty empleadosMBean.empleado.employeeID ? 'false' : 'true'}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hidden-xs hidden-sm col-md-12 col-lg-2">
+                        <div class="row">
+                            <div class="col-xs-12 center-component">
+                                <img src="#{baruGenericMBean.obtenerRutaFotoEmpleado(empleadosMBean.empleado.officeExtension)}" style="height: 151px"/>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="row">
+                            <div class="col-xs-6 center-component">
+                                <span class="glyphicon glyphicon-camera pointer-cursor pointer-not-allowed" style="font-size: 41px; color: #CCCCCC"
+                                      data-toggle="tooltip" data-placement="bottom" title="Espéralo pronto"></span>
+                            </div>
+                            <div class="col-xs-6 center-component">
+                                <span class="glyphicon glyphicon-remove pointer-cursor pointer-not-allowed" style="font-size: 41px; color: #CCCCCC"
+                                      data-toggle="tooltip" data-placement="bottom" title="Espéralo pronto"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                <hr/>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ul class="nav nav-tabs margin-bottom-10">
+                            <li class="active"><a data-toggle="tab" href="#general">General</a></li>
+                            <li><a data-toggle="tab" href="#direccion">Dirección</a></li>
+                            <li class="disabled" data-toggle="tooltip" data-placement="top" title="Espéralo pronto"><a>Miembro</a></li>
+                            <li><a data-toggle="tab" href="#gestion">Gestión</a></li>
+                            <li><a data-toggle="tab" href="#personal">Personal</a></li>
+                            <li><a data-toggle="tab" href="#finanzas">Finanzas</a></li>
+                            <li><a data-toggle="tab" href="#prestaciones">Prestaciones</a></li>
+                            <li><a data-toggle="tab" href="#comentarios">Comentarios</a></li>
+                            <li class="disabled" data-toggle="tooltip" data-placement="top" title="Espéralo pronto"><a>Anexos</a></li>
+                            <ui:fragment rendered="#{empleadosMBean.empleado.employeeID != null and empleadosMBean.empleado.employeeID gt 0}">
+                                <li><a data-toggle="tab" href="#custodias" onclick="iniciarSlider();">Custodias</a></li>
+                            </ui:fragment>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="general" class="tab-pane fade in active">
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-6">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Denominación de la función:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.jobTitle}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                            return false;
+                                                        }" maxlength="20"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Cargo:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.position}">
+                                                    <f:selectItem itemLabel="Seleccione cargo" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.posiciones}" var="posicion" itemLabel="#{posicion.name}" itemValue="#{posicion.posID}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Centro de costos:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.department}">
+                                                    <f:selectItem itemLabel="Seleccione centro de costos" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.centrosCosto}" var="centro" itemLabel="#{centro.name}" itemValue="#{centro.code}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Sucursal:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.branch}">
+                                                    <f:selectItem itemLabel="Seleccione sucursal" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.sucursales}" var="sucursal" itemLabel="#{sucursal.remarks}" itemValue="#{sucursal.code}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Jefe inmediato:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.manager}">
+                                                    <f:selectItem itemLabel="Seleccione jefe inmediato" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.jefes}" var="jefe" itemLabel="#{jefe.lastName} #{jefe.firstName}" itemValue="#{jefe.empID}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-md-6">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Código usuario:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.applicationUserID}">
+                                                    <f:selectItem itemLabel="Seleccione usuario" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.usuarios}" var="usuario" itemLabel="#{usuario.userCode}" itemValue="#{usuario.userID}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Empleado de ventas:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.salesPersonCode}" disabled="true">
+                                                    <f:selectItem itemLabel="Seleccione empleado de ventas" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.empleadosVentas}" var="ventas" itemLabel="#{ventas.slpName}" itemValue="#{ventas.slpCode}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Tipo contrato:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.tipoContrato}">
+                                                    <f:selectItem itemLabel="Seleccione contrato" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.tiposContrato}" var="contrato" itemLabel="#{contrato.descr}" itemValue="#{contrato.fldValue}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Código revisado:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.codigoRevisado}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+
+                                                            return false;
+                                                        }"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Correo corporativo:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.correoCorp}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                            return false;
+                                                        }"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="direccion" class="tab-pane fade">
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-6">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <h2>Dirección de trabajo</h2>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Calle:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.workStreet}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+
+                                                            return false;
+                                                        }"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Ciudad:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.workCity}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                            return false;
+                                                        }"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>País:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.workCountryCode}">
+                                                    <f:selectItem itemLabel="Seleccione el país" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.paises}" var="pais" itemLabel="#{pais.name}" itemValue="#{pais.code}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-md-6">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <h2>Dirección de casa</h2>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Calle:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.homeStreet}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+
+                                                            return false;
+                                                        }"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Barrio:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.homeStreetNumber}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+
+                                                            return false;
+                                                        }"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Edificio / Planta / Sala:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.homeBuildingFloorRoom}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                            return false;
+                                                        }"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Ciudad:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.homeCity}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                            return false;
+                                                        }"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>País:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.homeCountry}">
+                                                    <f:selectItem itemLabel="Seleccione el país" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.paises}" var="pais" itemLabel="#{pais.name}" itemValue="#{pais.code}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="miembro" class="tab-pane fade">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+                                        <div class="row">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="gestion" class="tab-pane fade">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-6">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Fecha inicio:</label>
+                                                <p:calendar id="fechaInicioGestion" pattern="dd-MM-yyyy" class="input-lg mask" value="#{empleadosMBean.empleado.fechaInicio}">
+                                                    <p:ajax event="dateSelect" rendered=":formEmpleado:fechaInicioGestion"/>
+                                                </p:calendar>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Fecha de rescisión del contrato:</label>
+                                                <p:calendar id="fechaFinGestion" pattern="dd-MM-yyyy" class="input-lg mask" value="#{empleadosMBean.empleado.fechaFin}">
+                                                    <p:ajax event="dateSelect" rendered=":formEmpleado:fechaFinGestion"/>
+                                                </p:calendar>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Motivo de rescisión del contrato:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.treminationReason}">
+                                                    <f:selectItem itemLabel="Seleccione el motivo" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.motivosCancelacion}" var="motivoCan" itemLabel="#{motivoCan.name}" itemValue="#{motivoCan.reasonID}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Último curso de altura:</label>
+                                                <p:calendar id="ultimoAltura" pattern="dd-MM-yyyy" class="input-lg mask" value="#{empleadosMBean.empleado.fechaCursoAlturas}">
+                                                    <p:ajax event="dateSelect" rendered=":formEmpleado:ultimoAltura"/>
+                                                </p:calendar>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Motivo curso de alturas:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.motivoCursoAlt}">
+                                                    <f:selectItem itemLabel="Seleccione el motivo" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.motivosCursoAltura}" var="motivo" itemLabel="#{motivo.descr}" itemValue="#{motivo.fldValue}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6">
+                                        <p:remoteCommand name="obtenerAusentismos" actionListener="#{empleadosMBean.obtenerAusentismos}" oncomplete="cerrarModalEspera(); abrirModalAusentismos();"
+                                                         update=":panelAusentismos"/>
+                                        <p:remoteCommand name="obtenerFormacion" actionListener="#{empleadosMBean.obtenerFormacion}" oncomplete="cerrarModalEspera(); abrirModalFormacion();"
+                                                         update=":panelFormacion"/>
+                                        <p:remoteCommand name="obtenerValoracion" actionListener="#{empleadosMBean.obtenerValoracion}" oncomplete="cerrarModalEspera(); abrirModalValoracion();"
+                                                         update=":panelValoracion"/>
+                                        <p:remoteCommand name="obtenerEmpleos" actionListener="#{empleadosMBean.obtenerEmpleos}" oncomplete="cerrarModalEspera(); abrirModalEmpleoAnterior();"
+                                                         update=":panelEmpleoAnterior"/>
+
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <div class="contenedor-gestion-empleado pointer-cursor" data-toggle="modal" onclick="abrirModalEspera();
+                                                        obtenerAusentismos();">
+                                                    Ausentismos
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 center-component">
+                                                <div class="contenedor-gestion-empleado pointer-cursor" data-toggle="modal" onclick="abrirModalEspera();
+                                                        obtenerFormacion();">
+                                                    Formación
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 center-component">
+                                                <div class="contenedor-gestion-empleado pointer-cursor" data-toggle="modal" onclick="abrirModalEspera();
+                                                        obtenerValoracion();">
+                                                    Valoración
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 center-component">
+                                                <div class="contenedor-gestion-empleado pointer-cursor" data-toggle="modal" onclick="abrirModalEspera();
+                                                        obtenerEmpleos();">
+                                                    Empleo anterior
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="personal" class="tab-pane fade">
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-6">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Teléfono móvil:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.mobilePhone}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+
+                                                            return false;
+                                                        }"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Teléfono fijo:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.homePhone}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+
+                                                            return false;
+                                                        }"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Correo electrónico:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.EMail}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                            return false;
+                                                        }"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Género:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.gender}">
+                                                    <f:selectItem itemLabel="Seleccione el género" itemValue=""/>
+                                                    <f:selectItem itemLabel="Masculino" itemValue="gt_Male"/>
+                                                    <f:selectItem itemLabel="Femenino" itemValue="gt_Female"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Estado civil:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.martialStatus}">
+                                                    <f:selectItem itemLabel="Seleccione el estado civil" itemValue=""/>
+                                                    <f:selectItem itemLabel="Soltero/a" itemValue="mts_Single"/>
+                                                    <f:selectItem itemLabel="Casado/a" itemValue="mts_Married"/>
+                                                    <f:selectItem itemLabel="Divorciado/a" itemValue="mts_Divorced"/>
+                                                    <f:selectItem itemLabel="Viudo/a" itemValue="mts_Widowed"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-md-6">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Cantidad de hijos:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.numOfChildren}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                            return false;
+                                                        }"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Fecha nacimiento:</label>
+                                                <p:calendar id="fechaNacimiento" pattern="dd-MM-yyyy" class="input-lg mask" value="#{empleadosMBean.empleado.fechaNacimiento}">
+                                                    <p:ajax event="dateSelect" rendered=":formEmpleado:fechaNacimiento"/>
+                                                </p:calendar>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>País nacimiento:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.countryOfBirth}">
+                                                    <f:selectItem itemLabel="Seleccione el país nacimiento" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.paises}" var="pais" itemLabel="#{pais.name}" itemValue="#{pais.code}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Nacionalidad:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.citizenshipCountryCode}">
+                                                    <f:selectItem itemLabel="Seleccione la nacionalidad" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.paises}" var="pais" itemLabel="#{pais.name}" itemValue="#{pais.code}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="finanzas" class="tab-pane fade">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Salario:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.salary}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+
+                                                            return false;
+                                                        }"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Costos de empleado:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.employeeCosts}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                            return false;
+                                                        }"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <h2>Info bancaria detallada</h2>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Banco:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.bankCode}">
+                                                    <f:selectItem itemLabel="Seleccione el banco" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.bancos}" var="banco" itemLabel="#{banco.bankName}" itemValue="#{banco.bankCode}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Número de cuenta:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.bankAccount}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+
+                                                            return false;
+                                                        }"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Sucursal:</label>
+                                                <h:inputText class="form-control input-lg noround" value="#{empleadosMBean.empleado.bankBranch}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                            return false;
+                                                        }"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="prestaciones" class="tab-pane fade">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>ARP:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.arp}">
+                                                    <f:selectItem itemLabel="Seleccione la ARP" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.arps}" var="arp" itemLabel="#{arp.descr}" itemValue="#{arp.fldValue}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>EPS:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.eps}">
+                                                    <f:selectItem itemLabel="Seleccione la EPS" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.epss}" var="eps" itemLabel="#{eps.descr}" itemValue="#{eps.fldValue}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Caja compensación:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.caComp}">
+                                                    <f:selectItem itemLabel="Seleccione la caja compesación" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.cajasCompesacion}" var="caja" itemLabel="#{caja.descr}" itemValue="#{caja.fldValue}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Pensiones:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.pens}">
+                                                    <f:selectItem itemLabel="Seleccione la pensiones" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.pensiones}" var="pension" itemLabel="#{pension.descr}" itemValue="#{pension.fldValue}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Cesantias:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{empleadosMBean.empleado.cesantias}">
+                                                    <f:selectItem itemLabel="Seleccione la cesantias" itemValue=""/>
+                                                    <f:selectItems value="#{empleadosMBean.cesantias}" var="cesantia" itemLabel="#{cesantia.descr}" itemValue="#{cesantia.fldValue}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="comentarios" class="tab-pane fade">
+                                <div class="row">
+                                    <div class="col-xs-12 margin-bottom-10">
+                                        <label>Comentario:</label>
+                                        <h:inputTextarea class="form-control input-lg noround" value="#{empleadosMBean.empleado.remarks}" style="height: 220px; resize: none"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="anexos" class="tab-pane fade">
+                                <div class="row">
+                                    <div class="col-xs-9 col-md-11">
+                                        <table class="table table-bordered table-striped">
+                                            <tr>
+                                                <th class="head-tabla">Vía de acceso destino</th>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-xs-3 col-md-1">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10 center-component">
+                                                <span class="glyphicon glyphicon-folder-open pointer-cursor" style="font-size: 30px"></span>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10 center-component">
+                                                <span class="glyphicon glyphicon-remove pointer-cursor" style="font-size: 30px"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="custodias" class="tab-pane fade">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <p:remoteCommand name="seleccionarCustodia" actionListener="#{empleadosMBean.seleccionarCustodia}" oncomplete="cerrarModalEspera(); abrirModalCustodia();"
+                                                         update=":panelCustodia :formEmpleado:custodiasEmpleado :formEmpleado:paginador"/>
+
+                                        <div class="slider-logos-container">
+                                            <div class="controllers">
+                                                <a class="left prev">
+                                                    <span class="glyphicon glyphicon-menu-left"></span>
+                                                </a>
+                                                <a class="right next">
+                                                    <span class="glyphicon glyphicon-menu-right"></span>
+                                                </a>
+                                            </div>
+                                            <div class="slider-logos">
+                                                <ui:repeat value="#{empleadosMBean.custodias}" var="custodia">
+                                                    <div class="article center-component">
+                                                        <span class="#{custodia.imagen} icon pointer-cursor" title="#{custodia.nombreCustodia}" style="font-size: 70px"
+                                                              onclick="abrirModalEspera();
+                                                                      seleccionarCustodia([{name: 'idCustodia', value: '#{custodia.idCustodia}'}]);"></span>
+                                                    </div>
+                                                </ui:repeat>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr/>
+                                <div class="row">
+                                    <div class="col-xs-12 right-component margin-bottom-10">
+                                        <p:remoteCommand name="recibirCustodia" oncomplete="cerrarModalEspera(); abrirModalRecibirCustodia();"
+                                                         update=":panelRecibirCustodia"/>
+
+                                        <button type="button" class="btn btn-default btn-lg noround" onclick="#{empleadosMBean.adquirirCustodia()}">
+                                            Imprimir <span class="glyphicon glyphicon-print"></span>
+                                        </button>  
+                                        <button type="button" class="btn btn-default btn-lg noround" onclick="recibirCustodia();">
+                                            Recibir custodia
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-offset-7 col-md-5">
+                                        <h:panelGroup id="paginador">
+                                            <p:remoteCommand name="paginarCustodias" actionListener="#{empleadosMBean.mostrarPaginaEspecificaCustodias}"
+                                                             update=":formEmpleado:paginador :formEmpleado:custodiasEmpleado"/>
+                                            <p:remoteCommand name="anteriorPaginaCustodias" actionListener="#{empleadosMBean.mostrarPaginaAnteriorCustodias}"
+                                                             update=":formEmpleado:paginador :formEmpleado:custodiasEmpleado"/>
+                                            <p:remoteCommand name="siguientePaginaCustodias" actionListener="#{empleadosMBean.mostrarPaginaSiguienteCustodias}"
+                                                             update=":formEmpleado:paginador :formEmpleado:custodiasEmpleado"/>
+
+                                            <nav class="nav-paginator-center">
+                                                <ul class="pagination pagination-lg">
+                                                    <li class="#{empleadosMBean.paginaCustodias == 1 ? 'disabled' : ''}" style="cursor: pointer">
+                                                        <a aria-label="Previus" onclick="anteriorPaginaCustodias();">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
+                                                    <ui:repeat var="pagina" value="#{empleadosMBean.paginasCustodias}">
+                                                        <li class="#{empleadosMBean.paginaCustodias == pagina ? 'active' : ''}" style="cursor: pointer">
+                                                            <a onclick="paginarCustodias([{name: 'pagina', value: '#{pagina}'}]);">
+                                                                #{pagina}
+                                                            </a>
+                                                        </li>
+                                                    </ui:repeat>
+                                                    <li class="#{empleadosMBean.paginaCustodias == empleadosMBean.totalPaginasCustodias ? 'disabled' : ''}" style="cursor: pointer">
+                                                        <a aria-label="Next" onclick="siguientePaginaCustodias();">
+                                                            <span aria-hidden="true">&raquo;</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <p:remoteCommand name="editarCustodia" actionListener="#{empleadosMBean.editarCustodia}" update=":panelCustodia" oncomplete="cerrarModalEspera(); abrirModalCustodia();"/>
+                                    <p:remoteCommand name="seleccionarEliminarCustodia" actionListener="#{empleadosMBean.seleccionarEliminarCustodia}" update=":panelEliminarCustodia"
+                                                     oncomplete="cerrarModalEspera(); abrirModalEliminarCustodia();"/>
+
+                                    <h:panelGroup id="custodiasEmpleado">
+                                        <ui:repeat value="#{empleadosMBean.custodiasEmpleadoVisibles}" var="custodiaEmpleado">
+                                            <div class="col-xs-6">
+                                                <div style="border: 1px solid #DDDDDD; margin: 0px 13px 10px 13px; padding: 10px; height: 213px">
+                                                    <div class="row">
+                                                        <div class="col-xs-4 center-component">
+                                                            <div class="row">
+                                                                <div class="col-xs-12">
+                                                                    <span class="#{custodiaEmpleado.idCustodia.imagen}" title="#{custodiaEmpleado.idCustodia.nombreCustodia}" style="font-size: 100px"></span>
+                                                                    <ui:fragment rendered="#{not custodiaEmpleado.activo}">
+                                                                        <div class="center-component"
+                                                                             style="position: absolute; top: -10px; background-color: #BF0039; color: #FFFFFF; padding: 5px 10px; width: 100%; left: 4px">
+                                                                            <b><span>INACTIVO</span></b>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                </div>
+                                                                <div class="col-xs-12 center-component">
+                                                                    #{baruGenericMBean.getValorFormateado('Date', custodiaEmpleado.fechaEntrega, 0)}
+                                                                </div>
+                                                                <div class="col-xs-12 center-component">
+                                                                    #{baruGenericMBean.getValorFormateado('Time', custodiaEmpleado.fechaEntrega, 0)}
+                                                                </div>
+                                                                <div class="col-xs-12">
+                                                                    <span class="badge badge-360-original" style="font-size: 20px; position: relative; bottom: -16px;">
+                                                                        #{custodiaEmpleado.cantidad}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-8">
+                                                            <div class="row">
+                                                                <div class="col-xs-12">
+                                                                    <label>Custodia: </label> #{custodiaEmpleado.idCustodia.nombreCustodia}
+                                                                </div>
+                                                                <div class="col-xs-12">
+                                                                    <label>Comentario: </label>
+                                                                    <h:inputTextarea value="#{custodiaEmpleado.comentario}" class="form-control input-lg noround textarea-static"
+                                                                                     disabled="#{not custodiaEmpleado.activo}"/>
+                                                                </div>
+                                                                <div class="col-xs-9">
+                                                                    <ui:fragment rendered="#{custodiaEmpleado.idCustodia.requiereContrasena}">
+                                                                        <label>Contraseña: </label>
+                                                                        <h:inputText value="#{custodiaEmpleado.contrasenaCustodia}" class="form-control input-lg noround" disabled="#{not custodiaEmpleado.activo}"/>
+                                                                    </ui:fragment>
+                                                                </div>
+                                                                <div class="col-xs-3 center-component" style="bottom: -38px; font-size: 18px">
+                                                                    <ui:fragment rendered="#{custodiaEmpleado.activo}">
+                                                                        <ui:fragment rendered="#{custodiaEmpleado.componentes != null and not empty custodiaEmpleado.componentes}">
+                                                                            <span class="glyphicon glyphicon-pencil pointer-cursor"
+                                                                                  onclick="abrirModalEspera(); editarCustodia([{name: 'idDetalleCustodia', value: '#{custodiaEmpleado.idDetalleCustodia}'}]);"></span>
+                                                                        </ui:fragment>
+                                                                        <span class="glyphicon glyphicon-trash pointer-cursor"
+                                                                              onclick="abrirModalEspera();
+                                                                                      seleccionarEliminarCustodia([{name: 'idDetalleCustodia', value: '#{custodiaEmpleado.idDetalleCustodia}'}]);"></span>
+                                                                    </ui:fragment>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 right-component">
+                        <p:remoteCommand name="limpir" actionListener="#{empleadosMBean.limpir}" update=":formEmpleado" oncomplete="cerrarModalEspera();"/>
+                        <p:remoteCommand name="guardarEmpleado" actionListener="#{empleadosMBean.guardarEmpleado}" update=":formEmpleado" oncomplete="cerrarModalEspera();"/>
+
+                        <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera();
+                                limpir();">
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn btn-lg btn-primary noround" onclick="abrirModalEspera();
+                                guardarEmpleado();">
+                            Guardar
+                        </button>
+                    </div>
+                </div>
+                <br/>
+            </h:form>
+        </div>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+        <script src="/360/js/empleados.js"></script>
+        <script src="/360/js/slick.js"></script>
+    </h:body>
+</html>

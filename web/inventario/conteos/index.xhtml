@@ -1,0 +1,265 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Conteos Inventario</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        <div class="container">
+
+            <h:form id="formConteos">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Conteos Inventario</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <h:panelGroup id="filtros">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-4">
+                            <div class="form-group">
+                                <p:remoteCommand name="ordenarConteos" actionListener="#{conteosMBean.ordenarProductos}" update=":formConteos:filtros :formConteos:conteos"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <div class="input-group">
+                                    <span class="input-group-addon input-group-matisses noround">Ordenar por</span>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                id="selOrdenar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            #{conteosMBean.ordenarPor}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="selOrdenar">
+                                            <li>
+                                                <a onclick="abrirModalEspera(); ordenarConteos([{name: 'orderBy', value: '#'}])" style="cursor: pointer">
+                                                    #
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); ordenarConteos([{name: 'orderBy', value: 'Tienda'}])" style="cursor: pointer">
+                                                    Tienda
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); ordenarConteos([{name: 'orderBy', value: 'Fecha'}])" style="cursor: pointer">
+                                                    Fecha
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); ordenarConteos([{name: 'orderBy', value: 'Tipo'}])" style="cursor: pointer">
+                                                    Tipo
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); ordenarConteos([{name: 'orderBy', value: 'Ubicacion'}])" style="cursor: pointer">
+                                                    Ubicación
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); ordenarConteos([{name: 'orderBy', value: 'Estado'}])" style="cursor: pointer">
+                                                    Estado
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <span class="input-group-btn">
+                                        <p:remoteCommand name="alternarOrden" actionListener="#{conteosMBean.alternarOrden}" update=":formConteos:filtros :formConteos:conteos"
+                                                         oncomplete="cerrarModalEspera();"/>
+                                        <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); alternarOrden();">
+                                            <span class="glyphicon #{conteosMBean.sortOrder eq 'ASC' ? 'glyphicon-sort-by-order' : (conteosMBean.sortOrder eq 'DESC' ? 'glyphicon-sort-by-order-alt' : '')}"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-4">
+                            <div class="form-group">
+                                <p:remoteCommand name="cambiarSizePage" actionListener="#{conteosMBean.cambiarSizePage}" update=":formConteos:filtros :formConteos:conteos"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <div class="input-group">
+                                    <span class="input-group-addon input-group-matisses noround">Mostrar</span>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                id="selSizePage" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            #{conteosMBean.sizePage}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="selSizePage">
+                                            <li>
+                                                <a onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '12'}])" style="cursor: pointer">
+                                                    12
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '24'}])" style="cursor: pointer">
+                                                    24
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '48'}])" style="cursor: pointer">
+                                                    48
+                                                </a>
+                                            </li>
+                                            <li class="hidden-xs hidden-sm">
+                                                <a onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '100000'}])" style="cursor: pointer">
+                                                    Todos
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <span class="input-group-addon input-group-matisses noround">x pag.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-4">
+                            <div class="form-group has-feedback">
+                                <p:remoteCommand name="buscar" actionListener="#{conteosMBean.buscarConteo}" update=":formConteos:filtros :formConteos:conteos"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <h:inputText id="txt_buscar" class="form-control input-lg noround" value="#{conteosMBean.parametroBusqueda}"
+                                             pt:placeholder="Parámetro Busqueda" autocomplete="off"
+                                             onkeypress="if (event.keyCode === 13) {
+                                                         abrirModalEspera();
+                                                         buscar();
+                                                         return false;
+                                                     }"/>
+                                <span class="form-control-feedback glyphicon glyphicon-search inline-search" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-offset-3 col-sm-6 center-component">
+                            <div class="form-group">
+                                <p:remoteCommand name="mostrarPrimeraPagina" actionListener="#{conteosMBean.mostrarPrimeraPagina}" update=":formConteos:filtros :formConteos:conteos"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <p:remoteCommand name="mostrarPaginaAnterior" actionListener="#{conteosMBean.mostrarPaginaAnterior}" update=":formConteos:filtros :formConteos:conteos"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <p:remoteCommand name="mostrarPaginaEspecifica" actionListener="#{conteosMBean.mostrarPaginaEspecifica}" update=":formConteos:filtros :formConteos:conteos"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <p:remoteCommand name="mostrarPaginaSiguiente" actionListener="#{conteosMBean.mostrarPaginaSiguiente}" update=":formConteos:filtros :formConteos:conteos"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <p:remoteCommand name="mostrarUltimaPagina" actionListener="#{conteosMBean.mostrarUltimaPagina}" update=":formConteos:filtros :formConteos:conteos"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarPrimeraPagina();">
+                                        1
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarPaginaAnterior();">
+                                        <span class="glyphicon glyphicon-chevron-left"></span>
+                                    </button>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-default dropdown-toggle btn-lg noround" data-toggle="dropdown"
+                                                aria-haspopup="true" aria-expanded="false">
+                                            #{conteosMBean.pagina} de #{conteosMBean.totalPaginas}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" style="max-height: 165px; overflow-y: auto">
+                                            <ui:repeat value="#{conteosMBean.paginas}" var="pagina">
+                                                <li>
+                                                    <a onclick="abrirModalEspera(); mostrarPaginaEspecifica([{name: 'pagina', value: '#{pagina}'}])" style="cursor: pointer">
+                                                        #{pagina}
+                                                    </a>
+                                                </li>
+                                            </ui:repeat>
+                                        </ul>
+                                    </div>
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarPaginaSiguiente();">
+                                        <span class="glyphicon glyphicon-chevron-right"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarUltimaPagina();">
+                                        #{conteosMBean.totalPaginas}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup id="conteos">
+                    <div class="row">
+                        <p:remoteCommand name="seleccionarConteo" action="#{conteosMBean.seleccionarConteo}" update=":formConteos:conteos"/>
+                        <ui:repeat value="#{conteosMBean.conteos}" var="conteo">
+                            <div class="col-xs-12 col-sm-4 col-lg-3 margin-bottom-10 conteo"
+                                 onclick="seleccionarConteo([{name: 'idConteo', value: '#{conteo.idConteo}'}, {name: 'estado', value: '#{conteo.estado}'}])">
+                                <div class="row">
+                                    <div class="col-xs-12 center-component" style="background-color: #D8D8D8; font-weight: bold; font-size: 25px">
+                                        #{conteo.tienda}
+                                        <ui:fragment rendered="#{conteo.casilla}">
+                                            - #{fn:substring(conteo.ubicacion, 0, 7)}
+                                        </ui:fragment>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 center-component" style="font-weight: bold; font-size: 19px;">
+                                        #{conteo.idTipoConteo.nombre}
+                                    </div>
+                                    <div class="col-xs-6 center-component"
+                                         style="background-color: #{conteo.estado eq 'P' ? '#F0AD4E' : '#5CB85C'}; color: #FFFFFF; height: 28px !important; padding-top: 4px !important">
+                                        <span>
+                                            #{conteo.estado eq 'P' ? 'PENDIENTE' : 'FINALIZADO'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 center-component margin-bottom-10">
+                                        <span class="input-lg" style="font-weight: bold">
+                                            \##{conteo.idConteo}
+                                        </span>
+                                    </div>
+                                    <div class="col-xs-6 center-component margin-bottom-10">
+                                        <h:outputText value="#{conteo.fecha}" style="font-size: 18px">
+                                            <f:convertDateTime pattern="yyyy-MM-dd"/>
+                                        </h:outputText>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 center-component">
+                                        <span class="glyphicon #{conteo.venta ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"></span>
+                                        <h:outputLabel value="Ventas" class="label-normal"/>
+                                    </div>
+                                    <div class="col-xs-6 center-component">
+                                        <span class="glyphicon #{conteo.casilla ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"></span>
+                                        <h:outputLabel value="Casilla" class="label-normal"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 center-component">
+                                        <span class="glyphicon #{conteo.cliente ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"></span>
+                                        <h:outputLabel value="Cliente" class="label-normal"/>
+                                    </div>
+                                    <div class="col-xs-6 center-component">
+                                        <span class="glyphicon #{conteo.dotacion ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"></span>
+                                        <h:outputLabel value="Dotación" class="label-normal"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </div>
+                </h:panelGroup>
+                <br/>
+                <br/>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

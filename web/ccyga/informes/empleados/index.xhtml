@@ -1,0 +1,247 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Informes CCYGA</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <h:form id="formEmpleado">
+
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Informe empleados CCYGA</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-9">
+                        <p:remoteCommand name="clasificarEmpleadosA" action="#{informeEmpleadosCcygaMBean.clasificarEmpleados}" update=":formEmpleado:panelActivos"
+                                         oncomplete="cerrarModalEspera();"/>
+                        <p:remoteCommand name="clasificarEmpleadosI" action="#{informeEmpleadosCcygaMBean.clasificarEmpleados}" update=":formEmpleado:panelInactivos"
+                                         oncomplete="cerrarModalEspera();"/>
+                        <p:remoteCommand name="cargarResumen" action="#{informeEmpleadosCcygaMBean.cargarResumen}" update=":formEmpleado:panelResumen"
+                                         oncomplete="cerrarModalEspera();"/>
+
+                        <ul class="nav nav-pills">
+                            <li class="active noround">
+                                <a href="#tab_activos" data-toggle="pill" class="input-lg noround" onclick="abrirModalEspera(); clasificarEmpleadosA()">
+                                    Activos
+                                </a>
+                            </li>
+                            <li class="noround">
+                                <a href="#tab_inactivos" data-toggle="pill" class="input-lg noround" onclick="abrirModalEspera(); clasificarEmpleadosI()">
+                                    Inactivos
+                                </a>
+                            </li>
+                            <li class="noround">
+                                <a href="#tab_resumen" data-toggle="pill" class="input-lg noround" onclick="abrirModalEspera(); cargarResumen()">
+                                    Resumen
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-3 right-component">
+                        <p:remoteCommand name="cierreGeneral" update="@form"/>
+                        <h:commandButton class="btn btn-primary input-lg noround" style="font-size: 18px; color: rgb(246,246,246); margin-right: 5px;"
+                                         action="#{informeEmpleadosCcygaMBean.realizarCierreGeneral}" value="Cierre General">
+                            <f:ajax render="@form"/>
+                        </h:commandButton>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab_activos">
+                            <h:panelGroup id="panelActivos">
+                                <ui:repeat value="#{informeEmpleadosCcygaMBean.empleadosActivos}" var="laborEmpleado">
+                                    <div class="col-xs-12 col-sm-6 col-lg-4">
+                                        <div class="labor-empleado-ccyga">
+                                            <div class="row titulo-labor-empleado-ccyga">
+                                                <div class="col-xs-12">
+                                                    <div class="row">
+                                                        <div class="col-xs-4">
+                                                            <b class="txt-18">Proceso: </b>
+                                                        </div>
+                                                        <div class="col-xs-8">
+                                                            <span class="txt-18">#{laborEmpleado.labor.proceso.nombre}</span>
+                                                        </div>
+                                                    </div>
+                                                    <ui:fragment rendered="#{laborEmpleado.labor.producto.idProducto ne null}">
+                                                        <div class="row">
+                                                            <div class="col-xs-12 right-component">
+                                                                <span class="txt-18">
+                                                                    <b>Producto:</b> #{laborEmpleado.labor.producto.idProducto}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </ui:fragment>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-6">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <img class="foto-labor-empleado-ccyga" src="#{informeEmpleadosCcygaMBean.obtenerRutaFotoEmpleado(laborEmpleado.empleado.cedula)}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="txt-14">#{laborEmpleado.empleado.nombre}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <ui:fragment rendered="#{laborEmpleado.labor.producto != null}">
+                                                    <div class="col-xs-6" style="min-height: 135px">
+                                                        <div class="row">
+                                                            <div class="col-xs-12 center-component">
+                                                                <img class="img-mini" src="#{imagenProductoMBean.obtenerUrlProducto(laborEmpleado.labor.producto.referencia, true)}"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-xs-12 center-component">
+                                                                <h:outputText styleClass="input-lg" value="#{baruGenericMBean.convertirARefCorta(laborEmpleado.labor.producto.referencia)}"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-6">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="txt-12">Inicio</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <h:outputText value="#{laborEmpleado.labor.inicio}"
+                                                                          class="txt-hora #{informeEmpleadosCcygaMBean.laborAtrasada(laborEmpleado.labor.fecha) ? 'txt-hora-roja' : null}">
+                                                                <f:convertDateTime type="time" pattern="HH:mm" timeZone="GMT-5"/>
+                                                            </h:outputText>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-6">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="txt-12">Duraci&oacute;n</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <h:outputText value="#{informeEmpleadosCcygaMBean.obtenerDuracionLabor(laborEmpleado.labor.inicio)}" 
+                                                                          class="txt-hora #{informeEmpleadosCcygaMBean.laborAtrasada(laborEmpleado.labor.fecha) ? 'txt-hora-roja' : null}"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </h:panelGroup>
+                        </div>
+                        <div class="tab-pane" id="tab_inactivos">
+                            <h:panelGroup id="panelInactivos">
+                                <ui:repeat value="#{informeEmpleadosCcygaMBean.empleadosInactivos}" var="empleado">
+                                    <div class="col-xs-12 col-sm-3">
+                                        <div class="empleado-ccyga">
+                                            <div class="row">
+                                                <div class="col-xs-5">
+                                                    <img class="foto-empleado-ccyga" src="#{informeEmpleadosCcygaMBean.obtenerRutaFotoEmpleado(empleado.cedula)}"/>
+                                                </div>
+                                                <div class="col-xs-7">
+                                                    <div class="row">
+                                                        <div class="col-xs-12" style="height: 90px">
+                                                            <span class="txt-18">#{empleado.nombre}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <span style="font-size: 25px; color: #BF0039">
+                                                                #{empleado.tiempoInactividad}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </h:panelGroup>
+                        </div>
+                        <div class="tab-pane" id="tab_resumen">
+                            <div class="row">
+                                <div class="col-xs-offset-4 col-xs-4 center-component">
+                                    <h:panelGroup id="panelResumen">
+                                        <ui:fragment rendered="#{informeEmpleadosCcygaMBean.resumenProcesos eq null}">
+                                            <h4>No hay procesos activos</h4>
+                                        </ui:fragment>
+
+                                        <table class="table table-bordered table-striped">
+                                            <tr>
+                                                <th class="head-tabla">
+                                                    Proceso
+                                                </th>
+                                                <th class="head-tabla" style="width: 100px !important">
+                                                    Empleados
+                                                </th>
+                                            </tr>
+                                            <ui:repeat value="#{informeEmpleadosCcygaMBean.resumenProcesos}" var="proceso">
+                                                <tr>
+                                                    <td>
+                                                        <span>
+                                                            #{proceso[0]}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span>
+                                                            #{proceso[1]}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </ui:repeat>
+                                            <tr>
+                                                <td>
+                                                    <b>Total</b>
+                                                </td>
+                                                <td>
+                                                    <span>
+                                                        #{fn:length(informeEmpleadosCcygaMBean.empleadosActivos)}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

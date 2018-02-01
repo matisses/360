@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Transportistas Prestashop</title>
+    </h:head>
+    <h:body>
+        <div id="wrap">
+
+            <m:navbar/>
+            <div class="container">
+                <h:form id="formTransportista">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-3">
+                            <div class="form-group">
+                                <h:outputLabel for="txtNombre" value="Nombre"/>
+                                <h:inputText id="txtNombre" value="#{transportistasMBean.transportista.nombre}" 
+                                             pt:placeholder="nombre del transportista" pt:type="text" autocomplete="off"
+                                             disabled="#{transportistasMBean.transportista.idTransportista eq 1}"
+                                             styleClass="form-control input-lg noround"/>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-3">
+                            <div class="form-group">
+                                <h:outputLabel for="txtClase" value="Clase"/>
+                                <h:inputText id="txtClase" value="#{transportistasMBean.transportista.clase}" 
+                                             pt:placeholder="class name" pt:type="text" autocomplete="off"
+                                             disabled="#{transportistasMBean.transportista.idTransportista eq 1}"
+                                             styleClass="form-control input-lg noround"/>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-3">
+                            <div class="form-group">
+                                <h:outputLabel for="txtMetodo" value="Método"/>
+                                <h:inputText id="txtMetodo" value="#{transportistasMBean.transportista.metodo}" 
+                                             pt:placeholder="method name" pt:type="text" autocomplete="off"
+                                             disabled="#{transportistasMBean.transportista.idTransportista eq 1}"
+                                             styleClass="form-control input-lg noround"/>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-3">
+                            <div class="form-group">
+                                <h:outputLabel for="txtCuenta" value="Cuenta SAP"/>
+                                <h:inputText id="txtCuenta" value="#{transportistasMBean.transportista.cuentaSAP}" 
+                                             pt:placeholder="method name" pt:type="text" autocomplete="off"
+                                             disabled="#{transportistasMBean.transportista.idTransportista eq 1}"
+                                             styleClass="form-control input-lg noround"/>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-8">
+                            <div class="form-group">
+                                <h:outputLabel for="txtWsdl" value="WSDL"/>
+                                <h:inputText id="txtWsdl" value="#{transportistasMBean.transportista.wsdl}" 
+                                             pt:placeholder="ingrese la ruta del wsdl" pt:type="url" autocomplete="off"
+                                             disabled="#{transportistasMBean.transportista.idTransportista eq 1}"
+                                             styleClass="form-control input-lg noround"/>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-4">
+                            <div class="form-group">
+                                <h:outputLabel for="selEstado" value="Estado"/>
+                                <h:selectOneMenu styleClass="form-control input-lg noround" id="selEstado" 
+                                                 disabled="#{transportistasMBean.transportista.idTransportista eq 1}"
+                                                 value="#{transportistasMBean.transportista.activo}">
+                                    <f:selectItem itemLabel="Activo" itemValue="true" />
+                                    <f:selectItem itemLabel="Inactivo" itemValue="false" />
+                                    <f:ajax listener="#{transportistasMBean.valorCambio}"/>
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-5 col-md-offset-3">
+                            <p:remoteCommand name="guardar" actionListener="#{transportistasMBean.guardar}" update="@form" />
+                            <p:remoteCommand name="limpiar" actionListener="#{transportistasMBean.limpiar}" update="@form" />
+                            <button type="button" class="btn btn-primary btn-lg noround" onclick="guardar()">Guardar</button>
+                            <button type="button" class="btn btn-default btn-lg noround" onclick="limpiar()">Limpiar</button>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div class="row">
+                        <p:remoteCommand name="seleccionarTransportista" actionListener="#{transportistasMBean.seleccionarTransportista}" update="@form"/>
+                        <ui:repeat value="#{transportistasMBean.transportistas}" var="trans">
+                            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                <div class="transportista #{transportistasMBean.transportista.idTransportista eq trans.idTransportista ? 'transportista-seleccionado' : null}" 
+                                     onclick="seleccionarTransportista([{name: 'idTransportista', value: '#{trans.idTransportista}'}])">
+                                    <p>NOMBRE</p>
+                                    <h2>#{trans.nombre}</h2>
+                                    <p style="text-align: center;"><span class="transportista-#{trans.activo ? 'activo' : 'inactivo'}">#{trans.activo ? 'Activo' : 'Inactivo'}</span></p>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

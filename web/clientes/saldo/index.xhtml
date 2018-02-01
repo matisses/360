@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Saldo Vencido</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        <h:form id="formSaldo">
+            <p:remoteCommand name="activarSaldoCliente" update=":formSaldo" oncomplete="cerrarModalEspera();" 
+                             actionListener="#{saldoVencidoMBean.activarSaldoCliente}"/>
+            <div class="container">
+                <h:panelGroup id="modalActivar">
+                    <div class="modal fade" id="modalConfirm" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title">Confirmar reactivación</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p>¿Estás seguro que quieres reactivar el saldo a favor de #{saldoVencidoMBean.saldoVencidoDto.nombre} 
+                                        (#{saldoVencidoMBean.saldoVencidoDto.formattedNit}) por valor de
+                                        $#{saldoVencidoMBean.saldoVencidoDto.saldoStr}?</p>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <button type="button" class="btn btn-lg btn-default noround" data-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-lg btn-primary noround"
+                                            onclick="$('#modalConfirm').modal('hide');abrirModalEspera();activarSaldoCliente();return false;">
+                                        Sí, reactivar
+                                    </button>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+                </h:panelGroup>
+                <h:panelGroup id="modalTransacciones">
+                    <div class="modal fade" id="modalTransacciones" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title">Historial saldos</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Saldo</th>
+                                                <th>Usuario</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <ui:repeat value="#{saldoVencidoMBean.transacciones}" var="transaccion">
+                                                <tr>
+                                                    <td>#{transaccion.fecha}</td>
+                                                    <td>$#{transaccion.saldoStr}</td>
+                                                    <td>#{transaccion.usuario}</td>
+                                                </tr>
+                                            </ui:repeat>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+                </h:panelGroup>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+                        <p:remoteCommand name="filtrarCliente" update=":formSaldo:clientes :formSaldo:msg" oncomplete="cerrarModalEspera();" 
+                                         actionListener="#{saldoVencidoMBean.filtrarSaldos}"/>
+                        <h:inputText id="parametroBusqueda" class="form-control input-lg noround" value="#{saldoVencidoMBean.busqueda}"
+                                     pt:placeholder="ingresa parte del nit o del nombre" autocomplete="off" 
+                                     onkeypress="if (event.keyCode === 13) {
+                                                 abrirModalEspera();
+                                                 filtrarCliente();
+                                                 return false;
+                                             }"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p:messages id="msg" showDetail="true" showSummary="true"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <h:panelGroup id="clientes">
+                        <p:remoteCommand name="seleccionarSaldoCliente" actionListener="#{saldoVencidoMBean.seleccionarSaldoCliente}" 
+                                         oncomplete="$('#modalConfirm').modal('show')" update=":formSaldo:modalActivar"/>
+                        <p:remoteCommand name="consultarTransacciones" actionListener="#{saldoVencidoMBean.consultarTransaccionesCliente}"
+                                         oncomplete="$('#modalTransacciones').modal('show')" update=":formSaldo:modalTransacciones"/>
+                        <ui:repeat value="#{saldoVencidoMBean.saldosFiltrados}" var="saldo">
+                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                <div id="cliente">
+                                    <div class="row">
+                                        <div class="col-xs-7">
+                                            <h:outputText value="#{saldo.formattedNit}" style="font-size: 20px"/>
+                                        </div>
+                                        <div class="col-xs-5">
+                                            <button type="button" class="btn btn-default noround" onclick="consultarTransacciones([{name: 'nit', value: '#{saldo.nit}'}]);return false;">
+                                                <span class="glyphicon glyphicon-search"></span> Transacciones
+                                            </button>
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <h:outputText value="#{saldo.nombre}"/>
+                                        </div>
+                                        <div class="col-xs-8">
+                                            <h:outputText value="Valor: $#{saldo.saldoStr}"/>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <button type="button" class="btn btn-default noround" onclick="seleccionarSaldoCliente([{name: 'nit', value: '#{saldo.nit}'}]);return false;">
+                                                <span class="glyphicon glyphicon-off"></span> Activar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </h:panelGroup>
+                </div>
+            </div>
+        </h:form>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

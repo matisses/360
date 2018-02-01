@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Registro producto CCYGA</title>
+    </h:head>
+    <h:body>
+        <m:navbarCcyga/>
+        <br/>
+        <h:form id="formProducto">
+            <div class="container">
+                <div class="row">
+                    <p:remoteCommand name="seleccionarProducto" action="#{productoProcesoCcygaMBean.seleccionarProducto}" update="@form"/>
+                    <h:panelGroup id="panelArticulos">
+                        <ui:fragment rendered="#{empty productoProcesoCcygaMBean.productos}">
+                            <h4>
+                                <p>
+                                    No se encontraron datos
+                                </p>
+                            </h4>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{not empty productoProcesoCcygaMBean.productos}">
+                            <ui:repeat value="#{productoProcesoCcygaMBean.productos}" var="producto">
+                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                    <div class="producto-proceso-ccyga" onclick="seleccionarProducto([{name: 'idProducto', value: '#{producto.idProducto}'}])">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component" style="color: #BF0039">
+                                                <div style="background-color: #BBBBBB; font-size: 20px">
+                                                    #{producto.idProducto}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-4">
+                                                <img src="#{imagenProductoMBean.obtenerUrlProducto(producto.referencia, true)}" class="img-mini"/>
+                                            </div>
+                                            <div class="col-xs-8">
+                                                <div class="row">
+                                                    <div class="col-xs-11 center-component">
+                                                        <span style="font-size: 30px;">
+                                                            #{baruGenericMBean.convertirARefCorta(producto.referencia)}
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-xs-11 justify-component">
+                                                        <span class="txt-12">
+                                                            #{producto.descripcion}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </ui:fragment>
+                    </h:panelGroup>
+                </div>
+            </div>
+        </h:form>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

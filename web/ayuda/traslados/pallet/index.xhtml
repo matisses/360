@@ -1,0 +1,198 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <title>360 - Ayuda Traslados Pallet</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        <div class="panel-body">
+            <div class="container" style="text-align: justify">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h1 class="h1_manual">
+                            Traslados Pallet
+                        </h1>
+                        <p>
+                            En este módulo, el usuario podrá realizar carga y descarga de toda la mercancía que se encuentre en la ubicación PALLET.
+                        </p>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <br/>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="contenido" class="h2_manual anchor">
+                            Contenido
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ul>
+                            <div class="row">
+                                <li id="contenido1" class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <a href="#crear">Crear</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="contenido7" class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <a href="#mensajes_recibidos">Mensajes Recibidos</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <br/>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="crear" class="anchor h2_manual">
+                            Crear
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Para crear un traslado de este tipo, el usuario debe seleccionar el almacén desde el que se realizara el traslado y seleccionar el almacén al que se realizara el traslado.
+                        </p>
+                        <p>
+                            Luego de que haya seleccionado los dos ítems anteriores, se habilitaran las ubicaciones tipo Pallet que estén creadas en el almacén origen y que tengan saldo en el momento.
+                        </p>
+                        <p>
+                            Para identificar de una forma más adecuada la selección de una de las ubicaciones Pallet, vea la siguiente información:
+                        </p>
+                        <p>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <ul>
+                                        <div class="row">
+                                            <li id="contenido2_2_1" class="padding-top-1">
+                                                <div class="col-xs-12 col-sm-6">
+                                                    <img src="/360/images/ayuda/traslados/pallet/contenedorInactivo.png" class="img-responsive"/>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6">
+                                                    <p>
+                                                        Como en esta imagen el usuario verá las ubicaciones Pallet que no ha seleccionado.
+                                                    </p>
+                                                </div>
+                                            </li>
+                                        </div>
+                                        <div class="row">
+                                            <li id="contenido2_2_2" class="padding-top-1">
+                                                <div class="col-xs-12 col-sm-6">
+                                                    <img src="/360/images/ayuda/traslados/pallet/contenedorActivo.png" class="img-responsive"/>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6">
+                                                    <p>
+                                                        En la anterior imagen se puede evidenciar que la ubicación fue seleccionada para trasladar,
+                                                        para seleccionar una ubicación simplemente de clic sobre esta y listo, de igual forma para deseleccionarla vuelva a darle clic.
+                                                    </p>
+                                                </div>
+                                            </li>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </div>
+                        </p>
+                        <p>
+                            Una vez seleccione las ubicaciones que desea, de clic en <b>Trasladar</b> para generar el traslado o de clic en <b>Cancelar</b> para no hacer nada.
+                        </p>
+                        <p>
+                            Si desea que se imprima el traslado que se generara, seleccione la opción <b>Imprimir traslado</b> y se imprimirá el documento en la impresora de la sucursal donde inicio sesión.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="mensajes_recibidos" class="h2_manual anchor">
+                            Mensajes Recibidos
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Si en algún momento usted recibe alguno de estos mensajes por parte del sistema, esto le ayudara a identificar cual es la gravedad 
+                            y el significado de este: 
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <th class="head-tabla">
+                                    Tipo
+                                </th>
+                                <th class="head-tabla">
+                                    Msj
+                                </th>
+                                <th class="head-tabla">
+                                    Causa / Solución
+                                </th>
+                            </tr>
+                            <ui:repeat value="#{trasladoPalletAyudaMBean.mensajes}" var="mensaje">
+                                <tr>
+                                    <td>
+                                        <span class="#{mensaje[0] eq 'E' ? 'glyphicon glyphicon-remove-sign' : mensaje[0] eq 'I' ? 'glyphicon glyphicon-info-sign'
+                                                       : mensaje[0] eq 'A' ? 'glyphicon glyphicon-question-sign': ''}"
+                                              title="#{mensaje[0] eq 'E' ? 'Error' : mensaje[0] eq 'I' ? 'Información' : mensaje[0] eq 'A' ? 'Advertencia': ''}"
+                                              style="font-size: 30px; #{mensaje[0] eq 'E' ? 'color: #DD5555;' : mensaje[0] eq 'I' ? 'color: #46B8DA;'
+                                                                        : mensaje[0] eq 'A' ? 'color: #FFBF00;': ''}"></span>
+                                    </td>
+                                    <td>
+                                        #{mensaje[1]}
+                                    </td>
+                                    <td>
+                                        <p>
+                                            #{mensaje[2]}
+                                        </p>
+                                        <ui:fragment rendered="#{not empty mensaje[3]}">
+                                            <hr/>
+                                            <p>
+                                                #{mensaje[3]}
+                                            </p>
+                                        </ui:fragment>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </table>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+            </div>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

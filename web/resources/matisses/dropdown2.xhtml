@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <composite:interface>
+        <composite:attribute name="id"/>
+        <composite:attribute name="value"/>
+        <composite:attribute name="valueName"/>
+        <composite:attribute name="selectItems" type="java.util.List"/>
+    </composite:interface>
+
+    <composite:implementation>
+        <div>
+            <script>
+                function setDropDownValue(newValue) {
+                    var inputHidden = $("[id$='dropDownValue']");
+                    inputHidden.val(newValue);
+                }
+            </script>
+            <h:inputHidden value="#{cc.attrs.value}" id="dropDownValue"/>
+            <button type="button" class="btn btn-primary dropdown-toggle btn-lg noround" data-toggle="dropdown">
+                #{cc.attrs.valueName}
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <ui:repeat value="#{cc.attrs.selectItems}" var="slc">
+                    <!--<li><a onclick="setDropDownValue('#{item.idEstado}')">#{slc.nombre}</a></li>-->
+                    <h1>#{slc.label}</h1>
+                </ui:repeat>
+            </ul>
+        </div>
+    </composite:implementation>
+</html>

@@ -1,0 +1,67 @@
+<style type="text/css">
+    body, html, .body {
+        /*background: #f3f3f3 !important; */
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+        color: #444;
+    }
+</style>
+<container>
+    <spacer size="16"></spacer>
+    <row>
+        <columns>
+            <center>
+                Notificaci&oacute;n venta tarjeta de regalo
+            </center>
+        </columns>
+    </row>
+    <row>
+        <columns>
+            <center>
+                <img src="https://www.matisses.co/360/360_150h.png" alt="logo">
+            </center>
+        </columns>
+    </row>
+    <row>
+        <columns large="8">
+            <table style="width: 100%">
+                <tr>
+                    <td style="width: 100%; text-align: center;">
+                        <h1 style="margin-top: 5px; margin-bottom: 0px;">Venta Tarjeta Regalo</h1>
+                    </td>
+                </tr>
+            </table>
+        </columns>
+        <columns large="8">
+            <table style="width: 100%; margin-left: auto; margin-right: auto;">
+                <tr>
+                    <td style="width: 50%; text-align: center;">
+                        Se ha registrado una operaci&oacute;n de compra de tarjetas de regalo a nombre de <b>${nombreCliente}</b> (${cedulaCliente}) con el recibo de caja ${numeroRecibo}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;">
+                        <table style="margin-left: auto; margin-right: auto; border-collapse: collapse;" cellspacing="0">
+                            <tr>
+                                <th></th>
+                                <th style="text-align: right; padding-right: 10px; border: 1px solid #acacac;">Cant.</th>
+                                <th style="text-align: right; padding-right: 10px; border: 1px solid #acacac;">Valor</th>
+                            </tr>
+                            <tr>
+                                <td style="width: 85px; text-align: center; border: 1px solid #acacac;"><img alt="logo_tarjeta" src="http://www.matisses.co/modules/matisses/files/T.REGALO.png" /></td>
+                                <td style="width: 85px; text-align: right; border: 1px solid #acacac; font-size: 24px; padding-right: 10px;">${cantTarjetas}</td>
+                                <td style="width: 100px; text-align: right; border: 1px solid #acacac; font-size: 24px; padding-right: 10px;">${valorTotal}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <table style="width: 100%">
+                <tr>
+                    <td style="width: 100%; text-align: center;">
+                        El proceso fue ejecutado por el usuario <code>${username}</code> desde <code>${nombreMaquina}</code>
+                    </td>
+                </tr>
+            </table>
+        </columns>
+    </row>
+</container>

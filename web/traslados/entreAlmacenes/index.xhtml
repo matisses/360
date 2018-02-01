@@ -1,0 +1,576 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <script type="text/javascript">
+            function abrirModalEliminar() {
+                $('#modalEliminar').modal('show');
+            }
+
+            function cerrarModalEliminar() {
+                $('#modalEliminar').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalFactura() {
+                $('#modalFactura').modal('show');
+            }
+
+            function cerrarModalFactura() {
+                $('#modalFactura').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalUbicacionesDemostracion() {
+                $('#modalUbicacionesDemostracion').modal('show');
+            }
+
+            function cerrarModalUbicacionesDemostracion() {
+                $('#modalUbicacionesDemostracion').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalComentario() {
+                $('#modalComentario').modal('show');
+            }
+
+            function cerrarModalComentario() {
+                $('#modalComentario').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalComentarioLinea() {
+                $('#modalComentarioLinea').modal('show');
+            }
+
+            function cerrarModalComentarioLinea() {
+                $('#modalComentarioLinea').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Traslados Entre Almacenes</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        <div class="container">
+            <h:panelGroup id="dlgEliminar">
+                <h:panelGroup rendered="#{trasladoEntreAlmacenesMBean.dlgEliminar}">
+                    <h:form id="formDlgEliminar">
+                        <div class="modal fade" id="modalEliminar" data-keyboard="false" data-backdrop="static">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <p:remoteCommand name="cancelarEliminacionItem" actionListener="#{trasladoEntreAlmacenesMBean.cancelarEliminacionItem}"/>
+                                    <div class="modal-header dialog-header-alerta">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cancelarEliminacionItem();">
+                                            &times;
+                                        </button>
+                                        <h4 class="modal-title">
+                                            Eliminar Referencia
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <p>
+                                                    ¿Está seguro(a) que desea eliminar esta referencia del cargue?
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-4 center-component">
+                                                <h:graphicImage value="#{imagenProductoMBean.obtenerUrlProducto(trasladoEntreAlmacenesMBean.referencia, true)}"
+                                                                class="img-mini"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-8">
+                                                <div class="row">
+                                                    <div class="col-xs-5 right-component">
+                                                        <b>Referencia: </b>
+                                                    </div>
+                                                    <div class="col-xs-7">
+                                                        #{trasladoEntreAlmacenesMBean.referencia}
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-5 right-component">
+                                                        <b>Cantidad: </b>
+                                                    </div>
+                                                    <div class="col-xs-7">
+                                                        1
+                                                    </div>
+                                                </div>
+                                                <ui:fragment rendered="#{trasladoEntreAlmacenesMBean.comentarioLinea ne null and not empty trasladoEntreAlmacenesMBean.comentarioLinea}">
+                                                    <div class="row">
+                                                        <div class="col-xs-5 right-component">
+                                                            <b>Comentario: </b>
+                                                        </div>
+                                                        <div class="col-xs-7">
+                                                            #{trasladoEntreAlmacenesMBean.comentarioLinea}
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <p:remoteCommand name="quitarReferencia" actionListener="#{trasladoEntreAlmacenesMBean.quitarReferencia}" update=":formTrasladoEntreAlmacenes:traslado"
+                                                         oncomplete="cerrarModalEspera(); document.getElementById('formTrasladoEntreAlmacenes:referencia').focus();"/>
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="cancelarEliminacionItem();">
+                                            Cancelar
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="cerrarModalEliminar(); abrirModalEspera(); quitarReferencia();">
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="dlgFactura">
+                <h:panelGroup rendered="#{trasladoEntreAlmacenesMBean.dlgFactura}">
+                    <h:form id="formDlgFactura">
+                        <div class="modal fade" id="modalFactura" data-keyboard="false" data-backdrop="static">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header-advertencia">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                            &times;
+                                        </button>
+                                        <h4 class="modal-title">
+                                            Ingrese Número Factura
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p:focus context="formDlgFactura" for="factura"/>
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <h:inputText id="factura" class="form-control input-lg noround" value="#{trasladoEntreAlmacenesMBean.factura}"
+                                                             pt:placeholder="Número factura" autocomplete="off"
+                                                             onkeypress="if (event.keyCode === 13) {
+                                                                         agregarReferencia();
+                                                                         document.getElementById('formTrasladoEntreAlmacenes:referencia').focus();
+                                                                         return false;
+                                                                     }">
+                                                    <f:ajax event="change"/>
+                                                </h:inputText>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                            Cancelar
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="agregarReferencia();">
+                                            Continuar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelUbicacionesDemostracion">
+                <h:panelGroup rendered="#{trasladoEntreAlmacenesMBean.dlgUbicaciones}">
+                    <h:form id="formUbicacionesDemostracion">
+                        <div class="modal fade" id="modalUbicacionesDemostracion" data-keyboard="false" data-backdrop="static">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <p:remoteCommand name="cancelarProcesoUbicacionDemostracion" actionListener="#{trasladoEntreAlmacenesMBean.cancelarProcesoUbicacionDemostracion}"
+                                                     oncomplete="cerrarModalEspera();"/>
+                                    <div class="modal-header dialog-header-advertencia">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="abrirModalEspera(); cancelarProcesoUbicacionDemostracion();">
+                                            &times;
+                                        </button>
+                                        <h4 class="modal-title">
+                                            Demostración
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row" style="max-height: 315px; overflow-y: auto; overflow-x: hidden">
+                                            <p:remoteCommand name="seleccionarUbicacionDemostracion" actionListener="#{trasladoEntreAlmacenesMBean.seleccionarUbicacionDemostracion}"
+                                                             update=":formTrasladoEntreAlmacenes:almacenesOrigen :formTrasladoEntreAlmacenes:almacenesDestino :formTrasladoEntreAlmacenes:traslado :panelComentarioLinea
+                                                             :formTrasladoEntreAlmacenes:referencia :formTrasladoEntreAlmacenes:msg :formTrasladoEntreAlmacenes:btns :dlgFactura :panelUbicacionesDemostracion
+                                                             #{userSessionInfoMBean.validarPermisoUsuario('CANTIDAD_TRASLADO', 'ASIGNAR') ? ':formTrasladoEntreAlmacenes:cantidad' : ''}"
+                                                             oncomplete="document.getElementById('formTrasladoEntreAlmacenes:referencia').focus(); cerrarModalEspera(); abrirModalComentarioLinea();"/>
+                                            <ui:repeat value="#{trasladoEntreAlmacenesMBean.ubicaciones}" var="ubicacion">
+                                                <div class="col-xs-12 col-sm-6 center-component">
+                                                    <div class="contenedor-demostracion-traslados" onclick="cerrarModalUbicacionesDemostracion();
+                                                            abrirModalEspera();
+                                                            seleccionarUbicacionDemostracion([{name: 'binCode', value: '#{ubicacion.binCode}'}]);">
+                                                        <span>
+                                                            #{ubicacion.attr2Val}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </ui:repeat>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="abrirModalEspera(); cancelarProcesoUbicacionDemostracion();">
+                                                    Cerrar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelComentario">
+                <h:form id="formComentario">
+                    <div class="modal fade" id="modalComentario">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Comentario
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="form-group">
+                                                <h:outputLabel value="Comentario:"/>
+                                                <h:inputTextarea id="txa_comentario" class="form-control input-lg noround" value="#{trasladoEntreAlmacenesMBean.comentario}" style="resize: none; height: 200px"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <div class="row">
+                                        <div class="col-xs-12 right-component">
+                                            <p:remoteCommand name="modal" oncomplete="cerrarModalComentario(); abrirModalEspera(); crearTrasladoSAP();" update=":panelComentario"/>
+                                            <p:remoteCommand name="crearTrasladoSAP" update=":formTrasladoEntreAlmacenes" actionListener="#{trasladoEntreAlmacenesMBean.crearTrasladoSAP}"
+                                                             oncomplete="cerrarModalEspera();"/>
+                                            <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                Cerrar
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-lg noround" onclick="modal();">
+                                                Trasladar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelComentarioLinea">
+                <h:panelGroup rendered="#{trasladoEntreAlmacenesMBean.dlgComentarioLinea}">
+                    <h:form id="formComentarioLinea">
+                        <div class="modal fade" id="modalComentarioLinea" data-keyboard="false" data-backdrop="static">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header-advertencia">
+                                        <h4 class="modal-title">
+                                            Comentario
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div class="form-group">
+                                                    <p:focus context="formComentarioLinea" for="txa_comentario"/>
+                                                    <h:outputLabel value="Comentario:"/>
+                                                    <h:inputTextarea id="txa_comentario" class="form-control input-lg noround" value="#{trasladoEntreAlmacenesMBean.comentarioLinea}" pt:placeholder="Comentario"
+                                                                     style="resize: none; height: 150px">
+                                                        <f:ajax event="change"/>
+                                                    </h:inputTextarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <p:remoteCommand name="limpiarBasico" actionListener="#{trasladoEntreAlmacenesMBean.limpiarBasico}" update=":panelComentarioLinea :formTrasladoEntreAlmacenes"/>
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal"
+                                                        onclick="document.getElementById('formTrasladoEntreAlmacenes:referencia').focus(); limpiarBasico();">
+                                                    Cancelar
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="agregarReferencia();">
+                                                    Agregar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:form id="formTrasladoEntreAlmacenes">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Traslados Entre Almacenes</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <h:panelGroup id="chk_usarEan">
+                            <p:remoteCommand name="checkearUsarEan" actionListener="#{trasladoEntreAlmacenesMBean.usarEan}" update=":formTrasladoEntreAlmacenes:chk_usarEan"/>
+                            <div class="tooltip-style">
+                                <span class="glyphicon #{trasladoEntreAlmacenesMBean.buscarXEan ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                      onclick="checkearUsarEan();"></span>
+                                <h:outputLabel value="Usar Código Ean" class="label-normal" onclick="checkearUsarEan();"/>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                    <div class="col-xs-6">
+                        <h:panelGroup id="chk_usarComentario">
+                            <p:remoteCommand name="checkearUsarComentario" actionListener="#{trasladoEntreAlmacenesMBean.usarComentario}" update=":formTrasladoEntreAlmacenes:chk_usarComentario"
+                                             oncomplete="abrirModalComentarioLinea();"/>
+                            <div class="tooltip-style">
+                                <span class="glyphicon #{trasladoEntreAlmacenesMBean.usarComent ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma" 
+                                      onclick="checkearUsarComentario();"></span>
+                                <h:outputLabel value="Usar Comentario por ítem" class="label-normal" onclick="checkearUsarComentario();"/>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </div>
+                <div class="row">
+                    <p:focus context="formTrasladoEntreAlmacenes" for="almacenesOrigen"/>
+                    <div class="col-xs-12 #{userSessionInfoMBean.validarPermisoUsuario('CANTIDAD_TRASLADO', 'ASIGNAR') ? 'col-sm-3' : 'col-sm-4'}">
+                        <p:remoteCommand name="seleccionarAlmacenOrigen" actionListener="#{trasladoEntreAlmacenesMBean.seleccionarAlmacenOrigen}"
+                                         update=":formTrasladoEntreAlmacenes:almacenesOrigen :formTrasladoEntreAlmacenes:almacenesDestino" oncomplete="cerrarModalEspera();"/>
+                        <div class="form-group">
+                            <h:outputLabel value="Almacén Origen" for="almacenesOrigen"/>
+                            <h:panelGroup id="almacenesOrigen">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround #{not empty trasladoEntreAlmacenesMBean.trasladoDetalles ? 'disabled' : ''}"
+                                            style="width: 100%" id="selAlmacenOrigen" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        #{trasladoEntreAlmacenesMBean.almacenOrigenSeleccionado}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selAlmacenOrigen" data-live-search="true">
+                                        <ui:repeat value="#{trasladoEntreAlmacenesMBean.almacenesOrigen}" var="almOrigen">
+                                            <li>
+                                                <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                        seleccionarAlmacenOrigen([{name: 'almacenOrigen', value: '#{almOrigen.whsCode}'}]);">
+                                                    #{almOrigen.whsCode} - #{almOrigen.nombrextablet}
+                                                </a>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 #{userSessionInfoMBean.validarPermisoUsuario('CANTIDAD_TRASLADO', 'ASIGNAR') ? 'col-sm-3' : 'col-sm-4'}">
+                        <p:remoteCommand name="seleccionarAlmacenDestino" actionListener="#{trasladoEntreAlmacenesMBean.seleccionarAlmacenDestino}" update=":formTrasladoEntreAlmacenes:almacenesDestino"
+                                         oncomplete="cerrarModalEspera(); document.getElementById('formTrasladoEntreAlmacenes:referencia').focus();"/>
+                        <div class="form-group">
+                            <h:outputLabel value="Almacén Destino" for="almacenesDestino"/>
+                            <h:panelGroup id="almacenesDestino">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround
+                                            #{empty trasladoEntreAlmacenesMBean.almacenOrigen or not empty trasladoEntreAlmacenesMBean.trasladoDetalles ? 'disabled' : ''}"
+                                            style="width: 100%" id="selAlmacenDestino" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        #{trasladoEntreAlmacenesMBean.almacenDestinoSeleccionado}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selAlmacenDestino">
+                                        <ui:repeat value="#{trasladoEntreAlmacenesMBean.almacenesDestino}" var="almDestino">
+                                            <li>
+                                                <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                        seleccionarAlmacenDestino([{name: 'almacenDestino', value: '#{almDestino.whsCode}'}]);">
+                                                    #{almDestino.whsCode} - #{almDestino.nombrextablet}
+                                                </a>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="form-group">
+                            <h:outputLabel value="Referencia" for="referencia"/>
+                            <p:remoteCommand name="agregarReferencia" actionListener="#{trasladoEntreAlmacenesMBean.agregarReferencia}"
+                                             update=":formTrasladoEntreAlmacenes:almacenesOrigen :formTrasladoEntreAlmacenes:almacenesDestino :formTrasladoEntreAlmacenes:traslado :panelComentarioLinea
+                                             :formTrasladoEntreAlmacenes:referencia :formTrasladoEntreAlmacenes:msg :formTrasladoEntreAlmacenes:btns :dlgFactura :panelUbicacionesDemostracion
+                                             #{userSessionInfoMBean.validarPermisoUsuario('CANTIDAD_TRASLADO', 'ASIGNAR') ? ':formTrasladoEntreAlmacenes:cantidad' : ''}"
+                                             oncomplete="document.getElementById('formTrasladoEntreAlmacenes:referencia').focus(); cerrarModalFactura(); abrirModalFactura();
+                                             abrirModalUbicacionesDemostracion(); abrirModalComentarioLinea();"/>
+                            <p:remoteCommand name="focusCantidad" oncomplete="document.getElementById('formTrasladoEntreAlmacenes:cantidad').focus()"/>
+                            <h:inputText id="referencia" pt:placeholder="Referencia" value="#{trasladoEntreAlmacenesMBean.referencia}" class="form-control input-lg noround"
+                                         autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                         #{userSessionInfoMBean.validarPermisoUsuario('CANTIDAD_TRASLADO', 'ASIGNAR')? 'focusCantidad();' : 'agregarReferencia();'}
+                                                     return false;
+                                                 }"/>
+                        </div>
+                    </div>
+                    <ui:fragment rendered="#{userSessionInfoMBean.validarPermisoUsuario('CANTIDAD_TRASLADO', 'ASIGNAR')}">
+                        <div class="col-xs-12 col-sm-2">
+                            <div class="form-group">
+                                <h:outputLabel value="Cantidad" for="cantidad"/>
+                                <h:inputText id="cantidad" pt:placeholder="Cantidad" value="#{trasladoEntreAlmacenesMBean.cantidad}"
+                                             class="form-control input-lg noround" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                         agregarReferencia();
+                                                         document.getElementById('formTrasladoEntreAlmacenes:referencia').focus();
+                                                         return false;
+                                                     }"/>
+                            </div>
+                        </div>
+                    </ui:fragment>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 right-component">
+                        <button type="button" class="btn btn-primary btn-lg noround" onclick="agregarReferencia();">
+                            Agregar
+                        </button>
+                    </div>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                <hr/>
+                <div class="row">
+                    <h:panelGroup id="traslado">
+                        <p:remoteCommand name="eliminarReferencia" action="#{trasladoEntreAlmacenesMBean.seleccionarReferenciaEliminar}" oncomplete="abrirModalEliminar();" update=":dlgEliminar"/>
+                        <ui:repeat value="#{trasladoEntreAlmacenesMBean.trasladoDetalles}" var="traslado">
+                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                <div class="articulos-ubicacion pointer-cursor" onclick="eliminarReferencia([{name: 'idDetalleTraslado', value: '#{traslado.idTrasladoDetalle}'}])">
+                                    <div class="row">
+                                        <div class="col-xs-6 center-component">
+                                            <h:graphicImage value="#{imagenProductoMBean.obtenerUrlProducto(traslado.referencia, true)}" class="img-mini"/>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <div class="row">
+                                                <div class="col-xs-12 right-component">
+                                                    <h:outputLabel value="#{baruGenericMBean.convertirARefCorta(traslado.referencia)}" style="font-size: 20px"/>
+                                                </div>
+                                                <ui:fragment rendered="#{traslado.documentoReferencia != null and traslado.documentoReferencia != 0 and not traslado.almacenOrigen.contains('DM')}">
+                                                    <div class="col-xs-12 right-component">
+                                                        <h:outputLabel value="#{traslado.documentoReferencia}" style="font-size: 15px; color: #AAAAAA"/>
+                                                    </div>
+                                                    <ui:fragment rendered="#{traslado.comentario ne null and not empty traslado.comentario}">
+                                                        <div class="col-xs-6 center-component">
+                                                            <span class="glyphicon glyphicon-comment" style="font-size: 24px"></span>
+                                                        </div>
+                                                    </ui:fragment>
+                                                    <div class="#{traslado.comentario ne null and not empty traslado.comentario ? 'col-xs-6' : 'col-xs-12'} right-component">
+                                                        <span class="badge badge-gray" style="font-size: 15px">
+                                                            #{traslado.cantidad}
+                                                        </span>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{traslado.documentoReferencia != null and traslado.documentoReferencia != 0 and traslado.almacenOrigen.contains('DM')}">
+                                                    <div class="col-xs-12 right-component">
+                                                        <h:outputLabel value="#{baruGenericMBean.obtenerAliasUbicacion(traslado.documentoReferencia)}" style="font-size: 15px; color: #AAAAAA"/>
+                                                    </div>
+                                                    <ui:fragment rendered="#{traslado.comentario ne null and not empty traslado.comentario}">
+                                                        <div class="col-xs-6 center-component">
+                                                            <span class="glyphicon glyphicon-comment" style="font-size: 24px"></span>
+                                                        </div>
+                                                    </ui:fragment>
+                                                    <div class="#{traslado.comentario ne null and not empty traslado.comentario ? 'col-xs-6' : 'col-xs-12'} right-component">
+                                                        <span class="badge badge-gray" style="font-size: 15px">
+                                                            #{traslado.cantidad}
+                                                        </span>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{traslado.documentoReferencia == null || traslado.documentoReferencia == 0}">
+                                                    <ui:fragment rendered="#{traslado.comentario ne null and not empty traslado.comentario}">
+                                                        <div class="col-xs-6 center-component">
+                                                            <span class="glyphicon glyphicon-comment" style="font-size: 24px"></span>
+                                                        </div>
+                                                    </ui:fragment>
+                                                    <div class="#{traslado.comentario ne null and not empty traslado.comentario ? 'col-xs-6' : 'col-xs-12'} right-component">
+                                                        <span class="badge badge-gray" style="font-size: 20px">
+                                                            #{traslado.cantidad}
+                                                        </span>
+                                                    </div>
+                                                </ui:fragment>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h:outputText value="#{baruGenericMBean.obtenerNombreReferencia(traslado.referencia)}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </h:panelGroup>
+                </div>
+                <br/>
+                <h:panelGroup id="btns">
+                    <h:panelGroup rendered="#{not empty trasladoEntreAlmacenesMBean.trasladoDetalles}">
+                        <div class="row">
+                            <div class="col-xs-12 center-component">
+                                <h:panelGroup id="chk_imprimir">
+                                    <p:remoteCommand name="checkearImprimir" actionListener="#{trasladoEntreAlmacenesMBean.imprimirTraslado}" update=":formTrasladoEntreAlmacenes:chk_imprimir"/>
+                                    <div class="tooltip-style">
+                                        <span class="glyphicon #{trasladoEntreAlmacenesMBean.imprimir ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                              onclick="checkearImprimir();"></span>
+                                        <h:outputLabel value="Imprimir traslado" class="label-normal" onclick="checkearImprimir();"/>
+                                    </div>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 right-component">
+                                <p:remoteCommand name="cancelarTraslado" actionListener="#{trasladoEntreAlmacenesMBean.cancelarTraslado}" update=":formTrasladoEntreAlmacenes" oncomplete="cerrarModalEspera();"/>
+                                <p:remoteCommand name="abrirComentario" update=":panelComentario" oncomplete="abrirModalComentario();"/>
+                                <button type="button" class="btn btn-default btn-lg noround" onclick="cancelarTraslado();">
+                                    Cancelar
+                                </button>
+                                <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirComentario();">
+                                    Trasladar
+                                </button>
+                            </div>
+                        </div>
+                        <br/>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

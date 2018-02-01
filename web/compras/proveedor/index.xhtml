@@ -1,0 +1,1760 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" http-equiv="Content-Type"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script src="/360/js/proveedor.js"></script>
+        <title>360 - Datos Proveedor</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <h:panelGroup id="panelBusqueda">
+                <h:panelGroup rendered="#{datosProveedorMBean.dlgBusqueda}">
+                    <h:form id="formBusqueda">
+                        <div class="modal fade" id="modalBusqueda">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                            &times;
+                                        </button>
+                                        <h4 class="modal-title">
+                                            Resultados Busqueda
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div class="row" style="max-height: 276px; overflow: auto">
+                                                    <p:remoteCommand name="seleccionarProveedor" actionListener="#{datosProveedorMBean.seleccionarProveedor}"
+                                                                     update=":formProveedores:administrar" oncomplete="cerrarModalBusqueda();"/>
+                                                    <ui:repeat value="#{datosProveedorMBean.datosProveedor}" var="dato">
+                                                        <div class="col-xs-6 center-component" onclick="seleccionarProveedor([{name: 'codProveedor', value: '#{dato.codProveedor}'}]);">
+                                                            <div class="row">
+                                                                <h:graphicImage value="#{datosProveedorMBean.obtenerRutaLogoProv(dato.codProveedor)}" class="medida-logo-dlg"/>
+                                                                <div class="logo-proveedor-busqueda"
+                                                                     style="opacity: #{dato.codProveedor eq datosProveedorMBean.codProveedor ? '0.6' : '0'}">
+                                                                    <div class="col-xs-12 center-component" style="top: 42px">
+                                                                        #{dato.codProveedor}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xs-12 center-component">
+                                                                    #{dato.codProveedor}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </ui:repeat>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer dialog-footer">
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelTransaccion">
+                <h:form id="formTransaccion">
+                    <div class="modal fade" id="modalTransaccion">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Transacción Bancaria
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                    <div class="row">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <p:remoteCommand name="seleccionarCuentaBancaria" actionListener="#{datosProveedorMBean.seleccionarCuentaBancaria}"
+                                                             update=":formTransaccion:cuentasBancarias :formTransaccion:msg"/>
+                                            <h:panelGroup id="cuentasBancarias">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon input-group-matisses noround">
+                                                        Cuenta bancaria
+                                                    </span>
+                                                    <div class="dropdown">
+                                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround #{datosProveedorMBean.editandoTransaccionBancaria ? 'disabled' : ''}"
+                                                                style="width: 100%" id="selCuentasBancarias" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                            #{datosProveedorMBean.idCuentaBancariaSeleccionada}
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu" aria-labelledby="selCuentasBancarias" style="width: 100%">
+                                                            <ui:repeat value="#{datosProveedorMBean.cuentas}" var="cuenta">
+                                                                <li>
+                                                                    <a class="pointer-cursor" onclick="seleccionarCuentaBancaria([{name: 'idCuentaBancaria', value: '#{cuenta.idCuentaBancaria}'}]);">
+                                                                        <ui:fragment rendered="#{fn:length(cuenta.sucursales.bancoCompras.razonSocial) gt 20}">
+                                                                            #{fn:substring(cuenta.sucursales.bancoCompras.razonSocial, 0, 20)}... - #{cuenta.cuentaBancaria}
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{fn:length(cuenta.sucursales.bancoCompras.razonSocial) le 21}">
+                                                                            #{cuenta.sucursales.bancoCompras.razonSocial} - #{cuenta.cuentaBancaria}
+                                                                        </ui:fragment>
+                                                                    </a>
+                                                                </li>
+                                                            </ui:repeat>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <div class="form-group">
+                                                <h:outputLabel value="Fecha Giro:"/>
+                                                <p:calendar id="fechaGiro" pattern="dd-MM-yyyy" class="input-lg mask" pt:placeholder="Fecha Giro" value="#{datosProveedorMBean.fechaGiro}">
+                                                    <p:ajax event="dateSelect" rendered=":formTransaccion:fechaGiro :formTransaccion:msg"/>
+                                                </p:calendar>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6" style="top: 25px">
+                                            <p:remoteCommand name="seleccionarTipoGiro" actionListener="#{datosProveedorMBean.seleccionarTipoGiro}"
+                                                             update=":formTransaccion:tiposGiro :formTransaccion:datosPago :formTransaccion:msg"/>
+                                            <h:panelGroup id="tiposGiro">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon input-group-matisses noround">
+                                                        Tipo giro
+                                                    </span>
+                                                    <div class="dropdown">
+                                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround #{datosProveedorMBean.editandoTransaccionBancaria ? 'disabled' : ''}"
+                                                                style="width: 100%" id="selTiposGiro" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                            #{datosProveedorMBean.tipoGiroSeleccionado}
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu" aria-labelledby="selTiposGiro" style="width: 100%">
+                                                            <li>
+                                                                <a class="pointer-cursor" onclick="seleccionarTipoGiro([{name: 'tipoGiro', value: 'anticipo'}]);">
+                                                                    Anticipo
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="pointer-cursor" onclick="seleccionarTipoGiro([{name: 'tipoGiro', value: 'balance'}]);">
+                                                                    Balance
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="pointer-cursor" onclick="seleccionarTipoGiro([{name: 'tipoGiro', value: 'roll on'}]);">
+                                                                    Roll on
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                    <h:panelGroup id="datosPago">
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Anticipo $:"/>
+                                                    <h:inputText class="form-control input-lg noround" pt:placeholder="Anticipo $" value="#{datosProveedorMBean.anticipo}"
+                                                                 disabled="#{datosProveedorMBean.tipoGiro eq 'anticipo' and datosProveedorMBean.tipoGiro != null ? 'false' : 'true'}">
+                                                        <f:ajax event="change" render=":formTransaccion:datosPago :formTransaccion:msg" listener="#{datosProveedorMBean.calcularPorcentajeAnticipo}"/>
+                                                    </h:inputText>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Anticipo %:"/>
+                                                    <h:inputText class="form-control input-lg noround" disabled="true" pt:placeholder="Anticipo %"
+                                                                 value="#{baruGenericMBean.getValorFormateado('Double', datosProveedorMBean.porcentajeAnticipo, 2)}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Balance $:"/>
+                                                    <h:inputText class="form-control input-lg noround" pt:placeholder="Balance $" value="#{datosProveedorMBean.balance}" disabled="true"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Total $:"/>
+                                                    <h:inputText class="form-control input-lg noround" pt:placeholder="Total girar $" value="#{datosProveedorMBean.totalGirar}"
+                                                                 disabled="#{datosProveedorMBean.tipoGiro eq 'roll on' or datosProveedorMBean.tipoGiro eq 'balance' ? 'false' : 'true'}">
+                                                        <f:ajax event="change" render=":formTransaccion:datosPago :formTransaccion:msg"/>
+                                                    </h:inputText>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Descripcion:"/>
+                                                    <h:inputText class="form-control input-lg noround" pt:placeholder="Descripción" value="#{datosProveedorMBean.descripcionPago}"
+                                                                 disabled="#{datosProveedorMBean.editandoTransaccionBancaria}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <p:remoteCommand name="limpiarDatosTransaccion" actionListener="#{datosProveedorMBean.limpiarDatosTransaccion}"/>
+                                            <p:remoteCommand name="guardarTransaccionBancaria" actionListener="#{datosProveedorMBean.guardarTransaccionBancaria}"
+                                                             update=":formTransaccion:tiposGiro :formTransaccion:datosPago :formTransaccion:msg :formTransaccion:fechaGiro
+                                                             :formTransaccion:cuentasBancarias :formProveedores:datosTransaccionesBancarias :formProveedores:panelAnticipoCuenta"/>
+                                            <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="limpiarDatosTransaccion();">
+                                                Cancelar
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-lg noround" onclick="guardarTransaccionBancaria();">
+                                                Guardar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>                
+            </h:panelGroup>
+
+            <h:panelGroup id="panelAnticipoCuenta">
+                <h:form id="formAnticipoCuenta">
+                    <div class="modal fade" id="modalAnticipoCuenta">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        #{datosProveedorMBean.tipoAnticipoCuenta} Anticipo Cuenta
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                    <h:panelGroup id="datos">
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Valor anticipo cuenta:"/>
+                                                    <h:inputText id="txt_valor" class="form-control input-lg noround" pt:placeholder="Valor anticipo cuenta" autocomplete="off"
+                                                                 value="#{datosProveedorMBean.anticipoCuenta}" disabled="#{datosProveedorMBean.editandoAnticipoCuenta}">
+                                                        <f:ajax event="change" render=":formAnticipoCuenta:txt_valor :formAnticipoCuenta:msg"/>
+                                                    </h:inputText>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6" style="top: 25px">
+                                                <ui:fragment rendered="#{datosProveedorMBean.tipoAnticipoCuenta eq 'Nuevo'}">
+                                                    <p:remoteCommand name="seleccionarTipoMoneda" actionListener="#{datosProveedorMBean.seleccionarTipoMoneda}"
+                                                                     update=":formAnticipoCuenta:monedas :formAnticipoCuenta:msg"/>
+                                                    <h:panelGroup id="monedas">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Moneda
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround #{datosProveedorMBean.editandoAnticipoCuenta ? 'disabled' : ''}"
+                                                                        style="width: 100%" id="selMonedas" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{datosProveedorMBean.idTipoMonedaSeleccionada}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selMonedas">
+                                                                    <ui:repeat value="#{datosProveedorMBean.tiposMonedas}" var="moneda">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarTipoMoneda([{name: 'idTipoMoneda', value: '#{moneda.idTipoMoneda}'}]);">
+                                                                                #{moneda.simbolo} - #{moneda.moneda}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{datosProveedorMBean.tipoAnticipoCuenta eq 'Usar'}">
+                                                    <p:remoteCommand name="seleccionarProformaAnticipo" actionListener="#{datosProveedorMBean.seleccionarProformaAnticipo}"
+                                                                     update=":formAnticipoCuenta:proformas"/>
+                                                    <h:panelGroup id="proformas">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Proforma
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround #{datosProveedorMBean.editandoAnticipoCuenta ? 'disabled' : ''}"
+                                                                        style="width: 100%" id="selProofrmas" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{datosProveedorMBean.idProformaSeleccionada}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selProofrmas">
+                                                                    <ui:repeat value="#{datosProveedorMBean.proformas}" var="proforma">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarProformaAnticipo([{name: 'idProforma', value: '#{proforma.idProforma}'}]);">
+                                                                                #{proforma.codProveedor} - #{proforma.anio} - #{proforma.consecutivo}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </ui:fragment>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <p:remoteCommand name="seleccionarCuentaBancaria" actionListener="#{datosProveedorMBean.seleccionarCuentaBancaria}"
+                                                                 update=":formAnticipoCuenta:cuentasBancarias :formAnticipoCuenta:msg"/>
+                                                <h:panelGroup id="cuentasBancarias">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon input-group-matisses noround">
+                                                            Cuenta bancaria
+                                                        </span>
+                                                        <div class="dropdown">
+                                                            <button type="button" class="btn btn-default dropdown-toggle input-lg noround #{datosProveedorMBean.editandoAnticipoCuenta ? 'disabled' : ''}"
+                                                                    style="width: 100%" id="selCuentasBancarias" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                #{datosProveedorMBean.idCuentaBancariaSeleccionada}
+                                                                <span class="caret"></span>
+                                                            </button>
+                                                            <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selCuentasBancarias">
+                                                                <ui:repeat value="#{datosProveedorMBean.cuentas}" var="cuenta">
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="seleccionarCuentaBancaria([{name: 'idCuentaBancaria', value: '#{cuenta.idCuentaBancaria}'}]);">
+                                                                            <ui:fragment rendered="#{fn:length(cuenta.sucursales.bancoCompras.razonSocial) gt 20}">
+                                                                                #{fn:substring(cuenta.sucursales.bancoCompras.razonSocial, 0, 20)}... - #{cuenta.cuentaBancaria}
+                                                                            </ui:fragment>
+                                                                            <ui:fragment rendered="#{fn:length(cuenta.sucursales.bancoCompras.razonSocial) le 21}">
+                                                                                #{cuenta.sucursales.bancoCompras.razonSocial} - #{cuenta.cuentaBancaria}
+                                                                            </ui:fragment>
+                                                                        </a>
+                                                                    </li>
+                                                                </ui:repeat>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Comentario:"/>
+                                                    <h:inputTextarea class="form-control input-lg noround" pt:placeholder="Comentario" value="#{datosProveedorMBean.comentarioAnticipoCuenta}"
+                                                                     style="resize: none; height: 65px" disabled="#{datosProveedorMBean.editandoAnticipoCuenta}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <ui:fragment rendered="#{datosProveedorMBean.editandoAnticipoCuenta}">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <div class="form-group">
+                                                        <h:outputLabel value="Fecha giro:"/>
+                                                        <p:calendar id="fechaGiro" pattern="dd-MM-yyyy" class="input-lg mask" pt:placeholder="Fecha Giro" value="#{datosProveedorMBean.fechaGiro}">
+                                                            <p:ajax event="dateSelect" rendered=":formAnticipoCuenta:fechaGiro :formAnticipoCuenta:msg"/>
+                                                        </p:calendar>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ui:fragment>
+                                    </h:panelGroup>                                    
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <p:remoteCommand name="limpiarModalAnticipoCuenta" actionListener="#{datosProveedorMBean.limpiarModalAnticipoCuenta}"/>
+                                            <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="limpiarModalAnticipoCuenta();">
+                                                Cancelar
+                                            </button>
+                                            <ui:fragment rendered="#{datosProveedorMBean.editandoAnticipoCuenta}">
+                                                <p:remoteCommand name="actualizarAnticipoCuenta" actionListener="#{datosProveedorMBean.actualizarAnticipoCuenta}"
+                                                                 update=":formProveedores:panelAnticipoCuenta :msg" oncomplete="cerrarModalAnticipoCuenta();"/>
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="actualizarAnticipoCuenta();">
+                                                    Actualizar
+                                                </button>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{datosProveedorMBean.editandoAnticipoCuenta == false}">
+                                                <p:remoteCommand name="crearAnticipoCuenta" actionListener="#{datosProveedorMBean.crearAnticipoCuenta}"
+                                                                 update=":formProveedores:panelAnticipoCuenta :formAnticipoCuenta:datos :formAnticipoCuenta:msg :formProveedores:datosTransaccionesBancarias"/>
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="crearAnticipoCuenta();">
+                                                    Crear
+                                                </button>
+                                            </ui:fragment>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelInforme">
+                <h:form id="formInforme">
+                    <div class="modal fade" id="modalInforme">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Descargar Informe
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                    <div class="row">
+                                        <div class="col-xs-6 margin-bottom-10">
+                                            <p:remoteCommand name="seleccionarTipoExportacion" actionListener="#{datosProveedorMBean.seleccionarTipoExportacion}"
+                                                             update=":formInforme:tiposExportaciones :formInforme:msg :formInforme:datos :formInforme:btns"/>
+                                            <h:panelGroup id="tiposExportaciones">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon input-group-matisses noround">
+                                                        Tipo exportación
+                                                    </span>
+                                                    <div class="dropdown">
+                                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround"
+                                                                style="width: 100%" id="selTipoExportacion" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                            #{datosProveedorMBean.tipoExportacionSeleccionada}
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selTipoExportacion">
+                                                            <li>
+                                                                <a class="pointer-cursor" onclick="seleccionarTipoExportacion([{name: 'tipoExportacion', value: 'general'}])">
+                                                                    General
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="pointer-cursor" onclick="seleccionarTipoExportacion([{name: 'tipoExportacion', value: 'proveedor'}])">
+                                                                    Proveedor
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </h:panelGroup>
+                                        </div>
+                                        <h:panelGroup id="datos">
+                                            <ui:fragment rendered="#{datosProveedorMBean.tipoExportacion eq 'proveedor'}">
+                                                <div class="col-xs-6 margin-bottom-10">
+                                                    <p:remoteCommand name="seleccionarTipoDatos" actionListener="#{datosProveedorMBean.seleccionarTipoDatos}"
+                                                                     update=":formInforme:msg :formInforme:datos :formInforme:btns"/>
+                                                    <h:panelGroup id="tiposDatos">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Tipo dato
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround"
+                                                                        style="width: 100%" id="selTipoDato" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{datosProveedorMBean.tipoDatoSeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selTipoDato">
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="seleccionarTipoDatos([{name: 'tipoDato', value: 'general'}])">
+                                                                            General
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="seleccionarTipoDatos([{name: 'tipoDato', value: 'proforma'}])">
+                                                                            Proforma
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{datosProveedorMBean.tipoDato eq 'proforma'}">
+                                                <div class="col-xs-6 margin-bottom-10">
+                                                    <p:remoteCommand name="seleccionarProforma" actionListener="#{datosProveedorMBean.seleccionarIdProforma}"
+                                                                     update=":formInforme:msg :formInforme:datos :formInforme:btns"/>
+                                                    <h:panelGroup id="proformas">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Proforma
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround"
+                                                                        style="width: 100%" id="selProforma" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{datosProveedorMBean.idProformaSeleccionada}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selProforma">
+                                                                    <ui:repeat value="#{datosProveedorMBean.proformas}" var="proforma">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarProforma([{name: 'idProforma', value: '#{proforma.idProforma}'}])">
+                                                                                #{proforma.codProveedor} - #{proforma.anio} - #{proforma.consecutivo}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{not empty datosProveedorMBean.tipoExportacion}">
+                                                <div class="col-xs-6 margin-bottom-10">
+                                                    <p:remoteCommand name="seleccionarFiltro" actionListener="#{datosProveedorMBean.seleccionarFiltro}"
+                                                                     update=":formInforme:msg :formInforme:datos :formInforme:btns"/>
+                                                    <h:panelGroup id="filtros">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Filtros
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround"
+                                                                        style="width: 100%" id="selFiltro" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{datosProveedorMBean.filtroSeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selFiltro">
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="seleccionarFiltro([{name: 'filtro', value: 'fecha'}])">
+                                                                            Fecha
+                                                                        </a>
+                                                                    </li>
+                                                                    <!--<li>
+                                                                        <a class="pointer-cursor" onclick="seleccionarFiltro([{name: 'filtro', value: 'prioridad'}])">
+                                                                            Prioridad
+                                                                        </a>
+                                                                    </li>-->
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="seleccionarFiltro([{name: 'filtro', value: 'vencidas'}])">
+                                                                            Vencidas
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{datosProveedorMBean.filtro eq 'fecha'}">
+                                                <div class="col-xs-12">
+                                                    <div class="form-group">
+                                                        <h:outputLabel value="Fecha:"/>
+                                                        <p:calendar pattern="dd-MM-yyyy" class="input-lg mask" pt:placeholder="Fecha" value="#{datosProveedorMBean.fechaFiltro}">
+                                                            <p:ajax event="dateSelect"/>
+                                                        </p:calendar>
+                                                    </div>
+                                                </div>
+                                            </ui:fragment>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <div class="row">
+                                        <div class="col-xs-12 right-component">
+                                            <h:panelGroup id="btns">
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                    Cancelar
+                                                </button>
+                                                <h:commandButton class="btn btn-primary btn-lg noround" value="Exportar" rendered="#{datosProveedorMBean.mostrarBtnExportar or not empty datosProveedorMBean.dato}">
+                                                    <p:fileDownload value="#{datosProveedorMBean.exportarExcel}"/>
+                                                </h:commandButton>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelCrearCuenta">
+                <h:form id="formCrearCuenta">
+                    <div class="modal fade" id="modalCrearCuenta">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Crear Cuenta
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h:panelGroup id="crearCuenta">
+                                        <h:panelGroup rendered="#{datosProveedorMBean.pasoCrearCuenta == 1}">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <h3>
+                                                        BANCO
+                                                    </h3>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <div class="form-group">
+                                                        <h:outputLabel value="Razon social banco" for="txt_banco"/>
+                                                        <h:inputText id="txt_banco" class="form-control input-lg noround" pt:placeholder="Razón social banco"
+                                                                     value="#{datosProveedorMBean.razonSocialBanco}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                 return false;
+                                                                             }"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-10 margin-bottom-10">
+                                                    <p:remoteCommand name="seleccionarBancoCompras" actionListener="#{datosProveedorMBean.seleccionarBancoCompras}"
+                                                                     update=":formCrearCuenta:bancos :formCrearCuenta:txt_banco :formCrearCuenta:btn"/>
+                                                    <h:panelGroup id="bancos">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Bancos
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                        id="selBancos" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{datosProveedorMBean.idBancoSeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selBancos">
+                                                                    <ui:repeat value="#{datosProveedorMBean.bancos}" var="banco">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarBancoCompras([{name: 'idBanco', value: '#{banco.idBanco}'}])">
+                                                                                #{banco.razonSocial}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="seleccionarBancoCompras([{name: 'idBanco', value: '-1'}])">
+                                                                            Nuevo banco
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-2 right-component">
+                                                    <p:remoteCommand name="guardarBancoCompras" action="#{datosProveedorMBean.guardarBancoCompras}"
+                                                                     update=":formCrearCuenta:bancos :formCrearCuenta:txt_banco :formCrearCuenta:btn"/>
+                                                    <button type="button" class="btn btn-default btn-lg noround" onclick="guardarBancoCompras();">
+                                                        Guardar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{datosProveedorMBean.pasoCrearCuenta == 2}">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <h3>
+                                                        SUCURSAL
+                                                    </h3>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-6">
+                                                    <div class="form-group">
+                                                        <h:outputLabel value="Dirección" for="txt_direccion"/>
+                                                        <h:inputText id="txt_direccion" class="form-control input-lg noround" pt:placeholder="Dirección sucursal"
+                                                                     value="#{datosProveedorMBean.direccionSucursal}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                 return false;
+                                                                             }"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-6">
+                                                    <div class="form-group">
+                                                        <h:outputLabel value="Swift" for="txt_swift"/>
+                                                        <h:inputText id="txt_swift" class="form-control input-lg noround" pt:placeholder="Swift"
+                                                                     value="#{datosProveedorMBean.swiftSucursal}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                 return false;
+                                                                             }"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-4 margin-bottom-10">
+                                                    <p:remoteCommand name="seleccionarPais" actionListener="#{datosProveedorMBean.seleccionarPais}"
+                                                                     update=":formCrearCuenta:paises :formCrearCuenta:estados"/>
+                                                    <h:panelGroup id="paises">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                País
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                        id="selPaises" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{datosProveedorMBean.paisSucursalSeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selPaises">
+                                                                    <ui:repeat value="#{datosProveedorMBean.paises}" var="pais">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarPais([{name: 'idPais', value: '#{pais.idPais}'}]);">
+                                                                                #{pais.nombre}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-4 margin-bottom-10">
+                                                    <p:remoteCommand name="seleccionarEstado" actionListener="#{datosProveedorMBean.seleccionarEstado}"
+                                                                     update=":formCrearCuenta:estados :formCrearCuenta:ciudades"/>
+                                                    <h:panelGroup id="estados">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Estado
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg #{datosProveedorMBean.paisSucursal == null ? 'disabled' : ''} noround"
+                                                                        style="width: 100%" id="selEstados" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{datosProveedorMBean.estadoSucursalSeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selEstados">
+                                                                    <ui:repeat value="#{datosProveedorMBean.estados}" var="estado">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarEstado([{name: 'idEstado', value: '#{estado.idEstado}'}]);">
+                                                                                #{estado.nombre}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-4 margin-bottom-10">
+                                                    <p:remoteCommand name="seleccionarCiudad" actionListener="#{datosProveedorMBean.seleccionarCiudad}"
+                                                                     update=":formCrearCuenta:ciudades"/>
+                                                    <h:panelGroup id="ciudades">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Ciudad
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg #{datosProveedorMBean.estadoSucursal == null ? 'disabled' : ''} noround"
+                                                                        style="width: 100%" id="selCiudades" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{datosProveedorMBean.ciudadSucursalSeleccionada}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selCiudades">
+                                                                    <ui:repeat value="#{datosProveedorMBean.ciudadesSucursal}" var="ciudad">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarCiudad([{name: 'idCiudad', value: '#{ciudad.idCiudad}'}])">
+                                                                                #{ciudad.nombre}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-10 margin-bottom-10">
+                                                    <p:remoteCommand name="seleccionarSucursalBanco" actionListener="#{datosProveedorMBean.seleccionarSucursalBanco}"
+                                                                     update=":formCrearCuenta:crearCuenta :formCrearCuenta:btn"/>
+                                                    <h:panelGroup id="sucursales">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Sucursales
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                        id="selSucursales" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{datosProveedorMBean.idSucursalSeleccionada}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selSucursales">
+                                                                    <ui:repeat value="#{datosProveedorMBean.sucursales}" var="sucursal">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarSucursalBanco([{name: 'idSucursalBanco', value: '#{sucursal.idSucursalBanco}'}])">
+                                                                                #{sucursal.direccion}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="seleccionarSucursalBanco([{name: 'idSucursalBanco', value: '-1'}])">
+                                                                            Nueva sucursal
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-2 right-component">
+                                                    <p:remoteCommand name="guardarSucursalBanco" actionListener="#{datosProveedorMBean.guardarSucursalBanco}"
+                                                                     update=":formCrearCuenta:btn :formCrearCuenta:crearCuenta :formCrearCuenta:msgCrearcuenta"/>
+                                                    <button type="button" class="btn btn-default btn-lg noround" onclick="guardarSucursalBanco();">
+                                                        Guardar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{datosProveedorMBean.pasoCrearCuenta == 3}">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <h3>
+                                                        CUENTA
+                                                    </h3>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-4">
+                                                    <div class="form-group">
+                                                        <h:outputLabel value="Cuenta bancaria" for="txt_cuenta"/>
+                                                        <h:inputText id="txt_cuenta" class="form-control input-lg noround" pt:placeholder="Cuenta bancaria"
+                                                                     value="#{datosProveedorMBean.cuentaBancaria}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                 return false;
+                                                                             }"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-4">
+                                                    <div class="form-group">
+                                                        <h:outputLabel value="Iban" for="txt_iban"/>
+                                                        <h:inputText id="txt_iban" class="form-control input-lg noround" pt:placeholder="Iban"
+                                                                     value="#{datosProveedorMBean.ibanCuenta}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                 return false;
+                                                                             }"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-4">
+                                                    <div class="form-group">
+                                                        <h:outputLabel value="Aba" for="txt_aba"/>
+                                                        <h:inputText id="txt_aba" class="form-control input-lg noround" pt:placeholder="Aba"
+                                                                     value="#{datosProveedorMBean.abaCuenta}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                 return false;
+                                                                             }"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-10">
+                                                    <p:remoteCommand name="seleccionarCuentaSucursal" actionListener="#{datosProveedorMBean.seleccionarCuentaSucursal}"
+                                                                     update=":formCrearCuenta:crearCuenta"/>
+                                                    <h:panelGroup id="cuentas">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Cuentas
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                        id="selCuentas" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{datosProveedorMBean.idCuentaSeleccionada}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu" aria-labelledby="selCuentas" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                                    <ui:repeat value="#{datosProveedorMBean.cuentasSucursal}" var="cuenta">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarCuentaSucursal([{name: 'idCuentaSucursal', value: '#{cuenta.idCuentaBancaria}'}])">
+                                                                                #{cuenta.cuentaBancaria}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="seleccionarCuentaSucursal([{name: 'idCuentaSucursal', value: '-1'}])">
+                                                                            Nueva cuenta
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-2 right-component">
+                                                    <p:remoteCommand name="guardarCuentaBancaria" actionListener="#{datosProveedorMBean.guardarCuentaBancaria}"
+                                                                     update=":formCrearCuenta:crearCuenta :formCrearCuenta:btn :formCrearCuenta:msgCrearcuenta"/>
+                                                    <button type="button" class="btn btn-default btn-lg noround" onclick="guardarCuentaBancaria();">
+                                                        Guardar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                    </h:panelGroup>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <div class="row">
+                                        <p:messages id="msgCrearcuenta" showDetail="true" showSummary="true" class="left-component"/>
+                                        <div class="col-xs-12">
+                                            <h:panelGroup id="btn">
+                                                <ui:fragment rendered="#{(datosProveedorMBean.pasoCrearCuenta == 2 and datosProveedorMBean.idBancoCuenta != null and datosProveedorMBean.idBancoCuenta != 0) ? 'true' :
+                                                                         (datosProveedorMBean.pasoCrearCuenta == 3 and datosProveedorMBean.idSucursal != null
+                                                                         and datosProveedorMBean.idSucursal != 0) ? 'true' : 'false'}">
+                                                    <p:remoteCommand name="irAnteriorPaso" actionListener="#{datosProveedorMBean.irAnteriorPaso}"
+                                                                     update=":formCrearCuenta:crearCuenta :formCrearCuenta:btn"/>
+                                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="irAnteriorPaso();">
+                                                        Anterior
+                                                    </button>
+                                                </ui:fragment>
+                                                <p:remoteCommand name="cerrarCreacionCuentaBancaria" actionListener="#{datosProveedorMBean.cerrarCreacionCuentaBancaria}"/>
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="cerrarCreacionCuentaBancaria();"
+                                                        style="margin-left: 0 !important">
+                                                    Cerrar
+                                                </button>
+                                                <ui:fragment rendered="#{(datosProveedorMBean.pasoCrearCuenta == 1 and datosProveedorMBean.idBancoCuenta != null and datosProveedorMBean.idBancoCuenta != 0) ? 'true' :
+                                                                         (datosProveedorMBean.pasoCrearCuenta == 2 and datosProveedorMBean.idSucursal != null
+                                                                         and datosProveedorMBean.idSucursal gt 0) ? 'true' : 'false'}">
+                                                    <p:remoteCommand name="irSiguientePaso" actionListener="#{datosProveedorMBean.irSiguientePaso}"
+                                                                     update=":formCrearCuenta:crearCuenta :formCrearCuenta:btn :formCrearCuenta:msgCrearcuenta"/>
+                                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="irSiguientePaso();">
+                                                        Siguiente
+                                                    </button>
+                                                </ui:fragment>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <ol class="breadcrumb">
+                        <li class="active">
+                            <a>Datos proveedores</a>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+            <h:panelGroup id="tags">
+                <h:form id="formTags">
+                    <p:remoteCommand name="cambiarTag" actionListener="#{datosProveedorMBean.cambiarTag}" update=":formProveedores :formDatosProveedor"/>
+                    <ul id="tabs" class="nav nav-pills">
+                        <li class="active noround">
+                            <a href="#tab_administrar" data-toggle="pill" class="input-lg noround" onclick="cambiarTag();">
+                                Administrar
+                            </a>
+                        </li>
+                        <li class="noround">
+                            <a href="#tab_crear" data-toggle="pill" class="input-lg noround" onclick="cambiarTag();">
+                                Crear
+                            </a>
+                        </li>
+                        <li class="noround">
+                            <a href="#modalInforme" data-toggle="modal" class="input-lg noround" title="Descargar Informe">
+                                <span class="glyphicon glyphicon-download-alt"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </h:form>
+            </h:panelGroup>
+
+            <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_administrar">
+                    <h:form id="formProveedores" class="col-xs-12 center-block" pt:role="form">
+                        <p:focus context="formProveedores" for="txt_busqueda"/>
+                        <h:panelGroup id="administrar">
+                            <div class="row">
+                                <div class="col-xs-offset-3 col-xs-6">
+                                    <div class="form-group has-feedback">
+                                        <p:remoteCommand name="buscar" actionListener="#{datosProveedorMBean.buscarProveedor}"
+                                                         oncomplete="abrirModalBusqueda();" update=":panelBusqueda :msg"/>
+                                        <h:inputText id="txt_busqueda" value="#{datosProveedorMBean.parametroBusqueda}" class="form-control input-lg noround"
+                                                     pt:placeholder="Escribe para filtrar" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                 buscar();
+                                                                 return false;
+                                                             }"/>
+                                        <span class="form-control-feedback glyphicon glyphicon-search inline-search" aria-hidden="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr/>
+                            <h:panelGroup id="proveedor">
+                                <h:panelGroup rendered="#{not empty datosProveedorMBean.codProveedor}">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <ul id="tabsProveedor" class="nav nav-pills">
+                                                <li class="noround">
+                                                    <a href="#datos_proveedor" data-toggle="pill" class="input-lg noround">
+                                                        Datos Proveedor
+                                                    </a>
+                                                </li>
+                                                <li class="noround">
+                                                    <a href="#datos_contenedores" data-toggle="pill" class="input-lg noround">
+                                                        Contenedores
+                                                    </a>
+                                                </li>
+                                                <li class="noround">
+                                                    <a href="#datos_transaccionesBancarias" data-toggle="pill" class="input-lg noround">
+                                                        Transacciones Bancarias
+                                                    </a>
+                                                </li>
+                                                <li class="noround">
+                                                    <a href="#datos_anticipoCuenta" data-toggle="pill" class="input-lg noround">
+                                                        Anticipo Cuenta
+                                                    </a>
+                                                </li>
+                                                <li class="noround">
+                                                    <p:remoteCommand name="crearCuenta" oncomplete="abrirModalCrearCuenta();" actionListener="#{datosProveedorMBean.obtenerBancosCompras}"
+                                                                     update=":formCrearCuenta"/>
+                                                    <a data-toggle="pill" class="input-lg noround" title="Agregar Cuenta" onclick="crearCuenta();"
+                                                       style="cursor: pointer">
+                                                        <div class="row">
+                                                            <div class="col-xs-6 span-plus-create-new-account">
+                                                                <span class="glyphicon glyphicon-plus" style="top: -9px; right: -14px"></span>
+                                                            </div>
+                                                            <div class="col-xs-6">
+                                                                <span class="glyphicon glyphicon-credit-card" style="font-size: 25px"></span>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <div class="row">
+                                        <div class="tab-content">
+                                            <div class="tab-pane" id="datos_proveedor">
+                                                <h:form id="formLogoFileEditando" pt:role="form" enctype="multipart/form-data">
+                                                    <div class="row">
+                                                        <div class="form-group col-xs-12">
+                                                            <h:graphicImage value="#{datosProveedorMBean.rutaImagen}" class="img-responsive" rendered="#{empty datosProveedorMBean.rutaImagen ? 'false' : 'true'}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 margin-bottom-10">
+                                                            <div class="form-group">
+                                                                <h:outputLabel value="Seleccione logo del proveedor:"/>
+                                                                <div class="input-group file-caption-main">
+                                                                    <div class="form-control noround" tabindex="500">
+                                                                        <div class="file-caption-name">
+                                                                            <ui:fragment rendered="#{datosProveedorMBean.fileName(datosProveedorMBean.logoFile) != ''}">
+                                                                                <i class="glyphicon glyphicon-file"></i>
+                                                                                #{datosProveedorMBean.fileName(datosProveedorMBean.logoFile)}
+                                                                            </ui:fragment>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="input-group-btn">
+                                                                        <div class="btn btn-primary btn-file noround" tabindex="500">
+                                                                            <i class="glyphicon glyphicon-folder-open"></i>
+                                                                            &nbsp;
+                                                                            <span>Navegar</span>
+                                                                            <h:inputFile class="file" value="#{datosProveedorMBean.logoFile}">
+                                                                                <f:ajax event="change" render=":formProveedores:formLogoFileEditando :msg" listener="#{datosProveedorMBean.validarDocumentoCargado}"/>
+                                                                            </h:inputFile>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </h:form>
+
+                                                <h:form id="formDatosProveedorEditado">
+                                                    <div class="row">
+                                                        <div class="col-xs-6">
+                                                            <div class="form-group">
+                                                                <h:outputLabel value="Código proveedor:"/>
+                                                                <h:inputText pt:placeholder="Código Proveedor" value="#{datosProveedorMBean.codProveedor}" class="form-control input-lg noround"
+                                                                             autocomplete="off">
+                                                                    <f:ajax event="change"/>
+                                                                </h:inputText>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <div class="form-group">
+                                                                <h:outputLabel value="Nombre socio negocios:"/>
+                                                                <h:inputText pt:placeholder="Nombre Socio Negocios" value="#{datosProveedorMBean.nombreSocioNegocios}" class="form-control input-lg noround"
+                                                                             autocomplete="off">
+                                                                    <f:ajax event="change"/>
+                                                                </h:inputText>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-6">
+                                                            <div class="form-group">
+                                                                <h:outputLabel value="Razón social proveedor:"/>
+                                                                <h:inputText pt:placeholder="Razón Social Proveedor" value="#{datosProveedorMBean.razonSocial}" class="form-control input-lg noround"
+                                                                             autocomplete="off">
+                                                                    <f:ajax event="change"/>
+                                                                </h:inputText>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <div class="form-group">
+                                                                <h:outputLabel value="Teléfono:"/>
+                                                                <h:inputText pt:placeholder="Teléfono" value="#{datosProveedorMBean.telefono}" class="form-control input-lg noround" autocomplete="off">
+                                                                    <f:ajax event="change"/>
+                                                                </h:inputText>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <div class="form-group">
+                                                                <h:outputLabel value="Dirección:"/>
+                                                                <h:inputText pt:placeholder="Dirección" value="#{datosProveedorMBean.direccion}" class="form-control input-lg noround" autocomplete="off">
+                                                                    <f:ajax event="change"/>
+                                                                </h:inputText>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-6">
+                                                            <div class="form-group">
+                                                                <h:outputLabel value="Correo:"/>
+                                                                <h:inputText pt:type="email" pt:placeholder="Correo" value="#{datosProveedorMBean.correo}" class="form-control input-lg noround"
+                                                                             autocomplete="off">
+                                                                    <f:ajax event="change"/>
+                                                                </h:inputText>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <div class="form-group">
+                                                                <h:outputLabel value="Persona contacto:"/>
+                                                                <h:inputText pt:placeholder="Persona Contacto" value="#{datosProveedorMBean.personaContacto}" class="form-control input-lg noround"
+                                                                             autocomplete="off">
+                                                                    <f:ajax event="change"/>
+                                                                </h:inputText>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-6 margin-bottom-10">
+                                                            <p:remoteCommand name="seleccionarPaisActualizar" actionListener="#{datosProveedorMBean.seleccionarPaisProveedor}"
+                                                                             update=":formProveedores:formDatosProveedorEditado:paisActualizacion
+                                                                             :formProveedores:formDatosProveedorEditado:estadoActualizacion"
+                                                                             oncomplete="cerrarModalEspera();"/>
+                                                            <h:panelGroup id="paisActualizacion">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon input-group-matisses noround">
+                                                                        País
+                                                                    </span>
+                                                                    <div class="dropdown">
+                                                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                                id="selPaisActualizacion" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                            #{datosProveedorMBean.paisSeleccionado}
+                                                                            <span class="caret"></span>
+                                                                        </button>
+                                                                        <ul class="dropdown-menu" aria-labelledby="selPaisActualizacion" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                                            <ui:repeat value="#{datosProveedorMBean.paises}" var="pais">
+                                                                                <li>
+                                                                                    <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                                            seleccionarPaisActualizar([{name: 'idPais', value: '#{pais.idPais}'}]);">
+                                                                                        #{pais.nombre}
+                                                                                    </a>
+                                                                                </li>
+                                                                            </ui:repeat>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </h:panelGroup>
+                                                        </div>
+                                                        <div class="col-xs-6 margin-bottom-10">
+                                                            <p:remoteCommand name="seleccionarEstadoActualizar" actionListener="#{datosProveedorMBean.seleccionarEstadoProveedor}"
+                                                                             update=":formProveedores:formDatosProveedorEditado:estadoActualizacion" oncomplete="cerrarModalEspera();"/>
+                                                            <h:panelGroup id="estadoActualizacion">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon input-group-matisses noround">
+                                                                        Estado
+                                                                    </span>
+                                                                    <div class="dropdown">
+                                                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                                id="selEstadoActualizacion" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                            #{datosProveedorMBean.estadoSeleccionado}
+                                                                            <span class="caret"></span>
+                                                                        </button>
+                                                                        <ul class="dropdown-menu" aria-labelledby="selEstadoActualizacion" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                                            <ui:repeat value="#{datosProveedorMBean.estados}" var="estado">
+                                                                                <li>
+                                                                                    <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                                            seleccionarEstadoActualizar([{name: 'idEstado', value: '#{estado.idEstado}'}]);">
+                                                                                        #{estado.nombre}
+                                                                                    </a>
+                                                                                </li>
+                                                                            </ui:repeat>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </h:panelGroup>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 right-component">
+                                                            <h:commandButton styleClass="btn btn-primary btn-lg noround" value="Actualizar" action="#{datosProveedorMBean.actualizarProveedor}">
+                                                                <f:ajax event="action" render=":msg"/>
+                                                            </h:commandButton>
+                                                        </div>
+                                                    </div>
+                                                    <br/>
+                                                </h:form>
+                                            </div>
+
+                                            <div class="tab-pane" id="datos_contenedores">
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <h:panelGroup id="datosContenedor">
+                                                            <ui:repeat id="proformas" value="#{datosProveedorMBean.proformas}" var="prof">
+                                                                <h:panelGroup rendered="#{not empty prof.contenedores}">
+                                                                    <div class="row">
+                                                                        <div class="col-xs-12 center-component">
+                                                                            <h3>
+                                                                                <b>Proforma: #{prof.codProveedor} - #{prof.anio} - #{prof.consecutivo}</b>
+                                                                            </h3>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-xs-12 center-component">
+                                                                            <h4>
+                                                                                <h:outputText value="Contenedores: #{prof.contenedoresConsolidados}"/>
+                                                                            </h4>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-xs-2 right-component">
+                                                                            <h4>
+                                                                                Comentario:
+                                                                            </h4>
+                                                                        </div>
+                                                                        <div class="col-xs-10">
+                                                                            <h:inputText class="form-control input-lg noround" value="#{prof.comentario}" pt:placeholder="Comentario">
+                                                                                <f:ajax event="change" listener="#{datosProveedorMBean.actualizarComentarioProforma(prof.idProforma)}"/>
+                                                                            </h:inputText>
+                                                                        </div>
+                                                                    </div>
+                                                                    <br/>
+                                                                    <div class="row">
+                                                                        <div class="col-xs-12">
+                                                                            <table id="cont" class="table table-bordered table-striped">
+                                                                                <tr>
+                                                                                    <th class="head-tabla">
+                                                                                        Contenedor
+                                                                                    </th>
+                                                                                    <th class="head-tabla">
+                                                                                        Fecha Embarque
+                                                                                    </th>
+                                                                                    <th class="head-tabla">
+                                                                                        T.P
+                                                                                    </th>
+                                                                                    <th class="head-tabla">
+                                                                                        T.T
+                                                                                    </th>
+                                                                                    <th class="head-tabla">
+                                                                                        Fecha Vencimiento
+                                                                                    </th>
+                                                                                    <th class="head-tabla">
+                                                                                        Fecha Max Pago
+                                                                                    </th>
+                                                                                    <th class="head-tabla">
+                                                                                        Días Vencidos
+                                                                                    </th>
+                                                                                </tr>
+                                                                                <ui:repeat value="#{prof.contenedores}" var="cont">
+                                                                                    <tr>
+                                                                                        <td class="center-component" style="width: 130px">
+                                                                                            <div class="row">
+                                                                                                <div class="col-xs-12" style="top: 13px">
+                                                                                                    #{cont.contenedorProveedor.contenedor.nombreCorto}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                        <td style="width: 220px">
+                                                                                            <p:calendar pattern="dd-MM-yyyy" class="input-lg mask" pt:placeholder="Fecha Embarque"
+                                                                                                        value="#{cont.fechaEmbarque}">
+                                                                                                <p:ajax event="dateSelect" update=":formProveedores:proformas"
+                                                                                                        listener="#{datosProveedorMBean.modificarFechaContenedor(cont.idContenedorProforma, 
+                                                                                                                    cont.fechaEmbarque, null, null)}"/>
+                                                                                            </p:calendar>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <h:inputText pt:placeholder="T.P" class="form-control input-lg noround" style="width: 90px"
+                                                                                                         value="#{cont.tiempoProduccion}">
+                                                                                                <f:ajax event="change"
+                                                                                                        listener="#{datosProveedorMBean.actualizarTiempos(cont.idContenedorProforma, cont.tiempoProduccion, null)}"/>
+                                                                                            </h:inputText>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <h:inputText pt:placeholder="T.T" class="form-control input-lg noround" style="width: 90px"
+                                                                                                         value="#{cont.tiempoTransito}">
+                                                                                                <f:ajax event="change"
+                                                                                                        listener="#{datosProveedorMBean.actualizarTiempos(cont.idContenedorProforma, null, cont.tiempoTransito)}"/>
+                                                                                            </h:inputText>
+                                                                                        </td>
+                                                                                        <td style="width: 220px">
+                                                                                            <p:calendar pattern="dd-MM-yyyy" class="input-lg mask" pt:placeholder="Fecha Vencimiento"
+                                                                                                        value="#{cont.fechaVencimiento}">
+                                                                                                <p:ajax event="dateSelect" update=":formProveedores:datosContenedor"
+                                                                                                        listener="#{datosProveedorMBean.modificarFechaContenedor(cont.idContenedorProforma, null, 
+                                                                                                                    cont.fechaVencimiento, null)}"/>
+                                                                                            </p:calendar>
+                                                                                        </td>
+                                                                                        <td style="width: 220px">
+                                                                                            <p:calendar pattern="dd-MM-yyyy" class="input-lg mask" pt:placeholder="Fecha Max Pago"
+                                                                                                        value="#{cont.fechaMaximaPago}">
+                                                                                                <p:ajax event="dateSelect" update=":formProveedores:proformas"
+                                                                                                        listener="#{datosProveedorMBean.modificarFechaContenedor(cont.idContenedorProforma, null, null, 
+                                                                                                                    cont.fechaMaximaPago)}"/>
+                                                                                            </p:calendar>
+                                                                                        </td>
+                                                                                        <td class="center-component">
+                                                                                            <div class="row">
+                                                                                                <div class="col-xs-12" style="top: 13px">
+                                                                                                    #{datosProveedorMBean.calcularDiasVencidos(cont.fechaVencimiento)}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </ui:repeat>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </h:panelGroup>
+                                                            </ui:repeat>
+                                                        </h:panelGroup>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane" id="datos_transaccionesBancarias">
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <h:panelGroup id="datosTransaccionesBancarias">
+                                                            <div class="row">
+                                                                <p:messages id="msgTransacciones" showDetail="true" showSummary="true"/>
+                                                            </div>
+                                                            <ui:repeat id="transacciones" value="#{datosProveedorMBean.proformas}" var="prof">
+                                                                <div class="row">
+                                                                    <div class="col-xs-12 center-component">
+                                                                        <h3>
+                                                                            <b>Proforma: #{prof.codProveedor} - #{prof.anio} - #{prof.consecutivo}</b>
+                                                                        </h3>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-xs-3" style="top: 10px">
+                                                                        <span class="input-lg">
+                                                                            <b style="color: #BF0039">Total: </b>#{baruGenericMBean.getValorFormateado('Double', prof.valorTotal, 2)}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="col-xs-3" style="top: 10px">
+                                                                        <span class="input-lg">
+                                                                            <b style="color: #BF0039">Pendiente: </b>#{baruGenericMBean.getValorFormateado('Double', prof.valorPendiente, 2)}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="col-xs-3" style="top: 10px">
+                                                                        <span class="input-lg">
+                                                                            <b style="color: #BF0039">Transferido: </b>#{baruGenericMBean.getValorFormateado('Double', prof.valorTransferido, 2)}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="col-xs-2" style="top: 10px">
+                                                                        <span class="input-lg">
+                                                                            <b style="color: #BF0039">Moneda: </b>#{baruGenericMBean.getValorFormateado('Double', prof.idTipoMoneda.simbolo, 2)}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="col-xs-1 right-component">
+                                                                        <h:panelGroup rendered="#{prof.valorTotal == null || prof.valorTotal == 0 ? 'false' : 'true'}">
+                                                                            <p:remoteCommand name="agregarTransaccionBancaria" actionListener="#{datosProveedorMBean.seleccionarProformaTransaccionar}"
+                                                                                             update=":panelTransaccion" oncomplete="abrirModalTransaccion();"/>
+                                                                            <button type="button" class="btn btn-default btn-lg noround btn-transacciones"
+                                                                                    onclick="agregarTransaccionBancaria([{name: 'idProforma', value: '#{prof.idProforma}'}]);">
+                                                                                <span class="glyphicon glyphicon-plus" style="font-size: 15px"></span>
+                                                                            </button>
+                                                                        </h:panelGroup>
+                                                                    </div>
+                                                                </div>
+                                                                <br/>
+                                                                <div class="row">
+                                                                    <div class="col-xs-12">
+                                                                        <table class="table table-bordered table-striped">
+                                                                            <tr>
+                                                                                <th class="head-tabla">
+                                                                                    Fecha Giro
+                                                                                </th>
+                                                                                <th class="head-tabla">
+                                                                                    Valor Giro
+                                                                                </th>
+                                                                                <th class="head-tabla">
+                                                                                    % Anticipo
+                                                                                </th>
+                                                                                <th class="head-tabla">
+                                                                                    Anticipo
+                                                                                </th>
+                                                                                <th class="head-tabla">
+                                                                                    Anticipo Cuenta
+                                                                                </th>
+                                                                                <th class="head-tabla">
+                                                                                    Balance
+                                                                                </th>
+                                                                                <th class="head-tabla">
+                                                                                    Tipo
+                                                                                </th>
+                                                                                <th class="head-tabla">
+                                                                                    Comentario
+                                                                                </th>
+                                                                                <th class="head-tabla"></th>
+                                                                                <th class="head-tabla"></th>
+                                                                                <!--<th class="head-tabla"></th>-->
+                                                                            </tr>
+                                                                            <ui:repeat value="#{prof.transacciones}" var="trans">
+                                                                                <tr style="#{trans.cancelado ? 'background-color: #EEEEEE; color: #999999' : ''}">
+                                                                                    <td>
+                                                                                        <h:outputText value="#{trans.fechaGiro}">
+                                                                                            <f:convertDateTime pattern="yyyy-MM-dd"/>
+                                                                                        </h:outputText>
+                                                                                    </td>
+                                                                                    <td class="right-component">
+                                                                                        <h:outputText value="#{baruGenericMBean.getValorFormateado('Double', trans.totalGiro, 2)}"/>
+                                                                                    </td>
+                                                                                    <td class="right-component">
+                                                                                        <ui:fragment rendered="#{trans.porcentajeAnticipo gt 0}">
+                                                                                            <h:outputText value="#{trans.porcentajeAnticipo}%"/>
+                                                                                        </ui:fragment>
+                                                                                    </td>
+                                                                                    <td class="right-component">
+                                                                                        <h:outputText value="#{baruGenericMBean.getValorFormateado('Double', trans.anticipo, 2)}"/>
+                                                                                    </td>
+                                                                                    <td class="right-component">
+                                                                                        <h:outputText value="#{baruGenericMBean.getValorFormateado('Double', trans.anticipoCuenta, 2)}"/>
+                                                                                    </td>
+                                                                                    <td class="right-component">
+                                                                                        <h:outputText value="#{baruGenericMBean.getValorFormateado('Double', trans.balance, 2)}"/>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <h:outputText value="#{trans.tipoGiro}"/>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <h:outputText value="#{trans.descripcion}"/>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <div class="row">
+                                                                                            <div class="col-xs-12 center-component">
+                                                                                                <p:remoteCommand name="visualizarTransaccion" actionListener="#{datosProveedorMBean.editarTransaccionBancaria}"
+                                                                                                                 update=":panelTransaccion" oncomplete="abrirModalTransaccion();"/>
+                                                                                                <ui:fragment rendered="#{trans.cancelado == false and trans.tipoGiro != 'ROLL ON'}">
+                                                                                                    <div class="btn-transacciones"
+                                                                                                         onclick="visualizarTransaccion([{name: 'idTransaccion', value: '#{trans.idTransaccionBancaria}'}])">
+                                                                                                        <span class="glyphicon glyphicon-eye-open"></span>
+                                                                                                    </div>
+                                                                                                </ui:fragment>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <div class="row">
+                                                                                            <div class="col-xs-12 center-component">
+                                                                                                <ui:fragment rendered="#{trans.cancelado == false}">
+                                                                                                    <ui:fragment rendered="#{trans.existePdf}">
+                                                                                                        <div class="btn-transacciones" onclick="openPdf('#{trans.rutaDocumento}');">
+                                                                                                            <span class="glyphicon glyphicon-print"></span>
+                                                                                                        </div>
+                                                                                                    </ui:fragment>
+                                                                                                    <ui:fragment rendered="#{not trans.existePdf}">
+                                                                                                        <p:remoteCommand name="reprocesarTransaccion" actionListener="#{datosProveedorMBean.reprocesarPdfTransaccion}"
+                                                                                                                         update=":formProveedores:datosTransaccionesBancarias"/>
+                                                                                                        <div class="btn-transacciones"
+                                                                                                             onclick="reprocesarTransaccion([{name: 'idTransaccion', value: '#{trans.idTransaccionBancaria}'}]);">
+                                                                                                            <span class="glyphicon glyphicon-refresh"></span>
+                                                                                                        </div>
+                                                                                                    </ui:fragment>
+                                                                                                </ui:fragment>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                    <!--<td>
+                                                                                        <div class="row">
+                                                                                            <div class="col-xs-12 center-component">
+                                                                                                <ui:fragment rendered="#{trans.cancelado == false}">
+                                                                                                    <div class="btn-transacciones">
+                                                                                                        <span class="glyphicon glyphicon-picture"></span>
+                                                                                                    </div>
+                                                                                                </ui:fragment>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </td>-->
+                                                                                </tr>
+                                                                            </ui:repeat>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </ui:repeat>
+                                                        </h:panelGroup>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane" id="datos_anticipoCuenta">
+                                                <h:panelGroup id="panelAnticipoCuenta">
+                                                    <div class="row">
+                                                        <div class="col-xs-10 right-component" style="top: 8px">
+                                                            <h4>
+                                                                <b style="color: #BF0039">Anticipos disponibles: </b>#{datosProveedorMBean.anticipoCuentaDisponible}
+                                                            </h4>
+                                                        </div>
+                                                        <div class="col-xs-2" style="top: 5px">
+                                                            <div class="row">
+                                                                <div class="col-xs-12 right-component">
+                                                                    <p:remoteCommand name="decidirTipoAnticipoCuenta" actionListener="#{datosProveedorMBean.decidirTipoAnticipoCuenta}"
+                                                                                     oncomplete="abrirModalAnticipoCuenta();" update=":panelAnticipoCuenta"/>
+                                                                    <button type="button" class="btn btn-default btn-lg noround btn-transacciones"
+                                                                            onclick="decidirTipoAnticipoCuenta([{name: 'tipoAnticipoCuenta', value: 'Nuevo'}]);">
+                                                                        <span class="glyphicon glyphicon-plus" style="font-size: 13px"></span>
+                                                                    </button>
+                                                                    <button type="button" class="btn btn-default btn-lg noround btn-transacciones"
+                                                                            onclick="decidirTipoAnticipoCuenta([{name: 'tipoAnticipoCuenta', value: 'Usar'}]);">
+                                                                        <span class="glyphicon glyphicon-minus" style="font-size: 13px"></span>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <br/>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <table class="table table-bordered table-striped">
+                                                                <tr>
+                                                                    <th class="head-tabla">
+                                                                        Fecha
+                                                                    </th>
+                                                                    <th class="head-tabla">
+                                                                        Fecha Giro
+                                                                    </th>
+                                                                    <th class="head-tabla">
+                                                                        Cuenta
+                                                                    </th>
+                                                                    <th class="head-tabla">
+                                                                        Valor
+                                                                    </th>
+                                                                    <th class="head-tabla">
+                                                                        Moneda
+                                                                    </th>
+                                                                    <th class="head-tabla">
+                                                                        Proforma
+                                                                    </th>
+                                                                    <th class="head-tabla">
+                                                                        Comentario
+                                                                    </th>
+                                                                    <th class="head-tabla">
+                                                                        Usuario
+                                                                    </th>
+                                                                    <th class="head-tabla"></th>
+                                                                    <th class="head-tabla"></th>
+                                                                </tr>
+                                                                <ui:repeat value="#{datosProveedorMBean.anticiposCuenta}" var="anticiposCuenta">
+                                                                    <tr>
+                                                                        <td class="center-component">
+                                                                            <h:outputText value="#{anticiposCuenta.fecha}">
+                                                                                <f:convertDateTime pattern="yyyy-MM-dd"/>
+                                                                            </h:outputText>
+                                                                        </td>
+                                                                        <td class="center-component">
+                                                                            <h:outputText value="#{anticiposCuenta.fechaGiro}">
+                                                                                <f:convertDateTime pattern="yyyy-MM-dd"/>
+                                                                            </h:outputText>
+                                                                        </td>
+                                                                        <td class="center-component">
+                                                                            <h:outputText value="#{anticiposCuenta.idCuentaBancaria.cuentaBancaria}"/>
+                                                                        </td>
+                                                                        <td class="right-component">
+                                                                            <h:outputText value="#{baruGenericMBean.getValorFormateado('Double', anticiposCuenta.valor, 2)}"/>
+                                                                        </td>
+                                                                        <td class="center-component">
+                                                                            <h:outputText value="#{anticiposCuenta.idTipoMoneda.simbolo}"/>
+                                                                        </td>
+                                                                        <td class="center-component">
+                                                                            <h:outputText value="#{datosProveedorMBean.obtenerProformaMostrar(anticiposCuenta)}"/>
+                                                                        </td>
+                                                                        <td>
+                                                                            <h:outputText value="#{anticiposCuenta.comentario}"/>
+                                                                        </td>
+                                                                        <td class="center-component">
+                                                                            <h:outputText value="#{anticiposCuenta.usuario}"/>
+                                                                        </td>
+                                                                        <td class="center-component">
+                                                                            <ui:fragment rendered="#{anticiposCuenta.valor gt 0}">
+                                                                                <span class="glyphicon glyphicon-arrow-up" style="color: #78C700"></span>
+                                                                            </ui:fragment>
+                                                                            <ui:fragment rendered="#{anticiposCuenta.valor lt 0}">
+                                                                                <span class="glyphicon glyphicon-arrow-down" style="color: #BF0039"></span>
+                                                                            </ui:fragment>
+                                                                        </td>
+                                                                        <td class="center-component">
+                                                                            <ui:fragment rendered="#{anticiposCuenta.fechaGiro == null}">
+                                                                                <p:remoteCommand name="seleccionarAnticipoCuenta" actionListener="#{datosProveedorMBean.seleccionarAnticipoCuenta}"
+                                                                                                 update=":panelAnticipoCuenta" oncomplete="cerrarModalEspera(); abrirModalAnticipoCuenta();"/>
+                                                                                <span class="glyphicon glyphicon-eye-open" style="cursor: pointer"
+                                                                                      onclick="abrirModalEspera();
+                                                                                              seleccionarAnticipoCuenta([{name: 'idAnticipoCuenta', value: '#{anticiposCuenta.idAnticipoCuenta}'}]);"></span>
+                                                                            </ui:fragment>
+                                                                        </td>
+                                                                    </tr>
+                                                                </ui:repeat>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </h:panelGroup>
+                            </h:panelGroup>
+                        </h:panelGroup>
+                    </h:form>
+                </div>
+
+                <div class="tab-pane" id="tab_crear">
+                    <br/>
+                    <h:panelGroup id="datos">
+                        <h:form id="formDatosProveedor">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Código proveedor:"/>
+                                        <h:inputText pt:placeholder="Código Proveedor" value="#{datosProveedorMBean.codProveedor}" class="form-control input-lg noround" autocomplete="off"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Nombre socio negocios:"/>
+                                        <h:inputText pt:placeholder="Nombre Socio Negocios" value="#{datosProveedorMBean.nombreSocioNegocios}" class="form-control input-lg noround" autocomplete="off"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Razón social proveedor:"/>
+                                        <h:inputText pt:placeholder="Razón Social Proveedor" value="#{datosProveedorMBean.razonSocial}" class="form-control input-lg noround" autocomplete="off"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Teléfono:"/>
+                                        <h:inputText pt:placeholder="Teléfono" value="#{datosProveedorMBean.telefono}" class="form-control input-lg noround" autocomplete="off"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Dirección:"/>
+                                        <h:inputText pt:placeholder="Dirección" value="#{datosProveedorMBean.direccion}" class="form-control input-lg noround" autocomplete="off"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Correo:"/>
+                                        <h:inputText pt:type="email" pt:placeholder="Correo" value="#{datosProveedorMBean.correo}" class="form-control input-lg noround" autocomplete="off"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Persona contacto:"/>
+                                        <h:inputText pt:placeholder="Persona Contacto" value="#{datosProveedorMBean.personaContacto}" class="form-control input-lg noround" autocomplete="off"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6 margin-bottom-10">
+                                    <p:remoteCommand name="seleccionarPaisProveedor" actionListener="#{datosProveedorMBean.seleccionarPaisProveedor}"
+                                                     update=":formDatosProveedor:paises :formDatosProveedor:estados"/>
+                                    <h:panelGroup id="paises">
+                                        <div class="input-group">
+                                            <span class="input-group-addon input-group-matisses noround">
+                                                País
+                                            </span>
+                                            <div class="dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround"
+                                                        style="width: 100%" id="selPaises" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    #{datosProveedorMBean.paisSeleccionado}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selPaises">
+                                                    <ui:repeat value="#{datosProveedorMBean.paises}" var="pais">
+                                                        <li>
+                                                            <a class="pointer-cursor" onclick="seleccionarPaisProveedor([{name: 'idPais', value: '#{pais.idPais}'}])">
+                                                                #{pais.nombre}
+                                                            </a>
+                                                        </li>
+                                                    </ui:repeat>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                                <div class="col-xs-6 margin-bottom-10">
+                                    <p:remoteCommand name="seleccionarEstadoProveedor" actionListener="#{datosProveedorMBean.seleccionarEstadoProveedor}"
+                                                     update=":formDatosProveedor:estados"/>
+                                    <h:panelGroup id="estados">
+                                        <div class="input-group">
+                                            <span class="input-group-addon input-group-matisses noround">
+                                                Estado
+                                            </span>
+                                            <div class="dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround #{datosProveedorMBean.pais == null ? 'disabled' : ''}"
+                                                        style="width: 100%" id="selEstados" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    #{datosProveedorMBean.estadoSeleccionado}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selEstados">
+                                                    <ui:repeat value="#{datosProveedorMBean.estados}" var="estado">
+                                                        <li>
+                                                            <a class="pointer-cursor" onclick="seleccionarEstadoProveedor([{name: 'idEstado', value: '#{estado.idEstado}'}])">
+                                                                #{estado.nombre}
+                                                            </a>
+                                                        </li>
+                                                    </ui:repeat>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 right-component">
+                                    <p:remoteCommand name="limpiar" actionListener="#{datosProveedorMBean.limpiar}" update=":formDatosProveedor :msg"/>
+                                    <p:remoteCommand name="guardarProveedor" actionListener="#{datosProveedorMBean.guardarProveedor}" update=":formDatosProveedor :msg"/>
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="limpiar();">
+                                        Cancelar
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="guardarProveedor();">
+                                        Guardar
+                                    </button>
+                                </div>
+                            </div>
+                        </h:form>
+                    </h:panelGroup>
+                </div>
+            </div>
+            <br/>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

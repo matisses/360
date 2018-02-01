@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script src="/360/js/arriba.js"></script>
+        <title>360 - Sincronizar Filtros Inventario</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        <span class="ir-arriba">
+            <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+        </span>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <ol class="breadcrumb">
+                        <li class="active">
+                            <a>Actualizar filtros lista inventario</a>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+            <h:form id="formSincronizarFiltros">
+                <div class="row">
+                    <div class="col-xs-12 right-component">
+                        <p:remoteCommand name="actualizarFiltros" actionListener="#{sincronizarFiltrosListaProductosMBean.actualizarFiltros}" oncomplete="cerrarModalEspera();"
+                                         update=":formSincronizarFiltros:datosActualizados"/>
+                        <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); actualizarFiltros();">
+                            Actualizar filtros
+                        </button>
+                    </div>
+                </div>
+                <hr/>
+
+                <h:panelGroup id="datosActualizados">
+                    <div class="row">
+                        <ui:repeat value="#{sincronizarFiltrosListaProductosMBean.filtrosObtenidos}" var="filtro">
+                            <div class="col-xs-12 col-sm-6 col-md-4 center-component margin-bottom-10">
+                                <div style="border: 1px solid #DDDDDD; padding: 5px; height: 84px">
+                                    <div class="row">
+                                        <div class="col-xs-4" style="font-size: 17px">
+                                            #{filtro[0]}
+                                        </div>
+                                        <div class="col-xs-8" style="font-size: 17px; border-left: 1px solid #BF0039">
+                                            #{filtro[1]}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </div>
+                </h:panelGroup>
+            </h:form>
+        </div>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

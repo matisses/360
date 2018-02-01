@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>Actualización Precios</title>
+        <script>
+            function asyncInitClick() {
+                $("[id$='asyncInit']").click();
+            }
+        </script>
+    </h:head>
+    <h:body >
+        <div id="wrap">
+            <div class="container">
+                <h:form id="formActPrecios">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <p:messages autoUpdate="true" showDetail="true" showSummary="true" showIcon="true"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6 center-component">
+                            <h:panelGroup id="btn_iniciar">
+                                <p:commandLink id="asyncInit" actionListener="#{actualizacionPreciosMBean.iniciar}" async="true" style="display: none;" update="@form"/>
+                                <button type="button" class="btn btn-primary btn-lg noround" 
+                                        onclick="asyncInitClick();" >
+                                    Iniciar
+                                </button>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 center-component">
+                            <p:remoteCommand name="consultar" actionListener="#{actualizacionPreciosMBean.actualizarEstado}" update=":formActPrecios"/>
+                            <button type="button" class="btn btn-primary btn-lg noround" onclick="consultar();">
+                                Consultar Estado
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row center-component">
+                        <ui:fragment rendered="#{actualizacionPreciosMBean.ultimo ne null}">
+                            <div class="col-xs-12">
+                                <h2>Última referencia</h2>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 left-component">
+                                <div class="row">
+                                    <div class="col-xs-12">referencia</div>
+                                    <div class="col-xs-12"><span style="font-size: 30px;">#{actualizacionPreciosMBean.ultimo.referenciaCorta}</span></div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 left-component">
+                                <div class="row">
+                                    <div class="col-xs-12">última actialización hace (segundos)</div>
+                                    <div class="col-xs-12"><span style="font-size: 30px;">#{actualizacionPreciosMBean.obtenerSegundosDiferencia(actualizacionPreciosMBean.ultimo.actualizado)}</span></div>
+                                </div>
+                            </div>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{actualizacionPreciosMBean.ultimo eq null}">
+                            <div class="col-xs-12">
+                                <h2>No se ha procesado ninguna referencia</h2>
+                            </div>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{not empty actualizacionPreciosMBean.itemsPendientes}">
+                            <div class="col-xs-12">
+                                <h2>Item #{actualizacionPreciosMBean.productosProcesados} de #{actualizacionPreciosMBean.itemsPendientes.size()}</h2>
+                            </div>
+                        </ui:fragment>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

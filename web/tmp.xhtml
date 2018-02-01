@@ -1,0 +1,309 @@
+<p:tabView id="pagos">
+<p:tab title="Tarjetas">
+<table style="width: 100%">
+<tr>
+<td style="vertical-align: bottom">
+<table>
+<tr>
+<td style="text-align: right">
+<h:outputLabel for="sel_tarjeta" value="Tarjeta: "/>
+</td>
+<td>
+<h:selectOneMenu id="sel_tarjeta" value="#{venderBonosMBean.tarjeta}"
+                                                 style="visibility: #{venderBonosMBean.montoBono == null || venderBonosMBean.montoBono == 0 || venderBonosMBean.totalAcumulado == 0 ? 'hidden' : 'visible'}; width: 206px">
+<f:selectItem itemLabel="Seleccione..." itemValue=""/>
+<f:selectItems value="#{venderBonosMBean.mediosPagos}" var="medio" itemLabel="#{medio.cardName}" itemValue="#{medio.creditCard}"/>
+<f:ajax event="change" render=":form:pagos:tipoTarjeta" listener="#{venderBonosMBean.obtenerTiposTarjetas}"/>
+</h:selectOneMenu>
+</td>
+</tr>
+<tr>
+<td style="text-align: right">
+<h:outputLabel for="nroTarjeta: " value="4 dígitos: "/>
+</td>
+<td style="text-align: left">
+<h:inputText id="nroTarjeta" maxlength="4" value="#{venderBonosMBean.nroTarjeta}" autocomplete="off" size="5"
+         onkeypress="if (event.keyCode == 13) {
+                     return false;
+                 }"
+         style="visibility: #{venderBonosMBean.montoBono == null || venderBonosMBean.montoBono == 0 || venderBonosMBean.totalAcumulado == 0 ? 'hidden' : 'visible'}"/>
+</td>
+</tr>
+<tr>
+<td style="text-align: right">
+<h:outputLabel for="valor" value="Valor: "/>
+</td>
+<td>
+<h:inputText id="valor" value="#{venderBonosMBean.valorTarjeta}" onkeypress="if (event.keyCode == 13) {
+        return false;
+    }" autocomplete="off"
+         style="width: 166px; visibility: #{venderBonosMBean.montoBono == null || venderBonosMBean.montoBono == 0 || venderBonosMBean.totalAcumulado == 0 ? 'hidden' : 'visible'}"/>
+<h:commandButton id="btnTotal" value="Total" image="../images/btnTotal.png" action="#{venderBonosMBean.agregarTotalCompletoTarjeta}" onclick="PF('statusDialog').show()"
+             style="visibility: #{empty venderBonosMBean.totalBono or venderBonosMBean.totalAcumulado == 0 ? 'hidden' : 'visible'}; vertical-align: bottom">
+<f:ajax event="change" render=":form:pagos:valor :form:pagos:btnTotal"/>
+</h:commandButton>
+</td>
+</tr>
+<tr>
+<td style="text-align: right">
+<h:outputLabel value="Nro. Voucher: "/>
+</td>
+<td>
+<h:inputText id="voucher" value="#{venderBonosMBean.voucher}" autocomplete="off"
+         onkeypress="if (event.keyCode == 13) {
+                     return false;
+                 }"
+         style="visibility: #{venderBonosMBean.montoBono == null || venderBonosMBean.montoBono == 0 || venderBonosMBean.totalAcumulado == 0 ? 'hidden' : 'visible'}"/>
+</td>
+</tr>
+<tr>
+<td style="text-align: right">
+<h:outputLabel for="tipoTarjeta" value="Tipo Tarjeta: "/>
+</td>
+<td>
+<h:selectOneMenu id="tipoTarjeta" disabled="#{empty venderBonosMBean.tarjeta ? 'true' : 'false'}" value="#{venderBonosMBean.tipo}"
+             style="width: 206px; visibility: #{venderBonosMBean.montoBono == null || venderBonosMBean.montoBono == 0 || venderBonosMBean.totalAcumulado == 0 ? 'hidden' : 'visible'}">
+<f:selectItem itemLabel="Seleccione..." itemValue=""/>
+<f:selectItems value="#{venderBonosMBean.tarjetas}" var="tarjeta" itemLabel="#{tarjeta.banco}(#{tarjeta.claseTarjeta}) - #{tarjeta.franquicia} - #{tarjeta.tipo}"
+               itemValue="#{tarjeta.idTarjeta}"/>
+<f:selectItem itemLabel="Nuevo" itemValue="0"/>
+<f:ajax event="change" render=":form:pagos:tipoTarjeta :form:pagos:franquicia :form:pagos:banco :form:pagos:tipo :form:pagos:clase :form:pagos:btn :form:pagos:btnTotal"
+        listener="#{venderBonosMBean.activarCreacionTarjeta}"/>
+</h:selectOneMenu>
+</td>
+</tr>
+</table>
+</td>
+<td style="vertical-align: top">
+<table>
+<tr>
+<td colspan="2">
+<h:inputText id="franquicia" value="#{venderBonosMBean.franquicia}" autocomplete="off" onkeypress="if (event.keyCode == 13) {
+        return false;
+    }"
+         style="visibility: #{venderBonosMBean.crearTarjeta ? 'visible' : 'hidden'}; width: 228px"/>
+<p:watermark for="franquicia" value="Franquicia"/>
+</td>
+</tr>
+<tr>
+<td colspan="2">
+<h:inputText id="banco" value="#{venderBonosMBean.banco}" autocomplete="off" onkeypress="if (event.keyCode == 13) {
+        return false;
+    }"
+         style="visibility: #{venderBonosMBean.crearTarjeta ? 'visible' : 'hidden'}; width: 228px"/>
+<p:watermark for="banco" value="Banco"/>
+</td>
+</tr>
+<tr>
+<td colspan="2">
+<h:inputText id="tipo" value="#{venderBonosMBean.tipoT}" autocomplete="off" onkeypress="if (event.keyCode == 13) {
+        return false;
+    }"
+         style="visibility: #{venderBonosMBean.crearTarjeta ? 'visible' : 'hidden'}; width: 228px"/>
+<p:watermark for="tipo" value="Tipo"/>
+</td>
+</tr>
+<tr>
+<td>
+<h:selectOneMenu id="clase" value="#{venderBonosMBean.claseTarjeta}" style="visibility: #{venderBonosMBean.crearTarjeta ? 'visible' : 'hidden'}">
+<f:selectItem itemLabel="Seleccione Tipo Tarjeta" itemValue=""/>
+<f:selectItem itemLabel="Tarjeta Credito" itemValue="TC"/>
+<f:selectItem itemLabel="Tarjeta Debito" itemValue="TD"/>
+</h:selectOneMenu>
+</td>
+<td>
+<h:commandButton id="btn" value="Agregar" image="../images/btn-ok.png" action="#{venderBonosMBean.agregarTarjeta}" onclick="PF('statusDialog').show()"
+             style="visibility: #{venderBonosMBean.crearTarjeta ? 'visible' : 'hidden'}">
+<f:ajax event="change" render=":form:pagos:tipoTarjeta :form:pagos:franquicia :form:pagos:banco :form:pagos:tipo :form:pagos:clase :form:pagos:btn :form:pagos:btnTotal"/>
+</h:commandButton>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td colspan="2">
+<h:commandButton id="btnPago" value="Agregar Pago" image="../images/btnAgregarPago.png"
+ action="#{venderBonosMBean.agregarPagoTarjeta}"
+ onclick="return justNumbers(event);"
+ style="visibility: #{venderBonosMBean.montoBono == null || venderBonosMBean.montoBono == 0 || venderBonosMBean.totalAcumulado == 0 ? 'hidden' : 'visible'}">
+<f:ajax event="change" render=":form:total"/>
+</h:commandButton>
+</td>
+</tr>
+</table>
+<table style="width: 100%">
+<tr>
+<td colspan="2">
+<h:dataTable id="pago" value="#{venderBonosMBean.pagosTarjeta}" var="pago" style="width: 100%">
+<h:column>
+<f:facet name="header">
+<h:outputText value="Franquicia"/>
+</f:facet>
+<h:outputText value="#{pago.franquicia}"/>
+</h:column>
+<h:column>
+<f:facet name="header">
+<h:outputText value="# Tarjeta"/>
+</f:facet>
+<h:outputText value="#{pago.nroTarjeta}"/>
+</h:column>
+<h:column>
+<f:facet name="header">
+<h:outputText value="Valor Pagado"/>
+</f:facet>
+<h:outputText value="#{pago.valor}">
+<f:convertNumber maxFractionDigits="0"/>
+</h:outputText>
+</h:column>
+<h:column>
+<f:facet name="header">
+<h:outputText value="Voucher"/>
+</f:facet>
+<h:outputText value="#{pago.voucher}"/>
+</h:column>
+<h:column>
+<h:commandButton value="Quitar" image="../images/quitar.png" action="#{venderBonosMBean.quitarPagoTarjeta}" onclick="PF('statusDialog').show()">
+<f:ajax event="change" render=":form:pagos:pago"/>
+<f:setPropertyActionListener target="#{venderBonosMBean.pago}" value="#{pago}"/>
+</h:commandButton>
+</h:column>
+</h:dataTable>
+</td>
+</tr>
+</table>
+</p:tab>
+<p:tab title="Efectivo">
+<table style="width: 100%">
+<tr>
+<td style="text-align: right">
+<h:outputText value="Valor: "/>
+</td>
+<td style="text-align: left; width: 100px">
+<h:inputText id="valorEfectivo" value="#{venderBonosMBean.valorEfectivo}" autocomplete="off" onkeypress="if (event.keyCode == 13) {
+                return false;
+            }"
+                 style="visibility: #{venderBonosMBean.montoBono == null || venderBonosMBean.montoBono == 0 || venderBonosMBean.totalAcumulado == 0 ? 'hidden' : 'visible'}"/>
+</td>
+<td style="text-align: left">
+<h:commandButton value="Total" id="pagoTotal" image="../images/btnTotal.png" action="#{venderBonosMBean.agregarTotalCompletoEfectivo}" onclick="PF('statusDialog').show()"
+                     style="visibility: #{empty venderBonosMBean.totalBono or venderBonosMBean.totalAcumulado == 0 || venderBonosMBean.montoBono == null || venderBonosMBean.montoBono == 0 || venderBonosMBean.totalAcumulado == 0 ? 'hidden' : 'visible'}; vertical-align: bottom">
+<f:ajax event="change" render=":form:pagos:valorEfectivo :form:pagos:pagoTotal"/>
+</h:commandButton>
+</td>
+</tr>
+<tr>
+<td colspan="3">
+<h:commandButton id="btnPagoEfectivo" value="Agregar Pago" disabled="#{venderBonosMBean.totalAcumulado == 0 ? 'true' : 'false'}" image="../images/btnAgregarPago.png"
+                     action="#{venderBonosMBean.agregarPagoEfectivo}" onclick="return justNumbers(event);"
+                     style="visibility: #{venderBonosMBean.montoBono == null || venderBonosMBean.montoBono == 0 || venderBonosMBean.totalAcumulado == 0 ? 'hidden' : 'visible'}">
+<f:ajax event="change" render=":form:total"/>
+</h:commandButton>
+</td>
+</tr>
+</table>
+<table style="width: 100%">
+<tr>
+<td>
+<h:dataTable id="pagoEfectivo" value="#{venderBonosMBean.pagosEfectivo}" var="pago" style="width: 100%">
+<h:column>
+<f:facet name="header">
+<h:outputText value="Valor Pagado"/>
+</f:facet>
+<h:outputText value="#{pago.valor}">
+<f:convertNumber maxFractionDigits="0"/>
+</h:outputText>
+</h:column>
+<h:column>
+<h:commandButton value="Quitar" image="../images/quitar.png" action="#{venderBonosMBean.quitarPagoEfectivo}" onclick="PF('statusDialog').show()">
+<f:ajax event="change" render=":form:pagos:pagoEfectivo"/>
+<f:setPropertyActionListener target="#{venderBonosMBean.pago}" value="#{pago}"/>
+</h:commandButton>
+</h:column>
+</h:dataTable>
+</td>
+</tr>
+</table>
+</p:tab>
+<p:tab title="Cheque" id="cheque" disabled="true">
+<table style="width: 100%">
+<tr>
+<td style="text-align: right">
+<h:outputText value="Valor: "/>
+</td>
+<td style="text-align: left">
+<h:inputText id="valorCheque" value="#{venderBonosMBean.valorCheque}" autocomplete="off" onkeypress="if (event.keyCode == 13) {
+                return false;
+            }"
+                 style="visibility: #{venderBonosMBean.montoBono == null || venderBonosMBean.montoBono == 0 || venderBonosMBean.totalAcumulado == 0 ? 'hidden' : 'visible'}"/>
+</td>
+</tr>
+<tr>
+<td style="text-align: right">
+<h:outputText value="Banco: "/>
+</td>
+<td style="text-align: left">
+<h:selectOneMenu id="bancoCheque" value="#{venderBonosMBean.bancoCheque}"
+                     style="width: 204px; visibility: #{venderBonosMBean.montoBono == null || venderBonosMBean.montoBono == 0 || venderBonosMBean.totalAcumulado == 0 ? 'hidden' : 'visible'}">
+<f:selectItem itemLabel="Seleccione Banco" itemValue=""/>
+<f:selectItems value="#{venderBonosMBean.bancos}" var="banco" itemLabel="#{banco.bankName}" itemValue="#{banco.bankCode}"/>
+</h:selectOneMenu>
+</td>
+</tr>
+<tr>
+<td style="text-align: right">
+<h:outputText value="# Cheque: "/>
+</td>
+<td style="text-align: left">
+    <h:inputText id="nroCheque" value="#{venderBonosMBean.nroCheque}" autocomplete="off" onkeypress="if (event.keyCode == 13) {
+                return false;
+            }"
+                 style="visibility: #{venderBonosMBean.montoBono == null || venderBonosMBean.montoBono == 0 || venderBonosMBean.totalAcumulado == 0 ? 'hidden' : 'visible'}"/>
+</td>
+</tr>
+<tr>
+<td colspan="2">
+<h:commandButton id="btnPagoCheque" value="Agregar Pago" disabled="#{venderBonosMBean.totalAcumulado == 0 ? 'true' : 'false'}" image="../images/btnAgregarPago.png"
+                 action="#{venderBonosMBean.agregarPagoCheque}" onclick="return justNumbers(event);"
+                 style="visibility: #{venderBonosMBean.montoBono == null || venderBonosMBean.montoBono == 0 ? 'hidden' : 'visible'}">
+<f:ajax event="change" render=":form:total"/>
+</h:commandButton>
+</td>
+</tr>
+</table>
+<table style="width: 100%">
+<tr>
+<td colspan="2">
+<h:dataTable id="pagoCheque" value="#{venderBonosMBean.pagosCheque}" var="pago" style="width: 100%">
+<h:column>
+<f:facet name="header">
+<h:outputText value="Banco"/>
+</f:facet>
+<h:outputText value="#{venderBonosMBean.interpretarCodBanco(pago.bancoCheque)}"/>
+</h:column>
+<h:column>
+<f:facet name="header">
+<h:outputText value="# Cheque"/>
+</f:facet>
+<h:outputText value="#{pago.nroCheque}"/>
+</h:column>
+<h:column>
+<f:facet name="header">
+<h:outputText value="Valor Pagado"/>
+</f:facet>
+<h:outputText value="#{pago.valor}">
+<f:convertNumber maxFractionDigits="0"/>
+</h:outputText>
+</h:column>
+<h:column>
+<h:commandButton value="Quitar" image="../images/quitar.png" action="#{venderBonosMBean.quitarPagoCheque}" onclick="PF('statusDialog').show()">
+<f:ajax event="change" render=":form:pagos:pagoCheque"/>
+<f:setPropertyActionListener target="#{venderBonosMBean.pago}" value="#{pago}"/>
+</h:commandButton>
+</h:column>
+</h:dataTable>
+</td>
+</tr>
+</table>
+</p:tab>
+</p:tabView>

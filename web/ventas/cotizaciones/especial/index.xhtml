@@ -1,0 +1,400 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <link href="/360/fonts/iconFont.css" rel="stylesheet"/>
+        <script src="/360/js/arriba.js"></script>
+        <script type="text/javascript">
+            $(window).load(function () {
+                $('#modalExito').modal('show');
+                $('#modalAdvertencia').modal('show');
+            });
+
+            function abrirModalAlmacenes() {
+                $('#modalAlmacenes').modal('show');
+            }
+
+            function cerrarModalAlmacenes() {
+                $('#modalAlmacenes').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalTipoPrecio() {
+                $('#modalTipoPrecio').modal('show');
+            }
+
+            function cerrarModalTipoPrecio() {
+                $('#modalTipoPrecio').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Crear Cotización Especial</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <span class="ir-arriba hidden-sm hidden-xs">
+                <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+            </span>
+
+            <h:panelGroup id="panelAdvertencia">
+                <h:form id="formAdvertencia">
+                    <div id="modalAdvertencia" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header-advertencia">
+                                    <h4 class="modal-title">Advertencia</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            <p>
+                                                <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                Este proceso se debe hacer con almacenes que no tengan muchos ítems por temas de ejecución.
+                                            </p>
+                                            <p>
+                                                <b>Nota: </b>Si hace una cotización de una tienda o una bodega con muchos ítems posiblemente no se creen.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelAlmacenes">
+                <h:panelGroup rendered="#{not empty cotizacionAlmacenMBean.almacenes}">
+                    <h:form id="formAlmacenes">
+                        <div id="modalAlmacenes" class="modal fade" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">Almacenes</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p:remoteCommand name="seleccionarAlmacen" actionListener="#{cotizacionAlmacenMBean.seleccionarAlmacen}" update=":panelAlmacenes :formCotizacion :panelTipoPrecio"
+                                                         oncomplete="cerrarModalEspera(); abrirModalTipoPrecio();"/>
+
+                                        <div class="row" style="max-height: 300px; overflow-y: auto">
+                                            <ui:repeat value="#{cotizacionAlmacenMBean.almacenes}" var="almacen">
+                                                <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                    <div class="contenedor-sucursal pointer-cursor" style="height: 139px"
+                                                         onclick="abrirModalEspera(); seleccionarAlmacen([{name: 'almacen', value: '#{almacen.whsCode}'}]);">
+                                                        <div class="row">
+                                                            <div class="col-xs-12 center-component" style="font-size: 20px; height: 56px">
+                                                                #{almacen.nombrextablet}
+                                                            </div>
+                                                        </div>
+                                                        <hr/>
+                                                        <div class="row">
+                                                            <div class="col-xs-12 center-component">
+                                                                #{almacen.whsCode}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ui:repeat>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelTipoPrecio">
+                <h:panelGroup rendered="#{cotizacionAlmacenMBean.dlgTipoPrecio}">
+                    <h:form id="formTipoPrecio">
+                        <div id="modalTipoPrecio" class="modal fade" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">Tipo precio</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <p:remoteCommand name="seleccionarPrecio" actionListener="#{cotizacionAlmacenMBean.seleccionarPrecio}" update=":formTipoPrecio:chk_precio"/>
+                                            <p:remoteCommand name="seleccionarCosto" actionListener="#{cotizacionAlmacenMBean.seleccionarCosto}" update=":formTipoPrecio:chk_precio"/>
+
+                                            <h:panelGroup id="chk_precio">
+                                                <div class="row">
+                                                    <div class="col-xs-6 center-component">
+                                                        <span class="glyphicon #{cotizacionAlmacenMBean.precio ? 'icon-radio_checked' : 'icon-radio_uncheck'} pointer-cursor" onclick="seleccionarPrecio();"
+                                                              style="font-size: 49px; color: #BF0039"></span>
+                                                    </div>
+                                                    <div class="col-xs-6 center-component">
+                                                        <span class="glyphicon #{cotizacionAlmacenMBean.costo ? 'icon-radio_checked' : 'icon-radio_uncheck'} pointer-cursor" onclick="seleccionarCosto();"
+                                                              style="font-size: 49px; color: #BF0039"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-6 center-component">
+                                                        <h:outputLabel value="Precio" class="label-normal" onclick="seleccionarPrecio();"/>
+                                                    </div>
+                                                    <div class="col-xs-6 center-component">
+                                                        <h:outputLabel value="Costo" class="label-normal" onclick="seleccionarCosto();"/>
+                                                    </div>
+                                                </div>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <p:remoteCommand name="modal" update=":panelTipoPrecio" oncomplete="cargarItemsAlmacen(); abrirModalEspera();"/>
+                                        <p:remoteCommand name="cargarItemsAlmacen" actionListener="#{cotizacionAlmacenMBean.cargarItemsAlmacen}" update=":formCotizacion" oncomplete="cerrarModalEspera();"/>
+
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" data-dismiss="modal" onclick="modal();">Continuar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelExito">
+                <h:panelGroup rendered="#{ventasSessionMBean.exitoCotizacion and ventasSessionMBean.cotizacionEspecial}">
+                    <h:form id="formExito">
+                        <div class="modal fade" id="modalExito" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">
+                                            Cotización exitosa
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <p:remoteCommand name="seleccionarImprimir" actionListener="#{cotizacionAlmacenMBean.seleccionarImprimir}" update=":formExito:chk_imprimir"/>
+                                                <h:panelGroup id="chk_imprimir">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon #{cotizacionAlmacenMBean.imprimir ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                                  onclick="seleccionarImprimir();"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <h:outputLabel value="¿Imprimir?" class="label-normal" onclick="seleccionarImprimir();"/>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <p:remoteCommand name="seleccionarEnivar" actionListener="#{cotizacionAlmacenMBean.seleccionarEnivar}" update=":formExito:chk_enviar"/>
+                                                <h:panelGroup id="chk_enviar">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon #{cotizacionAlmacenMBean.enviar ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                                  onclick="seleccionarEnivar();"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <h:outputLabel value="¿Enviar correo?" class="label-normal" onclick="seleccionarEnivar();"/>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <p:remoteCommand name="modal" oncomplete="actualizarDatosCotizacionWeb();" update=":panelExito :formCotizacion"/>
+                                                <p:remoteCommand name="actualizarDatosCotizacionWeb" actionListener="#{cotizacionAlmacenMBean.actualizarDatosCotizacionWeb}" update=":formCotizacion"
+                                                                 oncomplete="cerrarModalEspera();"/>
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="abrirModalEspera(); modal();">
+                                                    Cerrar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:form id="formCotizacion">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>
+                                    Cotización especial
+                                </a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-4 col-md-offset-2" style="height: 70px">
+                        <p:remoteCommand name="consultarAlmacen" actionListener="#{cotizacionAlmacenMBean.consultarAlmacen}" oncomplete="cerrarModalEspera(); abrirModalTipoPrecio(); abrirModalAlmacenes();"
+                                         update=":formCotizacion:msg :formCotizacion:items :formCotizacion:total :panelTipoPrecio :panelAlmacenes"/>
+                        <p:focus context="formCotizacion" for="txt_almacen"/>
+
+                        <label>Almacén:</label>
+                        <div class="input-group">
+                            <h:inputText id="txt_almacen" class="form-control input-lg noround" value="#{cotizacionAlmacenMBean.almacen}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                        abrirModalEspera();
+                                        consultarAlmacen();
+                                        return false;
+                                    }"/>
+                            <div class="input-group-btn">
+                                <button class="btn btn-primary btn-lg noround" type="button" style="font-size: 23px; padding: 9.5px 10px 4.5px 10px" onclick="abrirModalEspera(); consultarAlmacen();">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <h:panelGroup id="total">
+                        <div class="hidden-xs col-sm-6 col-md-4 center-component">
+                            <h:panelGroup style="position: relative; top: 40px; font-size: 20px">
+                                <b>Total: </b><span style="color: #BF0039">COP #{baruGenericMBean.getValorFormateado('Double', cotizacionAlmacenMBean.totalCotizacion, 2)}</span>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 hidden-sm hidden-md hidden-lg center-component">
+                            <span style="font-size: 20px">
+                                <b>Total: </b><span style="color: #BF0039">COP #{baruGenericMBean.getValorFormateado('Double', cotizacionAlmacenMBean.totalCotizacion, 2)}</span>
+                            </span>
+                        </div>
+                    </h:panelGroup>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                <hr/>
+
+                <div class="row">
+                    <div class="col-xs-12 right-component">
+                        <p:remoteCommand name="crearCotizacion" action="#{cotizacionAlmacenMBean.crearCotizacion}" update=":formCotizacion" oncomplete="cerrarModalEspera();"/>
+
+                        <button type="button" class="btn btn-default btn-lg noround margin-bottom-10"
+                                onclick="abrirModalEspera(); #{ventasSessionMBean.modificando ? 'cancelarEdicionCotizacion();' : 'cancelarVenta();'}">
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg noround margin-bottom-10" onclick="abrirModalEspera(); crearCotizacion();">
+                            Cotizar
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <h:panelGroup id="items">
+                                <p:remoteCommand name="seleccionarItemEliminar" actionListener="#{ventasMBean.seleccionarItemEliminar}" update="" oncomplete="abrirModalSaldos();"/>
+
+                                <ui:repeat value="#{cotizacionAlmacenMBean.saldos}" var="saldo">
+                                    <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                        <div class="pointer-cursor #{saldo.estado ne null and saldo.estado eq 'C' ? 'contenedor-items-ventas-cerrada' : 'contenedor-items-ventas'}"
+                                             onclick="seleccionarItemEliminar([{name: 'referencia', value: '#{saldo.referencia}'}, {name: 'almacen', value: '#{saldo.almacen}'}]);">
+                                            <div class="row">
+                                                <ui:fragment rendered="#{saldo.descuento gt 0}">
+                                                    <div style="position: absolute; z-index: 2; background-color: #DDDDDD; color: #BF0039; border-radius: 100%; height: 50px; width: 50px; font-size: 20px;
+                                                         padding-top: 11px; padding-left: 5px; top: -7px; right: 50%">
+                                                        #{saldo.descuento}%
+                                                    </div>
+                                                </ui:fragment>
+                                                <div class="col-xs-5">
+                                                    <img src="#{imagenProductoMBean.obtenerUrlProducto(saldo.referencia, true)}" class="img-mini"
+                                                         style="opacity: #{saldo.estado ne null and saldo.estado eq 'C' ? '0.6' : '1'}"/>
+                                                </div>
+                                                <div class="col-xs-7 center-component">
+                                                    <div class="row">
+                                                        <div class="col-xs-12" style="font-size: 27px">
+                                                            <b>#{baruGenericMBean.convertirARefCorta(saldo.referencia)}</b>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12" style="font-size: 12px">
+                                                            #{baruGenericMBean.obtenerNombreWebAlmacen(saldo.almacen)}
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12" style="font-size: 15px">
+                                                            <span class="badge badge-gray" style="#{saldo.estado ne null and saldo.estado eq 'C' ? 'background-color: #707070' : ''}">
+                                                                #{saldo.cantidadNecesaria}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div style="background-color: #{saldo.estado ne null and saldo.estado eq 'C' ? '#707070' : '#DDDDDD'}; height: 30px; margin: 0 9px; padding: 5px">
+                                                    <div class="col-xs-6 center-component" style="font-size: 15px">
+                                                        <ui:fragment rendered="#{cotizacionAlmacenMBean.precio}">
+                                                            <span style="color: #BF0039">
+                                                                $ #{baruGenericMBean.getValorFormateado('Double', baruGenericMBean.obtenerPrecioVenta(saldo.referencia), 2)}
+                                                            </span>
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{cotizacionAlmacenMBean.costo}">
+                                                            <span style="color: #BF0039">
+                                                                $ #{baruGenericMBean.getValorFormateado('Double', baruGenericMBean.obtenerPrecioCosto(saldo.referencia, cotizacionAlmacenMBean.almacen), 2)}
+                                                            </span>
+                                                        </ui:fragment>
+                                                    </div>
+                                                    <div class="col-xs-6 center-component" style="font-size: 15px; border-left: 1px solid #FFFFFF">
+                                                        <ui:fragment rendered="#{cotizacionAlmacenMBean.precio}">
+                                                            <span style="color: #BF0039">
+                                                                $ #{baruGenericMBean.getValorFormateado('Double', (baruGenericMBean.obtenerPrecioVenta(saldo.referencia)) * (saldo.cantidadNecesaria), 2)}
+                                                            </span>
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{cotizacionAlmacenMBean.costo}">
+                                                            <span style="color: #BF0039">
+                                                                $ #{baruGenericMBean.getValorFormateado('Double', (baruGenericMBean.obtenerPrecioCosto(saldo.referencia, cotizacionAlmacenMBean.almacen))
+                                                                    * (saldo.cantidadNecesaria), 2)}
+                                                            </span>
+                                                        </ui:fragment>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 justify-component">
+                                                    #{baruGenericMBean.obtenerNombreReferencia(saldo.referencia)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+        <script src="/360/js/ventas.js"></script>
+    </h:body>
+</html>

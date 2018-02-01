@@ -1,0 +1,538 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script type="text/javascript">
+            function abrirModalPerfiles() {
+                $('#modalPerfiles').modal('show');
+            }
+
+            function cerrarModalPerfiles() {
+                $('#modalPerfiles').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalUsuario() {
+                $('#modalUsuario').modal('show');
+            }
+
+            function cerrarModalUsuario() {
+                $('#modalUsuario').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Perfiles</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <h:panelGroup id="panelPerfiles">
+            <h:panelGroup rendered="#{autorizacionMBean.mostrarPanelResultados}">
+                <h:form id="formProfiles">
+                    <div class="modal fade" id="modalPerfiles">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Perfiles Encontrados
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12" style="height: 370px; overflow-y: auto">
+                                            <div class="row">
+                                                <ui:fragment rendered="#{empty autorizacionMBean.resultadoBusqueda}">
+                                                    <div class="col-xs-12">
+                                                        <h4>No hay perfiles disponibles</h4>
+                                                    </div>
+                                                </ui:fragment>
+                                                <p:remoteCommand name="seleccionarPerfil" actionListener="#{autorizacionMBean.seleccionarPerfil}"
+                                                                 update=":formPerfiles" oncomplete="cerrarModalPerfiles();"/>
+                                                <ui:repeat value="#{autorizacionMBean.resultadoBusqueda}" var="perfil">
+                                                    <div class="col-xs-12 col-sm-6 col-lg-4">
+                                                        <div class="perfil" onclick="seleccionarPerfil([{name: 'codigo', value: '#{perfil.codigo}'}])">
+                                                            <div class="row">
+                                                                <div class="col-xs-5 right-component">
+                                                                    <b>Nombre:</b>
+                                                                </div>
+                                                                <div class="col-xs-7">
+                                                                    #{perfil.nombre}
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xs-5 right-component">
+                                                                    <b>Usuarios:</b>
+                                                                </div>
+                                                                <div class="col-xs-7">
+                                                                    #{perfil.usuarios.size()}
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xs-5 right-component">
+                                                                    <b>Acciones:</b>
+                                                                </div>
+                                                                <div class="col-xs-7">
+                                                                    #{perfil.acciones.size()}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ui:repeat>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <div class="row">
+                                        <div class="col-xs-12 right-component">
+                                            <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                Cerrar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+        </h:panelGroup>
+
+        <h:panelGroup id="panelUsuario">
+            <h:panelGroup rendered="#{autorizacionMBean.dlgUsuario}">
+                <h:form id="formUsuario">
+                    <div class="modal fade" id="modalUsuario">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Crear Usuario
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p:focus context="formUsuario" for="documento"/>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-6 center-component">
+                                            <h:panelGroup id="image">
+                                                <div class="hidden-lg hidden-md">
+                                                    <img src="#{autorizacionMBean.obtenerImagenEmpleado}" class="img-responsive" style="max-height: 150px"></img>
+                                                </div>
+
+                                                <div class="hidden-sm hidden-xs">
+                                                    <img src="#{autorizacionMBean.obtenerImagenEmpleado}" class="img-responsive" style="max-height: 217px"></img>
+                                                </div>
+                                            </h:panelGroup>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-6">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <div class="form-group">
+                                                        <h:outputLabel value="Documento identificación:"/>
+                                                        <h:inputText id="documento" pt:placeholder="Documento" class="form-control input-lg noround" value="#{autorizacionMBean.documentoUsuario}"
+                                                                     autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                 return false;
+                                                                             }">
+                                                            <p:ajax event="change" update=":formUsuario:image"/>
+                                                        </h:inputText>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <div class="form-group">
+                                                        <h:outputLabel value="Nombre mostrar:"/>
+                                                        <h:inputText pt:placeholder="Nombre mostrar" class="form-control input-lg noround" value="#{autorizacionMBean.nombreMostrar}"
+                                                                     autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                 return false;
+                                                                             }"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <p:remoteCommand name="crearUsuario" actionListener="#{autorizacionMBean.crearUsuario}" oncomplete="cerrarModalEspera(); abrirModalUsuario();"
+                                                                 update=":formPerfiles:listaUsuariosDisponibles :formPerfiles:listaUsuariosUsados :formPerfiles:msg :panelUsuario"/>
+                                                <div class="col-xs-12 center-component">
+                                                    <button type="button" class="btn btn-primary btn-lg noround form-control" style="height: 46px"
+                                                            onclick="cerrarModalUsuario(); abrirModalEspera(); crearUsuario();">
+                                                        Crear
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <div class="row">
+                                        <div class="col-xs-12 right-component">
+                                            <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                Cancelar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+        </h:panelGroup>
+
+        <div class="container">
+            <h:form id="formPerfiles">
+                <div class="row">
+                    <div class="col-xs-12 col-lg-offset-3 col-lg-6">
+                        <div class="form-group">
+                            <p:focus context="formPerfiles" for="txt_perfil"/>
+                            <h:outputLabel value="Perfil" for="txt_perfil"/>
+                            <h:inputText id="txt_perfil" class="form-control input-lg noround" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                        abrirModalEspera();
+                                        buscar();
+                                        return false;
+                                    }" pt:placeholder="Nombre del Perfil" value="#{autorizacionMBean.nombrePerfil}">
+                                <f:ajax event="change" listener="#{autorizacionMBean.actualizarPerfil}"/>
+                            </h:inputText>
+                        </div>
+                    </div>
+                </div>
+                <h:panelGroup id="btns">
+                    <p:remoteCommand name="buscar" actionListener="#{autorizacionMBean.buscar}" update=":panelPerfiles :formPerfiles:txt_perfil :formPerfiles:btns :formPerfiles:msg
+                                     :formPerfiles:usuarios :formPerfiles:permisos" oncomplete="cerrarModalEspera(); abrirModalPerfiles();"/>
+                    <p:remoteCommand name="crear" actionListener="#{autorizacionMBean.crear}" update=":panelPerfiles :formPerfiles:txt_perfil :formPerfiles:btns :formPerfiles:msg
+                                     :formPerfiles:usuarios :formPerfiles:permisos" oncomplete="cerrarModalEspera();"/>
+                    <p:remoteCommand name="limpiar" actionListener="#{autorizacionMBean.limpiar}" update=":panelPerfiles :formPerfiles:txt_perfil :formPerfiles:btns :formPerfiles:msg
+                                     :formPerfiles:usuarios :formPerfiles:permisos" oncomplete="cerrarModalEspera();"/>
+                    <div class="row">
+                        <div class="col-xs-12 col-lg-offset-3 col-lg-6 right-component">
+                            <button type="button" class="btn btn-primary #{autorizacionMBean.idPerfilSeleccionado ne null ? 'disabled btn-deshabilitado' : ''} btn-lg noround"
+                                    onclick="abrirModalEspera();
+                                            buscar();">
+                                Buscar
+                            </button>
+                            <button type="button" class="btn btn-default #{autorizacionMBean.idPerfilSeleccionado ne null ? 'disabled btn-deshabilitado' : ''} btn-lg noround"
+                                    onclick="abrirModalEspera();
+                                            crear();">
+                                Crear<!--#{autorizacionMBean.idPerfilSeleccionado ne null ? 'Eliminar' : 'Crear'}-->
+                            </button>
+                            <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera();
+                                    limpiar();">
+                                Limpiar
+                            </button>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                <h:panelGroup id="usuarios">
+                    <h:panelGroup rendered="#{autorizacionMBean.idPerfilSeleccionado != null}">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h3>Usuarios</h3>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-md-offset-2 col-md-4 margin-bottom-10">
+                                <p:remoteCommand name="cambiarTipoUsuario" actionListener="#{autorizacionMBean.cambiarTipoUsuario}"
+                                                 update=":formPerfiles:tiposMostrar :formPerfiles:msg :formPerfiles:listaUsuariosDisponibles"/>
+                                <h:panelGroup id="tiposMostrar">
+                                    <div class="input-group">
+                                        <span class="input-group-addon input-group-matisses noround">
+                                            Mostrar
+                                        </span>
+                                        <div class="dropdown">
+                                            <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                    id="selMostrar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                #{autorizacionMBean.tipoSeleccionado}
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="selMostrar" style="width: 100%">
+                                                <li>
+                                                    <a onclick="cambiarTipoUsuario([{name: 'tipoUsuario', value: 'e'}]);" style="cursor: pointer">
+                                                        Empleados
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a onclick="cambiarTipoUsuario([{name: 'tipoUsuario', value: 'x'}]);" style="cursor: pointer">
+                                                        Externos
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-md-offset-2 col-md-4 margin-bottom-10">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <h:panelGroup id="listaUsuariosDisponibles">
+                                            <div class="hidden-lg hidden-md margin-bottom-10">
+                                                <p:remoteCommand name="seleccionarUsuarioVersionMovil" actionListener="#{autorizacionMBean.seleccionarUsuarioVersionMovil}"
+                                                                 update=":formPerfiles:listaUsuariosDisponibles :formPerfiles:msg" oncomplete="cerrarModalEspera();"/>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon input-group-matisses noround">
+                                                        Usuario
+                                                    </span>
+                                                    <div class="dropdown">
+                                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                id="selUsuarios" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                            #{autorizacionMBean.usuarioAgregarSeleccionado}
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selUsuarios" style="width: 100%">
+                                                            <ui:repeat value="#{autorizacionMBean.usuarios}" var="usuario">
+                                                                <li onclick="abrirModalEspera();
+                                                                        seleccionarUsuarioVersionMovil([{name: 'usuario', value: '#{usuario}'}]);">
+                                                                    <a class="pointer-cursor">
+                                                                        #{usuario}
+                                                                    </a>
+                                                                </li>
+                                                            </ui:repeat>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="hidden-sm hidden-xs">
+                                                <p:remoteCommand name="seleccionarUsuario" actionListener="#{autorizacionMBean.seleccionarUsuario}" oncomplete="cerrarModalEspera(); abrirModalUsuario();"
+                                                                 update=":formPerfiles:listaUsuariosDisponibles :formPerfiles:listaUsuariosUsados :formPerfiles:msg :panelUsuario"/>
+                                                <select class="form-control input-lg input-lg-auto noround" id="selUsuario" size="10">
+                                                    <ui:repeat value="#{autorizacionMBean.usuarios}" var="usuario">
+                                                        <option onclick="abrirModalEspera(); seleccionarUsuario([{name: 'usuario', value: '#{usuario}'}]);">
+                                                            #{usuario}
+                                                        </option>
+                                                    </ui:repeat>
+                                                </select>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="hidden-lg hidden-md">
+                                    <div class="row">
+                                        <p:remoteCommand name="agregarUsuario" actionListener="#{autorizacionMBean.agregarUsuario}" oncomplete="cerrarModalEspera(); abrirModalUsuario();"
+                                                         update=":formPerfiles:listaUsuariosDisponibles :formPerfiles:listaUsuariosUsados :formPerfiles:msg :panelUsuario"/>
+                                        <div class="col-xs-12 right-component">
+                                            <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera();
+                                                    agregarUsuario();">
+                                                Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                <h:panelGroup id="listaUsuariosUsados">
+                                    <p:remoteCommand name="deseleccionarUsuario" actionListener="#{autorizacionMBean.deseleccionarUsuario}" oncomplete="cerrarModalEspera();"
+                                                     update=":formPerfiles:listaUsuariosDisponibles :formPerfiles:listaUsuariosUsados :formPerfiles:msg"/>
+                                    <div class="row" style="max-height: 236px; overflow-x: hidden; overflow-y: auto">
+                                        <ui:fragment rendered="#{empty autorizacionMBean.usuariosSeleccionados}">
+                                            <div class="col-xs-12 center-component">
+                                                <span class="input-lg">Seleccione un usuario</span>
+                                            </div>
+                                        </ui:fragment>
+                                        <ui:repeat value="#{autorizacionMBean.usuariosSeleccionados}" var="usuarioSeleccionado">
+                                            <div class="col-xs-12 col-sm-6 center-component margin-bottom-10">
+                                                <div class="opciones-perfiles pointer-cursor" onclick="abrirModalEspera(); deseleccionarUsuario([{name: 'usuario', value: '#{usuarioSeleccionado}'}]);">
+                                                    <span class="input-lg">#{usuarioSeleccionado}</span>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                    </div>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <h:panelGroup id="permisos">
+                    <h:panelGroup rendered="#{autorizacionMBean.idPerfilSeleccionado != null}">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h3>Acciones</h3>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-6 col-md-offset-2 col-md-4 margin-bottom-10">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <p:remoteCommand name="filtrarAccionesDisponibles" actionListener="#{autorizacionMBean.filtrarListaDisponibles}"
+                                                                 update=":formPerfiles:accionesDisponibles :formPerfiles:msg" oncomplete="cerrarModalEspera();"/>
+                                                <h:inputText id="filtroDisponibles" class="form-control input-lg noround"
+                                                             pt:placeholder="Parámetro busqueda" autocomplete="off"
+                                                             value="#{autorizacionMBean.filtroDisponibles}" onkeypress="if (event.keyCode === 13) {
+                                                                         abrirModalEspera();
+                                                                         filtrarAccionesDisponibles();
+                                                                         return false;
+                                                                     }"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <h:panelGroup id="accionesDisponibles">
+                                                    <div class="hidden-lg hidden-md margin-bottom-10">
+                                                        <p:remoteCommand name="seleccionarAccionAgregar" actionListener="#{autorizacionMBean.seleccionarAccionAgregar}"
+                                                                         update=":formPerfiles:accionesDisponibles :formPerfiles:msg" oncomplete="cerrarModalEspera();"/>
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon input-group-matisses noround">
+                                                                Acción Disponible
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                        id="selAccionDisponible" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{autorizacionMBean.accionAgregarSeleccionada}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selAccionDisponible" style="width: 100%">
+                                                                    <ui:repeat value="#{autorizacionMBean.accionesDisponibles}" var="accionDisponible">
+                                                                        <li onclick="abrirModalEspera();
+                                                                                seleccionarAccionAgregar([{name: 'codigoAccion', value: '#{accionDisponible.idAccionObjeto}'}]);">
+                                                                            <a class="pointer-cursor">
+                                                                                #{accionDisponible.nombre}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="hidden-sm hidden-xs">
+                                                        <p:remoteCommand name="seleccionarAccion" actionListener="#{autorizacionMBean.seleccionarAccion}"
+                                                                         update=":formPerfiles:accionesDisponibles :formPerfiles:accionesUsadas :formPerfiles:msg" oncomplete="cerrarModalEspera();"/>
+                                                        <select class="form-control input-lg input-lg-auto noround" id="selAccionesDisponibles" size="10">
+                                                            <ui:repeat value="#{autorizacionMBean.accionesDisponibles}" var="accionDisponible">
+                                                                <option onclick="abrirModalEspera();
+                                                                        seleccionarAccion([{name: 'codigoAccion', value: '#{accionDisponible.idAccionObjeto}'}])">
+                                                                    #{accionDisponible.nombre}
+                                                                </option>
+                                                            </ui:repeat>
+                                                        </select>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                        <div class="hidden-lg hidden-md">
+                                            <div class="row">
+                                                <p:remoteCommand name="agregarAccion" actionListener="#{autorizacionMBean.agregarAccion}" oncomplete="cerrarModalEspera();"
+                                                                 update=":formPerfiles:accionesDisponibles :formPerfiles:accionesUsadas :formPerfiles:msg"/>
+                                                <div class="col-xs-12 right-component">
+                                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); agregarAccion();">
+                                                        Agregar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <hr/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <p:remoteCommand name="filtrarAccionesSeleccionados" actionListener="#{autorizacionMBean.filtrarListaSeleccionados}"
+                                                                 update=":formPerfiles:accionesUsadas :formPerfiles:msg" oncomplete="cerrarModalEspera();"/>
+                                                <h:inputText id="filtroUsadas" class="form-control input-lg noround"
+                                                             pt:placeholder="Parámetro busqueda" autocomplete="off"
+                                                             value="#{autorizacionMBean.filtroSeleccionados}" onkeypress="if (event.keyCode === 13) {
+                                                                         abrirModalEspera();
+                                                                         filtrarAccionesSeleccionados();
+                                                                         return false;
+                                                                     }"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <h:panelGroup id="accionesUsadas">
+                                                    <div class="hidden-lg hidden-md">
+                                                        <div class="hidden-lg hidden-md margin-bottom-10">
+                                                            <p:remoteCommand name="seleccionarAccionQuitar" actionListener="#{autorizacionMBean.seleccionarAccionQuitar}"
+                                                                             update=":formPerfiles:accionesUsadas :formPerfiles:msg" oncomplete="cerrarModalEspera();"/>
+                                                            <div class="input-group">
+                                                                <span class="input-group-addon input-group-matisses noround">
+                                                                    Acción Usadas
+                                                                </span>
+                                                                <div class="dropdown">
+                                                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                            id="selAccionUsadas" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                        #{autorizacionMBean.accionQuitarSeleccionada}
+                                                                        <span class="caret"></span>
+                                                                    </button>
+                                                                    <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selAccionUsadas" style="width: 100%">
+                                                                        <ui:repeat value="#{autorizacionMBean.accionesUsadas}" var="accionUsada">
+                                                                            <li onclick="abrirModalEspera();
+                                                                                    seleccionarAccionQuitar([{name: 'codigoAccion', value: '#{accionUsada.idAccionObjeto}'}]);">
+                                                                                <a class="pointer-cursor">
+                                                                                    #{accionUsada.nombre}
+                                                                                </a>
+                                                                            </li>
+                                                                        </ui:repeat>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="hidden-sm hidden-xs">
+                                                        <p:remoteCommand name="deseleccionarAccion" actionListener="#{autorizacionMBean.deseleccionarAccion}"
+                                                                         update=":formPerfiles:accionesDisponibles :formPerfiles:accionesUsadas :formPerfiles:msg" oncomplete="cerrarModalEspera();"/>
+                                                        <select class="form-control input-lg input-lg-auto noround" id="selAccionesUsadas" size="10">
+                                                            <ui:repeat value="#{autorizacionMBean.accionesUsadas}" var="accionUsada">
+                                                                <option onclick="abrirModalEspera();
+                                                                        deseleccionarAccion([{name: 'codigoAccion', value: '#{accionUsada.idAccionObjeto}'}])">
+                                                                    #{accionUsada.nombre}
+                                                                </option>
+                                                            </ui:repeat>
+                                                        </select>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                        <div class="hidden-lg hidden-md">
+                                            <div class="row">
+                                                <p:remoteCommand name="quitarAccion" actionListener="#{autorizacionMBean.quitarAccion}" oncomplete="cerrarModalEspera();"
+                                                                 update=":formPerfiles:accionesDisponibles :formPerfiles:accionesUsadas :formPerfiles:msg"/>
+                                                <div class="col-xs-12 right-component">
+                                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera();
+                                                            quitarAccion();">
+                                                        Quitar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:form>
+        </div>
+        <br/>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

@@ -1,0 +1,454 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script src="/360/js/arriba.js"></script>
+        <script src="/360/js/ventas.js"></script>
+        <title>360 - Listar Demostraciones</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <span class="ir-arriba hidden-sm hidden-xs">
+                <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+            </span>
+
+            <h:panelGroup id="panelCorreo">
+                <h:panelGroup>
+                    <h:form id="formCorreo">
+                        <div class="modal fade" id="modalCorreo">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <button type="button" class="close" data-dismiss="modal" data-hidden="true">
+                                            &times;
+                                        </button>
+                                        <h4 class="modal-title">
+                                            Enviar correo
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Correo electronico:"/>
+                                                    <h:inputText class="form-control input-lg noround" pt:placeholder="Correo electronico" value="#{listaDemostracionesMBean.correoCliente}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <p:remoteCommand name="cerrarModal" update=":panelCorreo" oncomplete="cerrarModalCorreo(); abrirModalEspera(); enviarCorreoCliente();"/>
+                                                <p:remoteCommand name="enviarCorreoCliente" actionListener="#{listaDemostracionesMBean.enviarCorreoCliente}" update=":formCorreo :formDemostraciones:msg"
+                                                                 oncomplete="cerrarModalEspera();"/>
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                    Cerrar
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="cerrarModal();" style="margin-left: 0px">
+                                                    Enviar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelCancelarDemo">
+                <h:form id="formCancelarDemo">
+                    <div id="modalCancelarDemo" class="modal fade">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header-advertencia">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Cancelar demostración
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            <p>
+                                                <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                ¿Desea regresar el saldo que aún no se ha movido, a las ubicaciones originales?
+                                            </p>
+                                            <p>
+                                                Si selecciona <b>No</b>, la mercancía quedara en la ubicación <b>TM</b>.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <div class="row">
+                                        <div class="col-xs-12 right-component">
+                                            <p:remoteCommand name="modalRegresar" oncomplete="cerrarModalCancelarDemo(); abrirModalEspera(); regresarSaldo();" update=":panelCancelarDemo"/>
+                                            <p:remoteCommand name="regresarSaldo" actionListener="#{listaDemostracionesMBean.regresarSaldo}" oncomplete="cerrarModalEspera();" update=":formDemostraciones"/>
+                                            <p:remoteCommand name="modalNoRegresar" oncomplete="cerrarModalCancelarDemo(); abrirModalEspera(); regresarSaldoNo();" update=":panelCancelarDemo"/>
+                                            <p:remoteCommand name="regresarSaldoNo" actionListener="#{listaDemostracionesMBean.regresarSaldoNo}" oncomplete="cerrarModalEspera();" update=":formDemostraciones"/>
+
+                                            <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                Cancelar
+                                            </button>
+                                            <button type="button" class="btn btn-default btn-lg noround" onclick="modalNoRegresar();" style="margin-left: 0px">
+                                                No
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-lg noround" onclick="modalRegresar();" style="margin-left: 0px">
+                                                Sí
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:form id="formDemostraciones">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Demostraciones</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Aqui van todos los p:remoteCommand que se van a usar, para que funcione tanto en pc como en mobil -->
+                <p:remoteCommand name="seleccionarFiltroEstado" actionListener="#{listaDemostracionesMBean.seleccionarFiltroEstado}" oncomplete="cerrarModalEspera();"
+                                 update=":formDemostraciones:filtroEstados :formDemostraciones:filtroEstadosMovil :formDemostraciones:cotizaciones :formDemostraciones:msg
+                                 :formDemostraciones:filtroAsesores :formDemostraciones:filtroAsesoresMovil"/>
+                <p:remoteCommand name="seleccionarAsesor" actionListener="#{listaDemostracionesMBean.seleccionarAsesor}" oncomplete="cerrarModalEspera();"
+                                 update=":formDemostraciones:filtroEstados :formDemostraciones:filtroEstadosMovil :formDemostraciones:cotizaciones :formDemostraciones:filtroAsesores
+                                 :formDemostraciones:filtroAsesoresMovil :formDemostraciones:msg"/>
+                <p:remoteCommand name="aplicarFiltroFechas" actionListener="#{listaDemostracionesMBean.aplicarFiltroFechas}" oncomplete="cerrarModalEspera();"
+                                 update=":formDemostraciones:cotizaciones :formDemostraciones:filtroAsesores :formDemostraciones:filtroAsesoresMovil :formDemostraciones:msg"/>
+                <p:remoteCommand name="aplicarFiltroFechasMovil" actionListener="#{listaDemostracionesMBean.aplicarFiltroFechasMovil}" oncomplete="cerrarModalEspera();"
+                                 update=":formDemostraciones:cotizaciones :formDemostraciones:filtroAsesores :formDemostraciones:filtroAsesoresMovil :formDemostraciones:msg"/>
+                <p:remoteCommand name="aplicarParametroBusqueda" actionListener="#{listaDemostracionesMBean.aplicarParametroBusqueda}" oncomplete="cerrarModalEspera();"
+                                 update=":formDemostraciones:cotizaciones :formDemostraciones:filtroAsesores :formDemostraciones:filtroAsesoresMovil :formDemostraciones:msg"/>
+                <p:remoteCommand name="aplicarParametroBusquedaMovil" actionListener="#{listaDemostracionesMBean.aplicarParametroBusquedaMovil}" oncomplete="cerrarModalEspera();"
+                                 update=":formDemostraciones:cotizaciones :formDemostraciones:filtroAsesores :formDemostraciones:filtroAsesoresMovil :formDemostraciones:msg"/>
+
+                <div class="row hidden-sm hidden-xs">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <h:outputLabel value="Filtrar estado:"/>
+                            <h:panelGroup id="filtroEstados">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                            id="selEstado" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        #{listaDemostracionesMBean.estadoSeleccionado}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selEstado">
+                                        <li>
+                                            <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFiltroEstado([{name: 'estado', value: ''}]);">
+                                                Todos
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFiltroEstado([{name: 'estado', value: 'a'}]);">
+                                                Activas
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFiltroEstado([{name: 'estado', value: 'v'}]);">
+                                                Vencidas
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <h:outputLabel value="Filtrar asesor:"/>
+                            <h:panelGroup id="filtroAsesores">
+                                <div class="dropdown">
+                                    <button type="button" style="width: 100%" id="selAsesor" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"
+                                            class="btn btn-default dropdown-toggle input-lg noround">
+                                        #{listaDemostracionesMBean.asesorSeleccionado}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selAsesor">
+                                        <li>
+                                            <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarAsesor([{name: 'asesor', value: ''}]);">
+                                                Todos
+                                            </a>
+                                        </li>
+                                        <ui:repeat value="#{listaDemostracionesMBean.asesores}" var="asesor">
+                                            <li>
+                                                <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarAsesor([{name: 'asesor', value: '#{asesor[1]}'}]);">
+                                                    #{asesor[0]}
+                                                </a>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <h:outputLabel value="Filtrar fecha:"/>
+                            <div class="input-group">
+                                <p:calendar id="fechaInicio" pattern="dd-MM-yyyy" class="input-lg mask" pt:placeholder="Fecha Inicial" value="#{listaDemostracionesMBean.fechaInicial}">
+                                    <p:ajax event="dateSelect" rendered=":formDemostraciones:fechaInicio"/>
+                                </p:calendar>
+                                <span class="input-group-addon noround" style="border-left:  none; border-right: none"> a </span>
+                                <p:calendar id="fechaFin" pattern="dd-MM-yyyy" class="input-lg mask" pt:placeholder="Fecha Final" value="#{listaDemostracionesMBean.fechaFinal}">
+                                    <p:ajax event="dateSelect" rendered=":formDemostraciones:fechaFin"/>
+                                </p:calendar>
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); aplicarFiltroFechas();">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <h:outputLabel value="Parámetro búsqueda:"/>
+                            <h:inputText class="form-control input-lg noround" pt:placeholder="Parámetro búsqueda" value="#{listaDemostracionesMBean.parametroBusqueda}" style="font-size: 15px !important"
+                                         autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                     abrirModalEspera();
+                                                     aplicarParametroBusqueda();
+                                                     return false;
+                                                 }">
+                                <f:ajax event="change"/>
+                            </h:inputText>
+                        </div>
+                    </div>
+                </div>
+                <div class="row hidden-lg hidden-md margin-bottom-10">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <p:remoteCommand name="mostrarFiltrosMovil" actionListener="#{listaDemostracionesMBean.mostrarFiltrosMovil}" update=":formDemostraciones:btnFitros"/>
+                        <h:panelGroup id="btnFitros">
+                            <button type="button" class="btn btn-default btn-lg form-control noround" style="height: 46px" data-toggle="collapse" data-target="#collapseFiltros"
+                                    onclick="mostrarFiltrosMovil();">
+                                <div class="col-xs-10">
+                                    Filtros <span class="glyphicon glyphicon-filter"></span>
+                                </div>
+                                <div class="col-xs-2 right-component">
+                                    <span class="glyphicon #{listaDemostracionesMBean.mostrarFiltros ? 'glyphicon-triangle-top' : 'glyphicon-triangle-bottom'}"></span>
+                                </div>
+                            </button>
+                        </h:panelGroup>
+                    </div>
+                    <div style="padding: 0 15px">
+                        <div class="collapse" id="collapseFiltros">
+                            <div class="col-xs-12" style="padding: 0 0px">
+                                <div class="col-xs-12 col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Filtrar estado:"/>
+                                        <h:panelGroup id="filtroEstadosMovil">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                        id="selEstado" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    #{listaDemostracionesMBean.estadoSeleccionado}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selEstado">
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFiltroEstado([{name: 'estado', value: ''}]);">
+                                                            Todos
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFiltroEstado([{name: 'estado', value: 'O'}]);">
+                                                            Pendientes
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFiltroEstado([{name: 'estado', value: 'C'}]);">
+                                                            Vencidas
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Filtrar asesor:"/>
+                                        <h:panelGroup id="filtroAsesoresMovil">
+                                            <div class="dropdown">
+                                                <button type="button" style="width: 100%" id="selAsesor" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"
+                                                        class="btn btn-default dropdown-toggle input-lg noround #{userSessionInfoMBean.validarPermisoUsuario('COTIZACIONES_TODAS', 'VISUALIZAR') ? '' : 'disabled'}">
+                                                    #{listaDemostracionesMBean.asesorSeleccionado}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selAsesor">
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarAsesor([{name: 'asesor', value: ''}]);">
+                                                            Todos
+                                                        </a>
+                                                    </li>
+                                                    <ui:repeat value="#{listaDemostracionesMBean.asesores}" var="asesor">
+                                                        <li>
+                                                            <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarAsesor([{name: 'asesor', value: '#{asesor[1]}'}]);">
+                                                                #{asesor[0]}
+                                                            </a>
+                                                        </li>
+                                                    </ui:repeat>
+                                                </ul>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-5">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Filtrar fecha:"/>
+                                        <div class="input-group">
+                                            <h:inputText class="form-control input-lg noround" pt:placeholder="dd/mm/aaaa" value="#{listaDemostracionesMBean.fechaInicialMovil}"
+                                                         style="font-size: 15px !important">
+                                                <f:ajax event="change"/>
+                                            </h:inputText>
+                                            <span class="input-group-addon noround" style="border-left:  none; border-right: none"> a </span>
+                                            <h:inputText class="form-control input-lg noround" pt:placeholder="dd/mm/aaaa" value="#{listaDemostracionesMBean.fechaFinalMovil}"
+                                                         style="font-size: 15px !important">
+                                                <f:ajax event="change"/>
+                                            </h:inputText>
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); aplicarFiltroFechasMovil();">
+                                                    <span class="glyphicon glyphicon-ok"></span>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Parámetro búsqueda:"/>
+                                        <h:inputText class="form-control input-lg noround" pt:placeholder="Parámetro búsqueda" value="#{listaDemostracionesMBean.parametroBusquedaMovil}"
+                                                     style="font-size: 15px !important" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                 abrirModalEspera();
+                                                                 aplicarParametroBusquedaMovil();
+                                                                 return false;
+                                                             }"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 right-component margin-bottom-10">
+                        <p:remoteCommand name="seleccionarEnvioCorreoCliente" actionListener="#{listaDemostracionesMBean.seleccionarEnvioCorreoCliente}" update=":panelCorreo" oncomplete="abrirModalCorreo();"/>
+                        <p:remoteCommand name="editarCotizacion" action="#{listaDemostracionesMBean.editarDemostracion}" oncomplete="cerrarModalEspera();" update=":formDemostraciones"/>
+                        <h:panelGroup id="btns">
+                            <button type="button" onclick="abrirModalEspera(); editarCotizacion();" class="btn btn-primary btn-lg noround
+                                    #{listaDemostracionesMBean.demostracion eq null or listaDemostracionesMBean.demostracion.idDemostracion eq 0 ? 'disabled btn-deshabilitado' : ''}">
+                                Editar
+                            </button>
+                            <ui:fragment rendered="#{userSessionInfoMBean.validarPermisoUsuario('DEMOSTRACION', 'CANCELAR')}">
+                                <button type="button" onclick="abrirModalCancelarDemo();" class="btn btn-default btn-lg noround
+                                        #{listaDemostracionesMBean.demostracion eq null or listaDemostracionesMBean.demostracion.idDemostracion eq 0 ? 'disabled btn-deshabilitado' : ''}">
+                                    Cancelar
+                                </button>
+                            </ui:fragment>
+                            <button type="button" onclick="#{listaDemostracionesMBean.abrirPdf()}" class="btn btn-default btn-lg noround
+                                    #{listaDemostracionesMBean.demostracion eq null or listaDemostracionesMBean.demostracion.idDemostracion eq 0 ? 'disabled btn-deshabilitado' : ''}">
+                                PDF
+                            </button>
+                            <button type="button" onclick="seleccionarEnvioCorreoCliente();" class="btn btn-default btn-lg noround
+                                    #{listaDemostracionesMBean.demostracion eq null or listaDemostracionesMBean.demostracion.idDemostracion eq 0 ? 'disabled btn-deshabilitado' : ''}">
+                                Enviar
+                            </button>
+                        </h:panelGroup>
+                    </div>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                <div class="row">
+                    <p:remoteCommand name="seleccionarDemostracion" actionListener="#{listaDemostracionesMBean.seleccionarDemostracion}" update=":formDemostraciones:btns :formDemostraciones:cotizaciones"
+                                     oncomplete="cerrarModalEspera();"/>
+                    <h:panelGroup id="cotizaciones">
+                        <ui:repeat value="#{listaDemostracionesMBean.demostraciones}" var="demostracion">
+                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                <div onclick="abrirModalEspera(); seleccionarDemostracion([{name: 'idDemostracion', value: '#{demostracion.idDemostracion}'}]);" class="pointer-cursor
+                                     #{demostracion.idDemostracion eq listaDemostracionesMBean.demostracion.idDemostracion ? 'contenedor-demostraciones-activo' : 'contenedor-demostraciones'}">
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component" style="font-size: 20px">
+                                            <b>#{demostracion.nombreDemostracion}</b>
+                                        </div>
+                                    </div>
+                                    <hr style="border-bottom: 1px solid #{cotizacion.docStatus eq 'C' ? '#707070' : '#BF0039'}; margin-top: 15px; margin-bottom: 15px;
+                                        border-top: #{cotizacion.docStatus eq 'C' ? 'none' : ''}"/>
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            #{demostracion.documentoCliente}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component" style="height: 50px">
+                                            <b style="font-size: 17px">#{demostracion.razonSocialCliente}</b>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component" style="height: 60px">
+                                            #{baruGenericMBean.obtenerNombreAsesor(demostracion.codigoAsesor)}
+                                            <br/>
+                                            <b>Asesor</b>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component" style="font-size: 25px; margin-top: 10px">
+                                            <b style="color: #{cotizacion.docStatus eq 'C' ? '#707070' : '#BF0039'}">
+                                                #{demostracion.estado}
+                                            </b>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-6 center-component" style="font-size: 15px; border-right: 1px solid #{cotizacion.docStatus eq 'C' ? '#707070' : '#BF0039'}; margin-top: 10px">
+                                            <h:outputText value="#{demostracion.fechaDemostracion}">
+                                                <f:convertDateTime pattern="yyyy-MM-dd"/>
+                                            </h:outputText>
+                                        </div>
+                                        <div class="col-xs-6 center-component" style="font-size: 15px; margin-top: 10px">
+                                            #{demostracion.facturaAsociada}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </h:panelGroup>
+                </div>
+
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

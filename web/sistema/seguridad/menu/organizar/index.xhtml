@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Matisses</title>
+    </h:head>
+    <h:body>
+        <m:navbar/>
+        <h:form id="formMenuItem">
+            <p:focus for=":formMenuItem:txt_nombre"/>
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-5 col-sm-5">
+                        <h:outputLabel for="txt_nombre" value="Nombre:" styleClass="input-lg pull-right"/>
+                    </div>
+                    <div class="col-xs-7 col-sm-5">
+                        <h:inputText id="txt_nombre" value="#{menu360MBean.menuItem.nombre}" pt:placeholder="Ingresa el nombre del menú" 
+                                     styleClass="form-control input-lg noround" autocomplete="off">
+                            <f:ajax event="change" listener="#{menu360MBean.valueChangeListener}" />
+                        </h:inputText>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5 col-sm-5">
+                        <h:outputLabel for="txt_alterno" value="Nombre alterno:" styleClass="input-lg pull-right"/>
+                    </div>
+                    <div class="col-xs-7 col-sm-5">
+                        <h:inputText id="txt_alterno" value="#{menu360MBean.menuItem.nombreAlterno}" pt:placeholder="Ingresa el nombre alterno del menú" 
+                                     styleClass="form-control input-lg noround" autocomplete="off">
+                            <f:ajax event="change" listener="#{menu360MBean.valueChangeListener}" />
+                        </h:inputText>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5 col-sm-5">
+                        <h:outputLabel for="sel_menuPadre" value="Menú padre:" styleClass="input-lg pull-right"/>
+                    </div>
+                    <div class="col-xs-7 col-sm-5">
+                        <h:selectOneMenu id="sel_menuPadre" styleClass="form-control input-lg noround" value="#{menu360MBean.idMenuPadre}">
+                            <f:selectItem itemLabel="Seleccione un menu" noSelectionOption="true"/>
+                            <f:selectItems value="#{menu360MBean.listaMenusPadre}" var="menu" itemLabel="#{menu.nombre}" itemValue="#{menu.idMenu}"/>
+                            <f:ajax event="change" listener="#{menu360MBean.valueChangeListener}" />
+                        </h:selectOneMenu>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5 col-sm-5">
+                        <h:outputLabel for="txt_ruta" value="Ruta:" styleClass="input-lg pull-right"/>
+                    </div>
+                    <div class="col-xs-7 col-sm-5">
+                        <h:inputText id="txt_ruta" value="#{menu360MBean.menuItem.ruta}" pt:placeholder="Ingresa la URL de acceso (relativa)" 
+                                     styleClass="form-control input-lg noround" autocomplete="off">
+                            <f:ajax event="change" listener="#{menu360MBean.valueChangeListener}" />
+                        </h:inputText>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5 col-sm-5">
+                        <h:outputLabel for="sel_objeto" value="Objeto:" styleClass="input-lg pull-right"/>
+                    </div>
+                    <div class="col-xs-6 col-sm-5">
+                        <h:selectOneMenu id="sel_objeto" styleClass="form-control input-lg noround" value="#{menu360MBean.idObjeto}">
+                            <f:selectItem itemLabel="Seleccione un objeto" noSelectionOption="true"/>
+                            <f:selectItems value="#{menu360MBean.listaObjetos}" var="objeto" itemLabel="#{objeto.nombre}" itemValue="#{objeto.idObjeto}"/>
+                            <f:ajax event="change" listener="#{menu360MBean.filtrarListaAcciones}" render=":formMenuItem:sel_accion"/>
+                        </h:selectOneMenu>
+                    </div>
+                    <div class="col-xs-1 col-sm-2">
+                        <button class="btn btn-primary btn-lg noround" onclick="mostrarPanelAccionObjeto()" type="button">
+                            Más...
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5 col-sm-5">
+                        <h:outputLabel for="sel_accion" value="Acción:" styleClass="input-lg pull-right"/>
+                    </div>
+                    <div class="col-xs-7 col-sm-5">
+                        <h:selectOneMenu id="sel_accion" styleClass="form-control input-lg noround" value="#{menu360MBean.menuItem.idAccionObjeto}">
+                            <f:selectItem itemLabel="Seleccione una acción" noSelectionOption="true"/>
+                            <f:selectItems value="#{menu360MBean.listaAcciones}" var="accion" itemLabel="#{accion.nombre}" itemValue="#{accion.idAccionObjeto}"/>
+                            <f:ajax event="change" listener="#{menu360MBean.valueChangeListener}" />
+                        </h:selectOneMenu>
+                    </div>
+                    <div class="col-xs-12 col-sm-2">
+                        <button class="btn btn-primary btn-lg noround" onclick="mostrarPanelAccionObjeto()" type="button">
+                            Más...
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5 col-sm-5">
+                        <h:outputLabel for="sel_esMenu" value="¿Es menú?" styleClass="input-lg pull-right"/>
+                    </div>
+                    <div class="col-xs-7 col-sm-5">
+                        <h:selectOneMenu id="sel_esMenu" styleClass="form-control input-lg noround" value="#{menu360MBean.menuItem.padre}">
+                            <f:selectItem itemLabel="Sí" itemValue="true"/>
+                            <f:selectItem itemLabel="No" itemValue="false"/>
+                            <f:ajax event="change" listener="#{menu360MBean.valueChangeListener}" />
+                        </h:selectOneMenu>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-5 col-sm-5">
+                        <h:outputLabel for="sel_separadorAntes" value="¿Separador antes?" styleClass="input-lg pull-right"/>
+                    </div>
+                    <div class="col-xs-7 col-sm-5">
+                        <h:selectOneMenu id="sel_separadorAntes" styleClass="form-control input-lg noround" value="#{menu360MBean.menuItem.tieneSeparadorAntes}">
+                            <f:selectItem itemLabel="Sí" itemValue="true"/>
+                            <f:selectItem itemLabel="No" itemValue="false"/>
+                            <f:ajax event="change" listener="#{menu360MBean.valueChangeListener}" />
+                        </h:selectOneMenu>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5 col-sm-5">
+                        <h:outputLabel for="sel_separadorDespues" value="¿Separador después?" styleClass="input-lg pull-right"/>
+                    </div>
+                    <div class="col-xs-7 col-sm-5">
+                        <h:selectOneMenu id="sel_separadorDespues" styleClass="form-control input-lg noround" value="#{menu360MBean.menuItem.tieneSeparadorDespues}">
+                            <f:selectItem itemLabel="Sí" itemValue="true"/>
+                            <f:selectItem itemLabel="No" itemValue="false"/>
+                            <f:ajax event="change" listener="#{menu360MBean.valueChangeListener}" />
+                        </h:selectOneMenu>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5 col-sm-5">
+                        <h:outputLabel for="sel_activo" value="¿Activo?" styleClass="input-lg pull-right"/>
+                    </div>
+                    <div class="col-xs-7 col-sm-5">
+                        <h:selectOneMenu id="sel_activo" styleClass="form-control input-lg noround" value="#{menu360MBean.menuItem.activo}">
+                            <f:selectItem itemLabel="Sí" itemValue="true"/>
+                            <f:selectItem itemLabel="No" itemValue="false"/>
+                            <f:ajax event="change" listener="#{menu360MBean.valueChangeListener}" />
+                        </h:selectOneMenu>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-1 col-lg-offset-5">
+                        <h:commandButton id="btn_buscar" class="btn btn-primary btn-lg noround" value="Buscar">
+                            <f:ajax listener="#{menu360MBean.buscar}" render="@form" />
+                        </h:commandButton>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-1">
+                        <h:commandButton class="btn btn-primary btn-lg noround" value="Crear" disabled="#{not menu360MBean.botonCrearVisible}">
+                            <f:ajax listener="#{menu360MBean.crear}" render="@form"/>
+                        </h:commandButton>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-1">
+                        <h:commandButton class="btn btn-primary btn-lg noround" value="Limpiar" disabled="#{menu360MBean.botonCrearVisible}">
+                            <f:ajax listener="#{menu360MBean.limpiar}" render="@form"/>
+                        </h:commandButton>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-1">
+                        <h:commandButton class="btn btn-primary btn-lg noround" value="Actualizar" disabled="#{menu360MBean.botonCrearVisible}">
+                            <f:ajax listener="#{menu360MBean.actualizar}" render="@form"/>
+                        </h:commandButton>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

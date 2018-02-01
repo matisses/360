@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Cambiar Modelo</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        <div class="container">
+
+            <h:form id="formCambiarModelo">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Cambiar Modelo Productos</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-offset-2 col-xs-6">
+                        <p:focus context="formCambiarModelo" for="modeloAnterior"/>
+                        <div class="form-group has-feedback">
+                            <h:outputLabel value="Modelo cambiar:"/>
+                            <h:inputText id="modeloAnterior" class="form-control input-lg noround" value="#{cambiarModelosProductosMBean.modeloAnterior}"
+                                         pt:placeholder="Ingrese modelo cambiar" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                     abrirModalEspera();
+                                                     consultarModelo();
+                                                     return false;
+                                                 }"/>
+                            <span class="form-control-feedback glyphicon glyphicon-search inline-search" aria-hidden="true" style="top: 31px !important"></span>
+                        </div>
+                    </div>
+                    <div class="col-xs-2 right-component" style="top: 25px">
+                        <p:remoteCommand name="consultarModelo" actionListener="#{cambiarModelosProductosMBean.consultarModelo}" update=":formCambiarModelo:itemsActuales :formCambiarModelo:msg"
+                                         oncomplete="cerrarModalEspera();"/>
+                        <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); consultarModelo();">
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                <hr/>
+                <h:panelGroup id="itemsActuales">
+                    <h:panelGroup rendered="#{not empty cambiarModelosProductosMBean.items}">
+                        <div class="row">
+                            <div class="col-xs-6 center-component">
+                                <h4>
+                                    <p class="color-360-original">
+                                        Items actuales
+                                    </p>
+                                </h4>
+                            </div>
+                            <div class="col-xs-6 center-component">
+                                <h4>
+                                    <p class="color-360-original">
+                                        Items nuevos
+                                    </p>
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-offset-6 col-xs-6">
+                                <div class="form-group">
+                                    <h:outputLabel value="Modelo nuevo:"/>
+                                    <h:inputText class="form-control input-lg noround" value="#{cambiarModelosProductosMBean.modeloNuevo}"
+                                                 pt:placeholder="Ingrese modelo nuevo" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                             return false;
+                                                         }"/>
+                                </div>
+                            </div>
+                        </div>
+                        <p:remoteCommand name="seleccionarItem" actionListener="#{cambiarModelosProductosMBean.seleccionarItem}" update=":formCambiarModelo:itemsActuales :formCambiarModelo:msg"
+                                         oncomplete="cerrarModalEspera();"/>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <ui:repeat value="#{cambiarModelosProductosMBean.items}" var="item">
+                                    <div class="row">
+                                        <div class="col-xs-6 center-component">
+                                            <div class="#{item.seleccionado ? 'contenedor-referencias-cambiar-modelo-activo' : 'contenedor-referencias-cambiar-modelo'}"
+                                                 onclick="abrirModalEspera(); seleccionarItem([{name: 'item', value: '#{item.itemCode}'}]);">
+                                                <div class="row">
+                                                    <div class="col-xs-6">
+                                                        <img src="#{imagenProductoMBean.obtenerUrlProducto(item.itemCode, true)}" class="img-mini"/>
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <div class="row">
+                                                            <div class="col-xs-12">
+                                                                <b style="font-size: 29px">
+                                                                    #{baruGenericMBean.convertirARefCorta(item.itemCode)}
+                                                                </b>
+                                                            </div>
+                                                            <div class="col-xs-12">
+                                                                <span class="badge badge-gray" style="font-size: 20px">
+                                                                    #{item.cantidadStock}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <span class="justify-component">
+                                                            #{item.frgnName}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <ui:fragment rendered="#{item.seleccionado}">
+                                            <div class="col-xs-6 center-component" style="top: 41px">
+                                                <span>
+                                                    <b style="font-size: 30px">#{fn:substring(item.itemCode, 0, 3)}*</b>
+                                                    <h:inputText class="form-control input-lg noround" style="width: 120px; display: inline; font-size: 30px" value="#{item.itemNuevo}"
+                                                                 pt:placeholder="####" pt:type="numeric"/>
+                                                </span>
+                                            </div>
+                                        </ui:fragment>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 right-component">
+                                <p:remoteCommand name="cambiarModelo" actionListener="#{cambiarModelosProductosMBean.cambiarModelo}" oncomplete="cerrarModalEspera();"
+                                                 update=":formCambiarModelo:itemsActuales :formCambiarModelo:msg :formCambiarModelo:modeloAnterior"/>
+                                <p:remoteCommand name="limpiar" actionListener="#{cambiarModelosProductosMBean.limpiar}" oncomplete="cerrarModalEspera();"
+                                                 update=":formCambiarModelo:itemsActuales :formCambiarModelo:msg :formCambiarModelo:modeloAnterior"/>
+                                <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); limpiar();">
+                                    Cancelar
+                                </button>
+                                <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); cambiarModelo();">
+                                    Cambiar
+                                </button>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <br/>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+        <script src="/360/js/datosProductos.js"></script>
+    </h:body>
+</html>

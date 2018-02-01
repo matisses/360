@@ -1,0 +1,537 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <title>360 - Ayuda Columnas Proforma</title>
+    </h:head>
+    <h:body>
+        <m:navbar/>
+        <div class="panel-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h1 class="h1_manual">
+                            Columnas Proforma
+                        </h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            En esta página se le permite al usuario realizar registros, eliminación, consultas y/o modificaciones de las 
+                            columnas para las proformas.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 class="h2_manual">
+                            Contenido
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ul>
+                            <div class="row">
+                                <li id="contenido1" class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <a href="#datos_necesarios">Datos Necesarios</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="contenido2" class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <a href="#datos_columna">Datos Columna</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="contenido3" class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <a href="#columnas">Columnas</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="contenido4" class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <a href="#columna_calculada">Columna Calculada</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="contenido5" class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <a href="#creacion">Creación</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="contenido6" class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <a href="#modificacion">Modificación</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="contenido7" class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <a href="#eliminacion">Eliminación</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="contenido8" class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <a href="#porque">¿Porque Columna y SubColumna?</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="contenido9" class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <a href="#mensajes">Mensajes del Sistema</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="datos_necesarios" class="h2_manual anchor">
+                            Datos Necesarios
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Para <b>Crear</b> o <b>Modificar</b> una columna, es necesario tener en cuenta los siguientes campos:
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <th class="head-tabla">
+                                    Campo
+                                </th>
+                                <th class="head-tabla">
+                                    Descripción
+                                </th>
+                                <th class="head-tabla">
+                                    Necesario
+                                </th>
+                            </tr>
+                            <ui:repeat value="#{columnasProformaAyudaMBean.tablaCampos}" var="campo">
+                                <tr>
+                                    <td>
+                                        #{campo[0]}
+                                    </td>
+                                    <td>
+                                        #{campo[1]}
+                                    </td>
+                                    <td class="center-component">
+                                        <ui:fragment rendered="#{campo[2] eq 'Si'}">
+                                            <span class="glyphicon glyphicon-ok center-component" style="color: #5CB85C"></span>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{campo[2] eq 'No'}">
+                                            <span class="glyphicon glyphicon-remove center-component" style="color: #BF0039"></span>
+                                        </ui:fragment>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Una vez diligenciados los datos de la columna y de seleccionadas las propiedades de esta,
+                            el usuario debe dar clic en el botón <b>Crear</b>, para que los datos de esta queden almacenados y puedan ser usados en las futuras proformas.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <h2 id="datos_columna" class="h2_manual anchor">
+                            Datos Columna
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            A continuación, se explicaran los tipos de datos y en que circunstancia o tipo de contenido se va a almacenar en estas.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <table class="table table-striped table-bordered">
+                            <tr>
+                                <th class="head-tabla">
+                                    Dato
+                                </th>
+                                <th class="head-tabla">
+                                    Descripción
+                                </th>
+                                <th class="head-tabla">
+                                    Limites
+                                </th>
+                            </tr>
+                            <ui:repeat value="#{columnasProformaAyudaMBean.tiposDatos}" var="datos">
+                                <tr>
+                                    <td>
+                                        #{datos[0]}
+                                    </td>
+                                    <td>
+                                        #{datos[1]}
+                                    </td>
+                                    <td>
+                                        #{datos[2]}
+                                        <ui:fragment rendered="#{not empty datos[3]}">
+                                            <hr/>
+                                            #{datos[3]}
+                                        </ui:fragment>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <h2 id="columnas" class="h2_manual anchor">
+                            Columnas
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            El usuario puede visualizar las columnas que se hayan creado, en la parte inferior de la página. 
+                        </p>
+                        <p>
+                            Se verán contenedores como los siguientes:
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/columnas/contenedor1.png"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10 justify-component">
+                        <p>
+                            En esta imagen se puede ver que los datos de la columna y de la subColumna fueron ingresados.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/columnas/contenedorOver.png"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10 justify-component">
+                        <p>
+                            Al pasar el cursor por encima del contenedor, este desplegara un componente que informara que propiedades más tiene la columna y
+                            los nombre en inglés.
+                        </p>
+                        <p>
+                            Si en la subColumna se ve <i style="color: #A3A3A3; font-weight: bold">[Sin Asignar]</i>, significa que la columna que se ve no tiene subColumna.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/columnas/contenedorAction.png"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10 justify-component">
+                        <p>
+                            Al seleccionar una columna para modificar, de clic sobre esta y ella tomara un color rojo que significara que esta seleccionada.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10 justify-component">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/columnas/buscador.png"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10 justify-component">
+                        <p>
+                            Para buscar una columna coloque el nombre o parte del nombre en el buscador y de <b>Enter</b> para ejecutar la consulta.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/columnas/paginator.png"/>
+                    </div>
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Recuerde, que las columnas están paginadas para agilizar el rendimiento de esta; aquí se explicara el contenido del paginador:
+                        </p>
+                        <p>
+                            <b>1 - Flechas anterior </b> En este primer ítem, se puede ver el botón que debemos usar si lo que se quiere es devolver a una página anterior.
+                        </p>
+                        <p>
+                            <b>2 - Página actual </b> La celda que se encuentre de color rojo, significa que esta es en la que se está trabajando.
+                        </p>
+                        <p>
+                            <b>3 - Página disponible </b> Si la celda esta de color blanco, es porque estas columnas se encuentran disponibles para visualizar.
+                        </p>
+                        <p>
+                            <b>4 - Flechas siguiente </b> En este ítem, se puede ver el botón que debemos usar si lo que se quiere es avanzar a una página siguiente.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <h2 id="columna_calculada" class="h2_manual anchor">
+                            Columna Calculada
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <p>
+                            Para realizar un trabajo completo con las columnas, estas tienen la posibilidad de crearse a partir de una operación que se auto calcularán,
+                            cada que sus datos cambien de valor.
+                        </p>
+                        <p>
+                            Para crear una columna calculada, de clic en el check que tiene el mismo nombre y se abrirá un dialogo, que es en el que se configurara la operación.
+                        </p>
+                        <p>
+                            Al usuario se le pedirán 4 datos indispensables para la creación de la operación:
+                        </p>
+                        <p>
+                            <b>1 - Operando 1 </b>En este dato se exige que se use una columna de las existentes para realizar la operación.
+                        </p>
+                        <p>
+                            <b>2 - Tipo operando 2 </b>El dato 2 es una lista en la que se dan dos opciones:
+                            <p style="margin-left: 25px">
+                                <b>1 - Columna </b>Se puede usar una segunda columna para realizar la operación.
+                            </p>
+                            <p style="margin-left: 25px">
+                                <b>2 - Constante </b>Se puede usar un valor estático para realizar la operación; Ejemplo: <b>Valor Total * 15</b>, siendo <b>15</b> la constante.
+                            </p>
+                        </p>
+                        <p>
+                            <b>3 - Operación </b>En este dato el usuario debe seleccionar el tipo de operación que llevara a cabo. Ejemplo: <b>-</b>, <b>+</b>, etc.
+                        </p>
+                        <p>
+                            <b>4 - Operando 2 </b>Seleccione o digite el operando 2, sea columna o constante.
+                        </p>
+                        <p>
+                            Una vez se tengan los datos con los que se realizara la operación de clic en el botón <b>Guardar</b>. Si el usuario no desea que la operación se guarde,
+                            debe dar clic en el botón <b>Cerrar</b>, para cancelar el proceso.
+                        </p>
+                        <p>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                    Después de haber guardado la operación, se vera de la siguiente forma, tal y como se muestra en la imagen. Si quiere modificar la operación de clic sobre esta 
+                                    y modifíquela.
+                                </div>
+                                <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                    <img class="img-responsive" src="/360/images/ayuda/compras/columnas/containerOperation.png"/>
+                                </div>
+                            </div>
+                        </p>
+                        <p>
+                            <b>Nota: </b>Operando es un elemento sobre el cual se aplica una operación.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <h2 id="creacion" class="h2_manual anchor">
+                            Creación
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 justify-component margin-bottom-10">
+                        <p>
+                            Llene todos los datos definidos anteriormente para poder crear una columna nueva. De clic en <b>Crear</b>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <h2 id="modificacion" class="h2_manual anchor">
+                            Modificación
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 justify-component margin-bottom-10">
+                        <p>
+                            Si el usuario desea cambiar las propiedades o los datos de la columna, seleccione una de estas, modifique los cambios que debe modificar y de clic en <b>Editar</b>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <h2 id="eliminacion" class="h2_manual anchor">
+                            Eliminación
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 justify-component margin-bottom-10">
+                        <p>
+                            Si el usuario desea eliminar la columna, seleccione una de estas y de clic en <b>Eliminar</b>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <h2 id="porque" class="h2_manual anchor">
+                            ¿Porque Columna y SubColumna?
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            El uso de estos datos es importante para la forma en que se verán las columnas en el archivo de excel.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/columnas/vistaExcelContenedor2.png"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <p>
+                            En la imagen anterior no se insertó datos de SubColumna, por lo cual las columnas se combinan.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/columnas/vistaExcelContenedor1.png"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <p>
+                            En la imagen anterior se insertó datos de SubColumna, por lo cual se muestra en cada columna sus datos.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <h2 id="mensajes" class="h2_manual anchor">
+                            Mensajes del Sistema
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Si en algún momento el usuario recibe uno de los siguientes mensajes por parte del sistema, esta guía le ayudara a identificarlo y 
+                            solucionarlo.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <th class="head-tabla">
+                                    Tipo
+                                </th>
+                                <th class="head-tabla">
+                                    Msj
+                                </th>
+                                <th class="head-tabla">
+                                    Causa / Solución
+                                </th>
+                            </tr>
+                            <ui:repeat value="#{columnasProformaAyudaMBean.mensajes}" var="mensaje">
+                                <tr>
+                                    <td>
+                                        <span class="#{mensaje[0] eq 'E' ? 'glyphicon glyphicon-remove-sign' : mensaje[0] eq 'I' ? 'glyphicon glyphicon-info-sign'
+                                                       : mensaje[0] eq 'A' ? 'glyphicon glyphicon-question-sign': ''}"
+                                              title="#{mensaje[0] eq 'E' ? 'Error' : mensaje[0] eq 'I' ? 'Información' : mensaje[0] eq 'A' ? 'Advertencia': ''}"
+                                              style="font-size: 30px; #{mensaje[0] eq 'E' ? 'color: #DD5555;' : mensaje[0] eq 'I' ? 'color: #46B8DA;'
+                                                                        : mensaje[0] eq 'A' ? 'color: #FFBF00;': ''}"></span>
+                                    </td>
+                                    <td>
+                                        #{mensaje[1]}
+                                    </td>
+                                    <td>
+                                        <p>
+                                            #{mensaje[2]}
+                                        </p>
+                                        <ui:fragment rendered="#{not empty mensaje[3]}">
+                                            <hr/>
+                                            <p>
+                                                #{mensaje[3]}
+                                            </p>
+                                        </ui:fragment>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

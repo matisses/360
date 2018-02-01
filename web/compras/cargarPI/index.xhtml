@@ -1,0 +1,430 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" http-equiv="Content-Type"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script type="text/javascript">
+            function abrirModal() {
+                $('#modalColumna').modal('show');
+            }
+            function cerrarModal() {
+                $('#modalColumna').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Cargar Proforma</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <h:form id="formDialogo" styleClass="center-block" pt:role="form">
+            <div class="modal fade" id="modalColumna">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content dialog-content noround">
+                        <div class="modal-header dialog-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <h4 class="modal-title">
+                                Asignar Columna
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <h:panelGroup id="chk_crearColumna">
+                                        <p:remoteCommand name="checkearCrearColumna" actionListener="#{obtenerDatosProformaMBean.seleccionarCrearColumna}"
+                                                         update=":formDialogo:chk_crearColumna :formDialogo:crearColumna :formDialogo:chk_elegirColumna :formDialogo:seleccionarColumna"/>
+                                        <span class="glyphicon #{obtenerDatosProformaMBean.crearColumna ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                              onclick="checkearCrearColumna();"></span>
+                                        <h:outputLabel value="Crear Columna" class="label-normal" onclick="checkearCrearColumna();"/>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <h:panelGroup id="crearColumna">
+                                        <h:panelGroup rendered="#{obtenerDatosProformaMBean.crearColumna}">
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                                    <h:inputText id="txt_columna" value="#{columnasProformaMBean.nombre1}" pt:placeholder="Columna" class="form-control input-lg margin-bottom-10 noround"
+                                                                 autocomplete="off">
+                                                        <f:ajax event="change"/>
+                                                    </h:inputText>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                                    <h:inputText id="txt_columnaIngles" value="#{columnasProformaMBean.nombreIngles1}" pt:placeholder="Columna Ingles"
+                                                                 class="form-control input-lg margin-bottom-10 noround"
+                                                                 autocomplete="off">
+                                                        <f:ajax event="change"/>
+                                                    </h:inputText>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                                    <h:inputText id="txt_subColumna" value="#{columnasProformaMBean.nombre2}" pt:placeholder="SubColumna" class="form-control input-lg margin-bottom-10 noround"
+                                                                 autocomplete="off">
+                                                        <f:ajax event="change"
+                                                                render=":formDialogo:txt_subColumna :formDialogo:msg :formDialogo:btn_cancelar"/>
+                                                    </h:inputText>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                                    <h:inputText id="txt_subColumnaIngles" value="#{columnasProformaMBean.nombreIngles2}" pt:placeholder="SubColumna Ingles"
+                                                                 class="form-control input-lg margin-bottom-10 noround"
+                                                                 autocomplete="off">
+                                                        <f:ajax render=":formDialogo:txt_subColumnaIngles :formDialogo:msg :formDialogo:btn_cancelar"/>
+                                                    </h:inputText>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                                    <h:selectOneMenu id="slc_tipoColumna" value="#{columnasProformaMBean.idTipoDato}" styleClass="form-control input-lg margin-bottom-10 noround">
+                                                        <f:selectItem itemLabel="Dato Columna" itemValue=""/>
+                                                        <f:selectItems value="#{columnasProformaMBean.tipoDatos}" var="tipo" itemLabel="#{tipo.tipoDato}" itemValue="#{tipo.idTipoDato}"/>
+                                                        <f:ajax render=":formDialogo:msg :formDialogo:btn_cancelar"/>
+                                                    </h:selectOneMenu>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                                    <h:inputText id="txt_decimalesVisibles" pt:placeholder="Decimales Visibles" class="form-control input-lg margin-bottom-10 noround"
+                                                                 value="#{columnasProformaMBean.decimalesVisibles}" autocomplete="off">
+                                                        <f:ajax event="change"/>
+                                                    </h:inputText>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                                    <h:inputText id="txt_longitudTabla" pt:placeholder="Longitud Tabla" class="form-control input-lg margin-bottom-10 noround"
+                                                                 value="#{columnasProformaMBean.longitudTabla}" autocomplete="off">
+                                                        <f:ajax event="change"/>
+                                                    </h:inputText>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                                    <h:panelGroup id="chk_crearItem">
+                                                        <p:remoteCommand name="checkearCrearItem" actionListener="#{columnasProformaMBean.seleccionarCrearItem}" update=":formDialogo:chk_crearItem"/>
+                                                        <div class="tooltip-style">
+                                                            <span class="glyphicon #{columnasProformaMBean.crearItem ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                                  onclick="checkearCrearItem();"></span>
+                                                            <h:outputLabel value="Crear Item" class="label-normal" onclick="checkearCrearItem();"/>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                                    <h:panelGroup id="chk_tipoItem">
+                                                        <p:remoteCommand name="checkearTipoItem" actionListener="#{columnasProformaMBean.seleccionarTipoItem}"
+                                                                         update=":formDialogo:chk_tipoItem :formDialogo:chk_tipoIdentificador :formDialogo:chk_tipoImagen
+                                                                         :formDialogo:chk_tipoCantidad :formDialogo:chk_tipoValorTotal"/>
+                                                        <span class="glyphicon #{columnasProformaMBean.tipoItem ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                              onclick="checkearTipoItem();"></span>
+                                                        <h:outputLabel value="Tipo Item" class="label-normal" onclick="checkearTipoItem();"/>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                                    <h:panelGroup id="chk_tipoIdentificador">
+                                                        <p:remoteCommand name="checkearTipoIdentificador" actionListener="#{columnasProformaMBean.seleccionarTipoIdentificador}"
+                                                                         update=":formDialogo:chk_tipoItem :formDialogo:chk_tipoIdentificador :formDialogo:chk_tipoImagen
+                                                                         :formDialogo:chk_tipoCantidad :formDialogo:chk_tipoValorTotal"/>
+                                                        <span class="glyphicon #{columnasProformaMBean.tipoIdentificador ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                              onclick="checkearTipoIdentificador();"></span>
+                                                        <h:outputLabel value="Tipo Identificar" class="label-normal" onclick="checkearTipoIdentificador();"/>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                                    <h:panelGroup id="chk_tipoImagen">
+                                                        <p:remoteCommand name="checkearTipoImagen" actionListener="#{columnasProformaMBean.seleccionarTipoImagen}"
+                                                                         update=":formDialogo:chk_tipoItem :formDialogo:chk_tipoIdentificador :formDialogo:chk_tipoImagen
+                                                                         :formDialogo:chk_tipoCantidad :formDialogo:chk_tipoValorTotal"/>
+                                                        <span class="glyphicon #{columnasProformaMBean.tipoImagen ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                              onclick="checkearTipoImagen();"></span>
+                                                        <h:outputLabel value="Tipo Imagen" class="label-normal" onclick="checkearTipoImagen();"/>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                                    <h:panelGroup id="chk_tipoCantidad">
+                                                        <p:remoteCommand name="checkearTipoCantidad" actionListener="#{columnasProformaMBean.seleccionarTipoCantidad}"
+                                                                         update=":formDialogo:chk_tipoItem :formDialogo:chk_tipoIdentificador :formDialogo:chk_tipoImagen
+                                                                         :formDialogo:chk_tipoCantidad :formDialogo:chk_tipoValorTotal"/>
+                                                        <span class="glyphicon #{columnasProformaMBean.tipoCantidad ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                              onclick="checkearTipoCantidad();"></span>
+                                                        <h:outputLabel value="Tipo Cantidad" class="label-normal" onclick="checkearTipoCantidad();"/>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                                    <h:panelGroup id="chk_tipoValorTotal">
+                                                        <p:remoteCommand name="checkearTipoValorTotal" actionListener="#{columnasProformaMBean.seleccionarTipoValorTotal}"
+                                                                         update=":formDialogo:chk_tipoItem :formDialogo:chk_tipoIdentificador :formDialogo:chk_tipoImagen
+                                                                         :formDialogo:chk_tipoCantidad :formDialogo:chk_tipoValorTotal"/>
+                                                        <span class="glyphicon #{columnasProformaMBean.tipoValorTotal ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                              onclick="checkearTipoValorTotal();"></span>
+                                                        <h:outputLabel value="Tipo Valor Total" class="label-normal" onclick="checkearTipoValorTotal();"/>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                                    <h:panelGroup id="chk_obligatoria">
+                                                        <p:remoteCommand name="checkearObligatoria" actionListener="#{columnasProformaMBean.seleccionarObligatoria}"
+                                                                         update=":formDialogo:chk_obligatoria"/>
+                                                        <span class="glyphicon #{columnasProformaMBean.obligatoria ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                              onclick="checkearObligatoria();"></span>
+                                                        <h:outputLabel value="Obligatoria" class="label-normal" onclick="checkearObligatoria();"/>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                                    <h:panelGroup id="chk_incluirProforma">
+                                                        <p:remoteCommand name="checkearIncluirProforma" actionListener="#{columnasProformaMBean.seleccionarIncluirProforma}"
+                                                                         update=":formDialogo:chk_incluirProforma"/>
+                                                        <span class="glyphicon #{columnasProformaMBean.incluirProforma ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                              onclick="checkearIncluirProforma();"></span>
+                                                        <h:outputLabel value="Incluir Proforma" class="label-normal" onclick="checkearIncluirProforma();"/>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                                    <h:panelGroup id="chk_modificable">
+                                                        <p:remoteCommand name="checkearModificable" actionListener="#{columnasProformaMBean.seleccionarModificable}"
+                                                                         update=":formDialogo:chk_modificable"/>
+                                                        <span class="glyphicon #{columnasProformaMBean.modificable ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                              onclick="checkearModificable();"></span>
+                                                        <h:outputLabel value="Modificable" class="label-normal" onclick="checkearModificable();"/>
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                                    <h:panelGroup id="chk_modificarNuevo">
+                                                        <p:remoteCommand name="checkearModificableNuevo" actionListener="#{columnasProformaMBean.seleccionarModificarNuevo}"
+                                                                         update=":formDialogo:chk_modificarNuevo"/>
+                                                        <span class="glyphicon #{columnasProformaMBean.modificarNuevo ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                              onclick="checkearModificableNuevo();"></span>
+                                                        <h:outputLabel value="Modificar Nuevo" class="label-normal" onclick="checkearModificableNuevo();"/>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </div>
+                                            <br/>
+                                        </h:panelGroup>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                            <hr/>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <h:panelGroup id="chk_elegirColumna">
+                                        <p:remoteCommand name="checkearElegirColumna" actionListener="#{obtenerDatosProformaMBean.seleccionarElegirColumna}"
+                                                         update=":formDialogo:chk_crearColumna :formDialogo:crearColumna :formDialogo:chk_elegirColumna :formDialogo:seleccionarColumna"/>
+                                        <span class="glyphicon #{obtenerDatosProformaMBean.elegirColumna ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                              onclick="checkearElegirColumna();"></span>
+                                        <h:outputLabel value="Usar Columna" class="label-normal" onclick="checkearElegirColumna();"/>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <h:panelGroup id="seleccionarColumna">
+                                        <h:panelGroup rendered="#{obtenerDatosProformaMBean.elegirColumna}">
+                                            <h:selectOneMenu id="slc_columnaAsociada" value="#{obtenerDatosProformaMBean.columnaAsociada}" styleClass="form-control input-lg noround">
+                                                <f:selectItem itemLabel="Seleccione Columna Asociada" itemValue=""/>
+                                                <f:selectItems value="#{obtenerDatosProformaMBean.todasColumnas}" var="columna"
+                                                               itemLabel="#{columna.nombre1Ingles} - #{columna.nombre2Ingles}" itemValue="#{columna.idColumna}"/>
+                                                <f:ajax event="change" render=":formDialogo:slc_columnaAsociada"/>
+                                            </h:selectOneMenu>
+                                        </h:panelGroup>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                            <br/>
+                            <p:messages id="msgDialogo" showDetail="true" showSummary="true"/>
+                            <div class="row">
+                                <div class="col-xs-12 right-component">
+                                    <p:remoteCommand name="administrarColumna" actionListener="#{obtenerDatosProformaMBean.administrarColumna}"
+                                                     oncomplete="#{obtenerDatosProformaMBean.dlgNuevaCol ? '' : 'cerrarModal();'}" update=":formColumnas :formColumnas:columnas :formDialogo:msgDialogo :msg"/>
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                        Cancelar
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="administrarColumna();">
+                                        Guardar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <ol class="breadcrumb">
+                        <li class="active">
+                            <a>Datos proveedores</a>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+            <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+            <h:form id="formCargarArchivo" styleClass="center-block" pt:role="form" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="from-group col-xs-12 col-sm-10 col-md-10 margin-bottom-10">
+                        <h:inputFile value="#{obtenerDatosProformaMBean.archivo}" class="form-control fileDatosProveedor noround"/>
+                    </div>
+                    <div class="from-group col-xs-12 col-sm-2 col-md-2 right-component">
+                        <h:commandButton value="Cargar" action="#{obtenerDatosProformaMBean.handleFileUpload()}"
+                                         styleClass="btn btn-primary btn-lg noround"/>
+                    </div>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p:messages showDetail="true" showSummary="true" id="msg"/>
+                    </div>
+                </div>
+            </h:form>
+
+            <h:panelGroup id="panel" rendered="#{empty obtenerDatosProformaMBean.proveedor || obtenerDatosProformaMBean.proveedor == null ? 'false' : 'true'}">
+                <hr/>
+                <div class="row">
+                    <div class="col-xs-6 right-component margin-bottom-10">
+                        <h:graphicImage value="#{obtenerDatosProformaMBean.rutaImagen}" id="img_logoProv" class="img-responsive"/>
+                    </div>
+                    <div class="col-xs-6 left-component">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <span>
+                                    <b>
+                                        Razón Social: 
+                                    </b>
+                                    #{obtenerDatosProformaMBean.proveedor.razonSocial}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <span>
+                                    <b>
+                                        Persona Contacto: 
+                                    </b>
+                                    #{obtenerDatosProformaMBean.proveedor.personaContacto}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <span>
+                                    <b>
+                                        Correo: 
+                                    </b>
+                                    #{obtenerDatosProformaMBean.proveedor.correo}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <span>
+                                    <b>
+                                        Teléfono: 
+                                    </b>
+                                    #{obtenerDatosProformaMBean.proveedor.telefono}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <span>
+                                    <b>
+                                        Dirección: 
+                                    </b>
+                                    #{obtenerDatosProformaMBean.proveedor.direccion}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+            <br/>
+            <h:form id="formColumnas" pt:role="form" rendered="#{empty obtenerDatosProformaMBean.proveedor || obtenerDatosProformaMBean.proveedor == null ? 'false' : 'true'}">
+                <hr/>
+                <div class="row">
+                    <div class="col-xs-12 right-component">
+                        <h:panelGroup id="botonesOrden" rendered="#{empty obtenerDatosProformaMBean.proveedor || obtenerDatosProformaMBean.proveedor == null ? 'false' : 'true'}">
+                            <p:remoteCommand name="moverSeleccionIzquierda" actionListener="#{obtenerDatosProformaMBean.moverSeleccionIzquierda}" 
+                                             update=":formColumnas:columnas :formColumnas:botonesOrden :msg"/>
+                            <p:remoteCommand name="moverSeleccionDerecha" actionListener="#{obtenerDatosProformaMBean.moverSeleccionDerecha}" 
+                                             update=":formColumnas:columnas :formColumnas:botonesOrden :msg"/>
+                            <p:remoteCommand actionListener="#{obtenerDatosProformaMBean.agregarColumna}" name="agregarColumna" oncomplete="abrirModal();" update=":msg"/>
+                            <p:remoteCommand actionListener="#{obtenerDatosProformaMBean.eliminarColumna}" name="eliminarColumna" update=":formColumnas:columnas :msg"/>
+
+                            <button type="button" class="btn btn-default btn-lg noround #{obtenerDatosProformaMBean.botonesOrdenarDeshabilitados ? 'disabled btn-deshabilitado' : ''}"
+                                    onclick="moverSeleccionIzquierda()">
+                                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                            </button>
+                            <ui:fragment rendered="#{obtenerDatosProformaMBean.columanExiste == false
+                                                     and obtenerDatosProformaMBean.posicionSeleccionada != null and obtenerDatosProformaMBean.obligatoria == false}">
+                                <button type="button" class="btn btn-default btn-lg noround #{obtenerDatosProformaMBean.botonesOrdenarDeshabilitados ? 'disabled btn-deshabilitado' : ''}"
+                                        onclick="agregarColumna([{name: 'posicion', value: '#{columna.posicion}'}])">
+                                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                                </button>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{obtenerDatosProformaMBean.columanExiste and obtenerDatosProformaMBean.obligatoria == false}">
+                                <button type="button" class="btn btn-default btn-lg noround #{obtenerDatosProformaMBean.botonesOrdenarDeshabilitados ? 'disabled btn-deshabilitado' : ''}"
+                                        onclick="eliminarColumna();">
+                                    <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                                </button>
+                            </ui:fragment>
+                            <button type="button" class="btn btn-default btn-lg noround #{obtenerDatosProformaMBean.botonesOrdenarDeshabilitados ? 'disabled btn-deshabilitado' : ''}"
+                                    onclick="moverSeleccionDerecha()">
+                                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                            </button>
+                        </h:panelGroup>
+                    </div>
+                </div>
+                <br/>
+                <div class="row">
+                    <h:panelGroup id="columnas">
+                        <p:remoteCommand name="seleccionarColumna" actionListener="#{obtenerDatosProformaMBean.seleccionarColumna}" update=":formColumnas:columnas :formColumnas:botonesOrden :msg"/>
+                        <ui:fragment rendered="#{empty obtenerDatosProformaMBean.columnasSeleccionadas}">
+                            <h4>No hay elementos para mostrar</h4>
+                        </ui:fragment>
+                        <ui:repeat value="#{obtenerDatosProformaMBean.columnasSeleccionadas}" var="columna"
+                                   rendered="#{not empty obtenerDatosProformaMBean.columnasSeleccionadas}">
+                            <div class="col-xs-3 center-component">
+                                <div class="#{obtenerDatosProformaMBean.posicionSeleccionada eq columna.posicion ? 'columna-nueva-seleccionada' :
+                                              columna.columnaExiste == false ? 'columna-nueva' : columna.obligatoria ? 'columan-obligatoria' : 'columna-proforma'}"
+                                     onclick="seleccionarColumna([{name: 'posicion', value: '#{columna.posicion}'},
+                                                 {name: 'existe', value: '#{columna.columnaExiste}'}, {name: 'obligatoria', value: '#{columna.obligatoria}'}])">
+                                    <ui:fragment rendered="#{not empty columna.nombre2Ingles}">
+                                        #{columna.nombre1Ingles} - #{columna.nombre2Ingles}
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{empty columna.nombre2Ingles}">
+                                        #{columna.nombre1Ingles}
+                                    </ui:fragment>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </h:panelGroup>
+                </div>
+                <br/>
+                <br/>
+                <div class="row">
+                    <div class="col-xs-12 right-component">
+                        <h:panelGroup id="btns">
+                            <h:panelGroup rendered="#{not empty obtenerDatosProformaMBean.columnasSeleccionadas}">
+                                <h:commandButton value="Cancelar" styleClass="btn btn-default btn-lg noround" action="#{obtenerDatosProformaMBean.cancelarProceso}" onclick="abrirModalEspera();"/>&nbsp;
+                                <h:commandButton value="Crear" styleClass="btn btn-primary btn-lg noround" action="#{obtenerDatosProformaMBean.registrarProforma}" onclick="abrirModalEspera();"/>
+                            </h:panelGroup>
+                        </h:panelGroup>
+                    </div>
+                </div>
+                <br/>
+            </h:form>
+        </div>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

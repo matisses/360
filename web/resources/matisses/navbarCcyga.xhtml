@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:composite="http://java.sun.com/jsf/composite" 
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <composite:interface>
+
+    </composite:interface>
+    <composite:implementation>
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/360/"> 
+                        <img class="img-responsive" src="/360/images/logo_navbar.png"/>
+                    </a>
+                </div>
+
+                <h:form id="formNavbar">
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li>
+                                <p:remoteCommand name="atras" action="#{ccygaSessionMBean.atras}"/>
+                                <a href="#" class="btn btn-default navbar-btn navbar-btn-ccyga" onclick="atras()">
+                                    <span class="glyphicon glyphicon-arrow-left"></span>
+                                </a>
+                            </li>
+                            <li>
+                                <p:remoteCommand name="empleado" action="#{ccygaSessionMBean.empleado}"/>
+                                <a href="#" class="btn btn-default navbar-btn navbar-btn-ccyga" onclick="empleado()">
+                                    <span class="glyphicon glyphicon-home"></span>
+                                </a>
+                            </li>
+                            <li>
+                                <p class="navbar-text" style="font-size: 20px;">#{ccygaSessionMBean.nombreEmpleado}</p>
+                            </li>
+                            <li>
+                                <p class="navbar-text" style="font-size: 20px;">#{ccygaSessionMBean.nombreProceso}</p>
+                            </li>
+                            <li>
+                                <p class="navbar-text" style="font-size: 20px; visibility: #{ccygaSessionMBean.idProductoSeleccionado eq null ? 'hidden' : 'visible'}">
+                                    #Prod.: #{ccygaSessionMBean.idProductoSeleccionado}
+                                </p>
+                            </li>
+                        </ul>
+                    </div><!-- /.navbar-collapse -->
+                </h:form>
+            </div><!-- /.container-fluid --> 
+        </nav>
+    </composite:implementation>
+</html>
+

@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Consulta Ubicaciones</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        <div class="container">
+
+            <h:form id="formConsulta">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Consulta Ubicaciones</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="row">
+                    <p:focus context="formConsulta" for="parametroBusqueda"/>
+                    <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+                        <p:remoteCommand name="buscarMercancia" update=":formConsulta:saldo :formConsulta:msg" oncomplete="cerrarModalEspera();" actionListener="#{consultarUbicacionesMBean.buscarMercancia}"/>
+                        <h:inputText id="parametroBusqueda" class="form-control input-lg noround" value="#{consultarUbicacionesMBean.parametroBusqueda}"
+                                     pt:placeholder="Parametro busqueda" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                 abrirModalEspera();
+                                                 buscarMercancia();
+                                                 return false;
+                                             }"/>
+                    </div>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                <br/>
+                <div class="row">
+                    <h:panelGroup id="saldo">
+                        <ui:repeat value="#{consultarUbicacionesMBean.saldos}" var="saldo">
+                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                <div style="height: 171px; margin: 5px ; padding: 5px; border: 1px solid #DDDDDD">
+                                    <div class="row">
+                                        <div class="col-xs-5">
+                                            <h:graphicImage value="#{imagenProductoMBean.obtenerUrlProducto(saldo.itemCode, true)}" style="width: 103px; height: 83px"/>
+                                        </div>
+                                        <div class="col-xs-7">
+                                            <div class="row">
+                                                <div class="col-xs-12 right-component">
+                                                    <h:outputLabel value="#{baruGenericMBean.convertirARefCorta(saldo.itemCode)}" style="font-size: 20px"/>
+                                                    <span style="position: relative; top: -3px">-</span>
+                                                    <span class="badge badge-gray" style="background-color: #BF0039 !important; position: relative; top: -4px">
+                                                        #{saldo.onHandQty}
+                                                    </span>
+                                                </div>
+                                                <div class="col-xs-12 right-component">
+                                                    <h:outputLabel value="#{saldo.whsCode}#{fn:replace(saldo.binCode, saldo.whsCode, ' - ')}"/>
+                                                </div>
+                                                <div class="col-xs-12 right-component" style="color: #BF0039">
+                                                    COP #{baruGenericMBean.getValorFormateado('Double', baruGenericMBean.obtenerPrecioVenta(saldo.itemCode), 2)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            #{baruGenericMBean.obtenerReferenciaProveedor(saldo.itemCode)}
+                                        </div>
+                                    </div>
+                                    <hr style="border-bottom: 1px solid #BF0039; margin-bottom: 0px; margin-top: 0px"/>
+                                    <div class="row">
+                                        <div class="col-xs-12 justify-component">
+                                            <h:outputText value="#{baruGenericMBean.obtenerNombreReferencia(saldo.itemCode)}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </h:panelGroup>
+                </div>
+                <br/>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

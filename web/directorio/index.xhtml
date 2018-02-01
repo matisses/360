@@ -1,0 +1,255 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <script src="/360/js/arriba.js"></script>
+        <title>360 - Directorio</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        <div class="container">
+            <span class="ir-arriba hidden-sm hidden-xs">
+                <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+            </span>
+            <h:form id="formDirectorio">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-4">
+                        <p:remoteCommand name="seleccionarFiltro" actionListener="#{directorioMBean.seleccionarFiltro}" update=":formDirectorio:filtros :formDirectorio:directorio :formDirectorio:paginas"
+                                         oncomplete="cerrarModalEspera();"/>
+                        <div class="form-group">
+                            <h:outputLabel value="Filtros:"/>
+                            <h:panelGroup id="filtros">
+                                <div class="input-group">
+                                    <span class="input-group-addon input-group-matisses noround">Departamento</span>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround"
+                                                style="width: 100%" id="selFiltro" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            #{directorioMBean.filtroSeleccionado}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selFiltro" data-live-search="true">
+                                            <ui:repeat value="#{directorioMBean.filtros}" var="filtro">
+                                                <li>
+                                                    <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFiltro([{name: 'filtro', value: '#{filtro}'}]);">
+                                                        #{filtro}
+                                                    </a>
+                                                </li>
+                                            </ui:repeat>
+                                            <li>
+                                                <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFiltro([{name: 'filtro', value: 'todos'}]);">
+                                                    Todos
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-4">
+                        <p:remoteCommand name="cambiarTamanoPagina" actionListener="#{directorioMBean.cambiarTamanoPagina}" update=":formDirectorio:directorio :formDirectorio:paginas :formDirectorio:mostarDatos" 
+                                         oncomplete="cerrarModalEspera();"/>
+                        <h:outputLabel value="Mostrar:"/>
+                        <h:panelGroup id="mostarDatos">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                id="selSizePage" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            #{directorioMBean.tamanoPagina}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="selSizePage">
+                                            <li>
+                                                <a onclick="abrirModalEspera(); cambiarTamanoPagina([{name: 'tamanoPagina', value: '12'}])" style="cursor: pointer">
+                                                    12
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); cambiarTamanoPagina([{name: 'tamanoPagina', value: '24'}])" style="cursor: pointer">
+                                                    24
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); cambiarTamanoPagina([{name: 'tamanoPagina', value: '48'}])" style="cursor: pointer">
+                                                    48
+                                                </a>
+                                            </li>
+                                            <li class="hidden-xs hidden-sm">
+                                                <a onclick="abrirModalEspera(); cambiarTamanoPagina([{name: 'tamanoPagina', value: '100000'}])" style="cursor: pointer">
+                                                    Todos
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <span class="input-group-addon input-group-matisses noround">x pag.</span>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                    <p:focus context="formDirectorio" for="txtBusqueda"/>
+                    <div class="col-xs-12 col-sm-6 col-md-4">
+                        <h:outputLabel value="Busqueda: "/>
+                        <div class="form-group">
+                            <p:remoteCommand name="aplicarBusqueda" actionListener="#{directorioMBean.aplicarBusqueda}"
+                                             oncomplete="cerrarModalEspera();" update=":formDirectorio:directorio :formDirectorio:paginas"/>
+                            <h:inputText value="#{directorioMBean.busqueda}" pt:placeholder="Parametro busqueda" 
+                                         id="txtBusqueda" class="form-control input-lg noround" autocomplete="off"
+                                         onkeypress="if (event.keyCode === 13) {
+                                                     abrirModalEspera();
+                                                     aplicarBusqueda();
+                                                     return false;
+                                                 }"/>
+                            <span class="form-control-feedback glyphicon glyphicon-search inline-search" aria-hidden="true" 
+                                  style="top: 31px; right: 22px;"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-offset-3 col-sm-6 center-component">
+                        <div class="form-group">
+                            <p:remoteCommand name="mostrarPrimeraPagina" actionListener="#{directorioMBean.mostrarPrimeraPagina}" update=":formDirectorio:directorio :formDirectorio:paginas" 
+                                             oncomplete="cerrarModalEspera();"/>
+                            <p:remoteCommand name="mostrarPaginaAnterior" actionListener="#{directorioMBean.mostrarPaginaAnterior}" update=":formDirectorio:directorio :formDirectorio:paginas"
+                                             oncomplete="cerrarModalEspera();"/>
+                            <p:remoteCommand name="mostrarPaginaEspecifica" actionListener="#{directorioMBean.mostrarPaginaEspecifica}" update=":formDirectorio:directorio :formDirectorio:paginas"
+                                             oncomplete="cerrarModalEspera();"/>
+                            <p:remoteCommand name="mostrarPaginaSiguiente" actionListener="#{directorioMBean.mostrarPaginaSiguiente}" update=":formDirectorio:directorio :formDirectorio:paginas"
+                                             oncomplete="cerrarModalEspera();"/>
+                            <p:remoteCommand name="mostrarUltimaPagina" actionListener="#{directorioMBean.mostrarUltimaPagina}" update=":formDirectorio:directorio :formDirectorio:paginas"
+                                             oncomplete="cerrarModalEspera();"/>
+                            <h:panelGroup id="paginas">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="mostrarPrimeraPagina();">
+                                        1
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="mostrarPaginaAnterior();">
+                                        <span class="glyphicon glyphicon-chevron-left"></span>
+                                    </button>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-default dropdown-toggle btn-lg noround" data-toggle="dropdown"
+                                                aria-haspopup="true" aria-expanded="false">
+                                            #{directorioMBean.pagina} de #{directorioMBean.totalPaginas}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" style="max-height: 165px; overflow-y: auto">
+                                            <ui:repeat value="#{directorioMBean.paginas}" var="pagina">
+                                                <li>
+                                                    <a onclick="abrirModalEspera(); mostrarPaginaEspecifica([{name: 'pagina', value: '#{pagina}'}])" style="cursor: pointer">
+                                                        #{pagina}
+                                                    </a>
+                                                </li>
+                                            </ui:repeat>
+                                        </ul>
+                                    </div>
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="mostrarPaginaSiguiente();">
+                                        <span class="glyphicon glyphicon-chevron-right"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="mostrarUltimaPagina();">
+                                        #{directorioMBean.totalPaginas}
+                                    </button>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row">
+                    <h:panelGroup id="directorio">
+                        <ui:repeat value="#{directorioMBean.directorio}" var="directorio">
+                            <ui:fragment rendered="#{not empty directorio.departamento}">
+                                <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                    <div class="contenedor-directorio">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component" style="font-size: 20px; font-weight: bold">
+                                                <div>
+                                                    #{directorio.nombre}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr style="margin: 5px; border-bottom: 1px solid #DDDDDD"/>
+                                        <div class="row">                                       
+                                            <div class="col-xs-12 col-sm-4 center-component">
+                                                <img src="#{baruGenericMBean.obtenerRutaFotoEmpleado(directorio.empleado.cedula)}"
+                                                     style="max-height: 144px"/>       
+                                            </div>
+                                            <div class="col-xs-12 col-sm-8">
+                                                <ui:fragment rendered="#{not empty directorio.departamento}">
+                                                    <div class="col-xs-6 col-sm-12">
+                                                        <p style="margin: 0px !important">
+                                                            <span title="Departamento" class="glyphicon glyphicon-home" style="font-size: 20px"></span>
+                                                            #{directorio.departamento}
+                                                        </p>                                                
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{not empty directorio.cargo}">
+                                                    <div class="col-xs-12">
+                                                        <p style="margin: 0px !important">
+                                                            <span title="Cargo" class="glyphicon glyphicon-briefcase" style="font-size: 20px"></span>
+                                                            #{directorio.cargo}
+                                                        </p>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{not empty directorio.correo}">
+                                                    <div class="col-xs-12">
+                                                        <p style="margin: 0px !important">
+                                                            <span title="Correo" class="glyphicon glyphicon-envelope" style="font-size: 20px;"></span>
+                                                            <a href="mailto:#{directorio.correo}" style="color: #333333; text-decoration: underline">#{directorio.correo}</a>
+                                                        </p>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{not empty directorio.celular}">
+                                                    <div class="col-xs-6 col-sm-12">
+                                                        <p style="margin: 0px !important">
+                                                            <span title="Celular" class="glyphicon glyphicon-phone" style="font-size: 20px"></span>
+                                                            #{directorio.celular}
+                                                        </p>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{not empty directorio.extension}">
+                                                    <div class="col-xs-6 col-sm-12">
+                                                        <p style="margin: 0px !important"> 
+                                                            <span title="Extensión" class="glyphicon glyphicon-earphone" style="font-size: 20px"></span>
+                                                            #{directorio.extension}
+                                                        </p>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{not empty directorio.skype}">
+                                                    <div class="col-xs-12">
+                                                        <p style="margin: 0px !important">
+                                                            <img title="Skype" src="../images/logo.svg" style="width: 20px"/>
+                                                            <a href="skype:#{directorio.skype}?chat" style="color: #333333; text-decoration: underline">#{directorio.skype}</a>
+                                                        </p>
+                                                    </div>
+                                                </ui:fragment>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:fragment>
+                        </ui:repeat>
+                    </h:panelGroup>
+                </div>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

@@ -1,0 +1,513 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Consultar Productos</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        <div class="container">
+            <h:panelGroup id="dlg">
+                <h:panelGroup rendered="#{consultaDatosProductoMBean.dlgReferencias}">
+                    <h:form id="formReferencias">
+                        <div class="modal fade" id="modalReferencias">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                            &times;
+                                        </button>
+                                        <h4 class="modal-title">
+                                            Referencias Encontradas
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p:remoteCommand name="aplicarReferencia" actionListener="#{consultaDatosProductoMBean.aplicarReferencia}"
+                                                         update=":formConsulta" oncomplete="cerrarModalReferencias();"/>
+                                        <div class="row" style="max-height: 400px; overflow: auto">
+                                            <ui:repeat value="#{consultaDatosProductoMBean.inventario}" var="inv">
+                                                <div class="col-xs-12 col-sm-6 col-md-4 contenedor-contar" onclick="aplicarReferencia([{name: 'referencia', value: '#{inv.itemCode}'}])">
+                                                    <div class="row">
+                                                        <div class="col-xs-6 center-component">
+                                                            <h:graphicImage url="#{imagenProductoMBean.obtenerUrlProducto(inv.itemCode, true)}" class="img-mini"/>
+                                                        </div>
+                                                        <div class="col-xs-6 right-component">
+                                                            <h:outputText class="input-lg" value="#{baruGenericMBean.convertirARefCorta(inv.itemCode)}"
+                                                                          style="font-weight: bold"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 justify-component">
+                                                            #{baruGenericMBean.obtenerNombreReferencia(inv.itemCode)}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ui:repeat>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                    Cerrar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelReferencia">
+                <h:form id="formReferencia">
+                    <div class="modal fade" id="modalReferencia">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Evaluar Referencia
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-4 center-component">
+                                            <h:graphicImage value="#{imagenProductoMBean.obtenerUrlProducto(consultaDatosProductoMBean.itemSeleccionado.referencia, true)}"
+                                                            class="img-mini"/>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-8">
+                                            <div class="row">
+                                                <div class="col-xs-5 right-component">
+                                                    <b>Referencia: </b>
+                                                </div>
+                                                <div class="col-xs-7">
+                                                    #{consultaDatosProductoMBean.itemSeleccionado.referencia}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-5 right-component">
+                                                    <b>Cantidad: </b>
+                                                </div>
+                                                <div class="col-xs-7">
+                                                    <p:remoteCommand name="modificarCantidadReferencia" actionListener="#{consultaDatosProductoMBean.modificarCantidadReferencia}"
+                                                                     update=":formConsulta:refs :formReferencia:btns"/>
+                                                    <h:inputText value="#{consultaDatosProductoMBean.itemSeleccionado.cantidad}" class="form-control input-lg noround"
+                                                                 pt:placeholder="Cantidad" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                             modificarCantidadReferencia();
+                                                                             return false;
+                                                                         }" style="color: #BF0039; font-weight: bold; height: 63px; font-size: 45px; border: none"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <h:panelGroup id="btns">
+                                        <div class="row">
+                                            <p:remoteCommand name="eliminarReferencia" actionListener="#{consultaDatosProductoMBean.eliminarReferencia}"
+                                                             update=":formConsulta:refs" oncomplete="cerrarModalReferencia();"/>
+                                            <p:remoteCommand name="imprimirReferencia" update=":formConsulta:refs :panelImprimir" oncomplete="cerrarModalReferencia(); abrirModalImprimir();"/>
+                                            <p:remoteCommand name="cancelar" actionListener="#{consultaDatosProductoMBean.cancelar}"
+                                                             update=":formConsulta:refs"/>
+                                            <div class="col-xs-12">
+                                                <button type="button" class="btn btn-default btn-lg noround hidden-xs" data-dismiss="modal" onclick="cancelar();">
+                                                    Cancelar
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-lg noround #{consultaDatosProductoMBean.itemSeleccionado.estado eq 'PP' ? '' : 'disabled btn-deshabilitado'}"
+                                                        onclick="eliminarReferencia();">
+                                                    Eliminar 1
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-lg #{consultaDatosProductoMBean.permitirImpresion ? '' : 'disabled btn-deshabilitado'}
+                                                        #{consultaDatosProductoMBean.itemSeleccionado.estado eq 'PP' ? '' : 'disabled btn-deshabilitado'} noround"
+                                                        onclick="imprimirReferencia();">
+                                                    Imprimir
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelImprimir">
+                <h:form id="formImprimir">
+                    <div class="modal fade" id="modalImprimir">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <p:remoteCommand name="cancelar" actionListener="#{consultaDatosProductoMBean.cancelar}"/>
+                                <div class="modal-header dialog-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cancelar();">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Impresión
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h:panelGroup id="tipoSticker">
+                                        <h:panelGroup rendered="#{consultaDatosProductoMBean.pasoImpresion == 1}">
+                                            <p:remoteCommand name="seleccionarTipoSticker" actionListener="#{consultaDatosProductoMBean.seleccionarTipoSticker}"
+                                                             update=":formImprimir:tipoSticker :formImprimir:btnTipoSticker :formImprimir:btnImprimir"/>
+                                            <div class="row">
+                                                <ui:repeat value="#{consultaDatosProductoMBean.tiposSticker}" var="tipo">
+                                                    <div class="col-xs-12 col-sm-6 center-component">
+                                                        <div class="opcion-sticker #{tipo.idTipoSticker eq consultaDatosProductoMBean.idTipoSticker ? 'opcion-sticker-activa' : ''}"
+                                                             onclick="seleccionarTipoSticker([{name: 'idTipoSticker', value: '#{tipo.idTipoSticker}'}]);">
+                                                            <h:outputText value="#{tipo.nombreSticker}" class="input-lg"/>
+                                                        </div>
+                                                    </div>
+                                                </ui:repeat>
+                                            </div>
+                                        </h:panelGroup>
+                                    </h:panelGroup>
+                                    <h:panelGroup id="impresora">
+                                        <h:panelGroup rendered="#{consultaDatosProductoMBean.pasoImpresion == 2}">
+                                            <p:remoteCommand name="seleccionarImpresora" actionListener="#{consultaDatosProductoMBean.seleccionarImpresora}"
+                                                             update=":formImprimir:impresora :formImprimir:btnImprimir"/>
+                                            <div class="row">
+                                                <ui:repeat value="#{consultaDatosProductoMBean.impresoras}" var="impresora">
+                                                    <div class="col-xs-12 col-sm-6 center-component">
+                                                        <div class="opcion-sticker #{consultaDatosProductoMBean.idImpresora eq impresora.idImpresora ? 'opcion-sticker-activa' : ''}"
+                                                             onclick="seleccionarImpresora([{name: 'idImpresora', value: '#{impresora.idImpresora}'}])">
+                                                            <h:outputText value="#{impresora.nombreImpresora}" class="input-lg"/>
+                                                        </div>
+                                                    </div>
+                                                </ui:repeat>
+                                            </div>
+                                        </h:panelGroup>
+                                    </h:panelGroup>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h:panelGroup id="btnAtras">
+                                                <h:panelGroup rendered="#{consultaDatosProductoMBean.pasoImpresion == 2}">
+                                                    <p:remoteCommand name="anteriorPaso" actionListener="#{consultaDatosProductoMBean.aplicarAnteriorPaso}"
+                                                                     update=":formImprimir:tipoSticker :formImprimir:btnTipoSticker :formImprimir:impresora
+                                                                     :formImprimir:impresora :formImprimir:btnAtras :formImprimir:btnImprimir"/>
+                                                    <button type="button" class="btn btn-default btn-lg noround" onclick="anteriorPaso();">
+                                                        Anterior
+                                                    </button>
+                                                </h:panelGroup>
+                                            </h:panelGroup>
+                                            <button type="button" class="btn btn-default btn-lg noround hidden-xs" data-dismiss="modal" onclick="cancelar();">
+                                                Cancelar
+                                            </button>
+                                            <h:panelGroup id="btnTipoSticker">
+                                                <h:panelGroup rendered="#{consultaDatosProductoMBean.pasoImpresion == 1 and consultaDatosProductoMBean.idTipoSticker > 0
+                                                                          and fn:length(consultaDatosProductoMBean.impresoras) > 1}">
+                                                    <p:remoteCommand name="siguientePaso" actionListener="#{consultaDatosProductoMBean.aplicarSiguientePaso}"
+                                                                     update=":formImprimir:tipoSticker :formImprimir:btnTipoSticker :formImprimir:impresora
+                                                                     :formImprimir:btnAtras :formImprimir:btnImprimir"/>
+                                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="siguientePaso();">
+                                                        Siguiente
+                                                    </button>
+                                                </h:panelGroup>
+                                            </h:panelGroup>
+                                            <h:panelGroup id="btnImprimir">
+                                                <h:panelGroup rendered="#{(consultaDatosProductoMBean.pasoImpresion == 2 and consultaDatosProductoMBean.idImpresora > 0)
+                                                                          or (fn:length(consultaDatosProductoMBean.impresoras) == 1 and consultaDatosProductoMBean.pasoImpresion == 1
+                                                                          and consultaDatosProductoMBean.idTipoSticker > 0)}">
+                                                    <p:remoteCommand name="imprimir" actionListener="#{consultaDatosProductoMBean.imprimirReferencia}"
+                                                                     update=":formImprimir:tipoSticker :formImprimir:btnTipoSticker :formImprimir:impresora
+                                                                     :formImprimir:impresora :formImprimir:btnAtras :formImprimir:btnImprimir :formConsulta:refs"
+                                                                     oncomplete="cerrarModalImprimir();"/>
+                                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="imprimir();">
+                                                        Imprimir
+                                                    </button>
+                                                </h:panelGroup>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:form id="formConsulta">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Consultar Datos Productos</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="row">
+                    <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                    <div class="col-xs-12 col-md-8">
+                        <div class="row">
+                            <p:focus context="formConsulta" for="parametroBusqueda"/>
+                            <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+                                <p:remoteCommand name="abrirModal" oncomplete="abrirModalEspera(); buscar();"/>
+                                <p:remoteCommand name="buscar" update=":formConsulta:msg :formConsulta:maestro :formConsulta:parametroBusqueda :dlg :formConsulta:btn :formConsulta:refs"
+                                                 oncomplete="cerrarModalEspera(); abrirModalReferencias();"
+                                                 actionListener="#{consultaDatosProductoMBean.buscarDatos}"/>
+                                <h:inputText id="parametroBusqueda" class="form-control input-lg noround" value="#{consultaDatosProductoMBean.parametroBusqueda}"
+                                             pt:placeholder="Parámetro busqueda" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                         abrirModal();
+                                                         return false;
+                                                     }"/>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h:panelGroup id="maestro">
+                                    <h:panelGroup rendered="#{consultaDatosProductoMBean.itemVisible.itemCode != null}">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div class="hidden-md hidden-lg">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <h:outputLabel value="Referencia: " style="font-size: 18px;"/>
+                                                            <h:outputText class="input-lg" value="#{consultaDatosProductoMBean.itemVisible.itemCode}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <h:outputLabel value="Descripción: " style="font-size: 18px;"/>
+                                                            <h:outputText class="input-lg" value="#{consultaDatosProductoMBean.itemVisible.itemName}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <h:outputLabel value="Referencia proveedor: " style="font-size: 18px;"/>
+                                                            <h:outputText class="input-lg" value="#{consultaDatosProductoMBean.itemVisible.uURefPro}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <h:outputLabel value="Modelo: " style="font-size: 18px;"/>
+                                                            <h:outputText class="input-lg" value="#{consultaDatosProductoMBean.itemVisible.umodelo}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <h:outputLabel value="Código EAN: " style="font-size: 18px;"/>
+                                                            <h:outputText class="input-lg" value="#{consultaDatosProductoMBean.itemVisible.uCodigoEan}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <div id="images" class="carousel slide">
+                                                                <ol class="carousel-indicators">
+                                                                    <ui:repeat value="#{consultaDatosProductoMBean.imagenes}" var="imagen">
+                                                                        <li data-target="#images" data-slide-to="#{imagen[1]}" class="#{imagen[1] eq '0' ? 'active' : ''}"></li>
+                                                                    </ui:repeat>
+                                                                </ol>
+
+                                                                <div class="carousel-inner">
+                                                                    <ui:repeat value="#{consultaDatosProductoMBean.imagenes}" var="imagen">
+                                                                        <div class="item #{imagen[1] eq '0' ? 'active' : ''}">
+                                                                            <img src="#{imagen[0]}" class="img-responsive" style="max-width: 331px"/>
+                                                                        </div>
+                                                                    </ui:repeat>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="hidden-sm hidden-xs">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <h:outputLabel value="Referencia: " style="font-size: 18px;"/>
+                                                            <h:outputText class="input-lg" value="#{consultaDatosProductoMBean.itemVisible.itemCode}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <h:outputLabel value="Descripción: " style="font-size: 18px;"/>
+                                                            <h:outputText class="input-lg" value="#{consultaDatosProductoMBean.itemVisible.itemName}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <h:outputLabel value="Precio: " style="font-size: 18px;"/>
+                                                            <h:outputText class="input-lg" value="#{baruGenericMBean.obtenerPrecioVenta(consultaDatosProductoMBean.itemVisible.itemCode)}">
+                                                                <f:convertNumber currencySymbol="$" type="currency"/>
+                                                            </h:outputText>
+                                                        </div>
+                                                    </div>
+                                                    <br/>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <ul id="tabs" class="nav nav-pills">
+                                                                <li class="active noround">
+                                                                    <a href="#tab_otros" data-toggle="pill" class="input-lg noround">
+                                                                        Otros
+                                                                    </a>
+                                                                </li>
+                                                                <li class="noround">
+                                                                    <a href="#tab_images" data-toggle="pill" class="input-lg noround">
+                                                                        Imagenes
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <br/>
+
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane active" id="tab_otros">
+                                                            <div class="row">
+                                                                <div class="col-xs-12">
+                                                                    <h:outputLabel value="Referencia proveedor: " style="font-size: 18px;"/>
+                                                                    <h:outputText class="input-lg" value="#{consultaDatosProductoMBean.itemVisible.uURefPro}"/>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xs-12 justify-component">
+                                                                    <h:outputLabel value="Descripción artículo: " style="font-size: 18px;"/>
+                                                                    <h:outputText class="input-lg" value="#{consultaDatosProductoMBean.itemVisible.udescripciona}"/>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xs-12">
+                                                                    <h:outputLabel value="Modelo: " style="font-size: 18px;"/>
+                                                                    <h:outputText class="input-lg" value="#{consultaDatosProductoMBean.itemVisible.umodelo}"/>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xs-12">
+                                                                    <h:outputLabel value="Código EAN: " style="font-size: 18px;"/>
+                                                                    <h:outputText class="input-lg" value="#{consultaDatosProductoMBean.itemVisible.uCodigoEan}"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="tab-pane" id="tab_images">
+                                                            <div class="row">
+                                                                <div class="col-xs-12">
+                                                                    <div id="image" class="carousel slide">
+                                                                        <ol class="carousel-indicators">
+                                                                            <ui:repeat value="#{consultaDatosProductoMBean.imagenes}" var="images">
+                                                                                <li data-target="#image" data-slide-to="#{images[1]}" class="#{images[1] eq '0' ? 'active' : ''}"></li>
+                                                                            </ui:repeat>
+                                                                        </ol>
+
+                                                                        <div class="carousel-inner">
+                                                                            <ui:repeat value="#{consultaDatosProductoMBean.imagenes}" var="images">
+                                                                                <div class="item #{images[1] eq '0' ? 'active' : ''}">
+                                                                                    <img src="#{images[0]}" class="img-responsive" style="max-width: 550px"/>
+                                                                                </div>
+                                                                            </ui:repeat>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-4">
+                        <h:panelGroup id="refs">
+                            <h:panelGroup id="btn">
+                                <h:panelGroup rendered="#{consultaDatosProductoMBean.itemVisible.itemCode != null}">
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            <p:remoteCommand name="mostrarDlgImprimir" action="#{consultaDatosProductoMBean.abrirDlgImpresion()}"
+                                                             oncomplete="abrirModalImprimir();" update=":panelImprimir"/>
+                                            <button type="button" class="btn btn-primary btn-lg #{consultaDatosProductoMBean.permitirImpresion ? '' : 'disabled btn-deshabilitado'} noround"
+                                                    onclick="mostrarDlgImprimir();">
+                                                Imprimir Todo
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                </h:panelGroup>
+                            </h:panelGroup>
+                            <div class="row">
+                                <div class="col-xs-12 center-component">
+                                    <h:outputLabel class="input-lg" value="Últimas 20 Referencias"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12" style="max-height: 425px; overflow-y: auto">
+                                    <p:remoteCommand name="seleccionarReferencia" actionListener="#{consultaDatosProductoMBean.seleccionarReferencia}"
+                                                     update=":panelReferencia" oncomplete="abrirModalReferencia();"/>
+                                    <div class="row">
+                                        <ui:repeat value="#{consultaDatosProductoMBean.referenciasVisibles}" var="ref">
+                                            <div class="col-xs-12 col-sm-6 col-md-offset-1 col-md-10 center-component contenedor-contar margin-bottom-10" style="height: 123px"
+                                                 onclick="seleccionarReferencia([{name: 'referencia', value: '#{ref.referencia}'}])">
+                                                <div class="row">
+                                                    <div class="col-xs-12 center-component" style="border: 1px solid #BF0039; height: 123px">
+                                                        <div class="row">
+                                                            <div class="col-xs-6">
+                                                                <h:graphicImage value="#{imagenProductoMBean.obtenerUrlProducto(ref.referencia, true)}" class="img-mini"/>
+                                                            </div>
+                                                            <div class="col-xs-6">
+                                                                <div class="row">
+                                                                    <div class="col-xs-12 right-component" style="font-weight: bold">
+                                                                        <h:outputText value="#{baruGenericMBean.convertirARefCorta(ref.referencia)}" style="font-size: 20px"/>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-xs-12 center-component">
+                                                                        <span style="font-size: 35px; color: #{ref.estado eq 'PP' ? '#BF0039' : '#5CB85C'}; font-weight: bold">
+                                                                            #{ref.cantidad}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-xs-12 justify-component">
+                                                                <h:outputText value="#{baruGenericMBean.obtenerNombreReferencia(ref.referencia)}"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                    </div>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </div>
+
+
+                <br/>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+        <script src="/360/js/datosProductos.js"></script>
+    </h:body>
+</html>

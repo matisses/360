@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="SAPPU" transaction-type="JTA">
+    <jta-data-source>java:/sap_ds</jta-data-source>
+    <class>co.matisses.persistence.sap.entity.SocioDeNegocios</class>
+    <class>co.matisses.persistence.sap.entity.ItemInventario</class>
+    <class>co.matisses.persistence.sap.entity.DepartamentoSAP</class>
+    <class>co.matisses.persistence.sap.entity.Municipio</class>
+    <class>co.matisses.persistence.sap.entity.TarjetaCreditoSAP</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties/>
+  </persistence-unit>
+  <persistence-unit name="BARUWEBPU" transaction-type="JTA">
+    <jta-data-source>java:/baruweb_ds</jta-data-source>
+    <class>co.matisses.persistence.web.entity.ClienteWeb</class>
+    <class>co.matisses.persistence.web.entity.DireccionClienteWeb</class>
+    <class>co.matisses.persistence.web.entity.VentaPOS</class>
+    <class>co.matisses.persistence.web.entity.DetalleVentaPOS</class>
+    <class>co.matisses.persistence.web.entity.OperacionCaja</class>
+    <class>co.matisses.persistence.web.entity.PagoVentaPOS</class>
+    <class>co.matisses.persistence.web.entity.EmpaqueVenta</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties/>
+  </persistence-unit>
+</persistence>

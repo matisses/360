@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Administrar Cajas POS</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <h:form id="formCaja">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Administrar Cajas POS</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="row">
+                    <h:panelGroup id="cajas">
+                        <p:remoteCommand name="seleccionar" actionListener="#{administrarCajaMBean.seleccionarCaja}"
+                                         update=":formCaja:cajas :formCaja:btn"/>
+                        <ui:repeat value="#{administrarCajaMBean.cajas}" var="caja">
+                            <div class="col-xs-12 col-sm-6 col-md-3 center-component margin-bottom-10">
+                                <div class="#{caja[1] eq administrarCajaMBean.ip ? 'caja-seleccionada' : 'caja'}"
+                                     onclick="seleccionar([{name: 'ip', value: '#{caja[1]}'}, {name: 'estado', value: '#{caja[0]}'}]);">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h:outputLabel class="input-lg" value="Caja"/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h:outputLabel class="input-lg" value="#{caja[2] != null ? caja[2] : caja[1]}"/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h:outputLabel class="form-control input-lg noround" value="#{caja[0] eq 0 ? 'Inactiva' : caja[0] eq 1 ? 'Activa' : 'Bloqueada'}"
+                                                           style="#{caja[0] eq 0 ? 'background-color: #D3D3D3;' : caja[0] eq 1 ? 'background-color: #5CB85C;' : 'background-color: #F0AD4E;'}
+                                                           #{caja[0] eq 0 ? 'color: #000000;' : caja[0] eq 1 ? 'color: #FFFFFF;' : 'color: #FFFFFF;'}
+                                                           #{caja[0] eq 0 ? 'border: 1px solid #D3D3D3;' : caja[0] eq 1 ? 'border: 1px solid #5CB85C;' : 'border: 1px solid #F0AD4E;'}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </h:panelGroup>
+                </div>
+                <br/>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                <div class="row">
+                    <h:panelGroup id="btn">
+                        <p:remoteCommand name="ejecutar" update=":formCaja:msg :formCaja:cajas" actionListener="#{administrarCajaMBean.ejecutarCierreForzoso}"/>
+                        <div class="col-xs-12 center-component">
+                            <button type="button" class="btn btn-primary btn-lg noround #{administrarCajaMBean.ip == null ? 'disabled btn-deshabilitado' : ''}"
+                                    onclick="ejecutar();">
+                                Cierre Forzoso
+                            </button>
+                        </div>
+                    </h:panelGroup>
+                </div>
+                <br/>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

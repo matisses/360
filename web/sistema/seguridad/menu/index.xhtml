@@ -1,0 +1,573 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script type="text/javascript">
+            function abrirModalCrearObjetoAccion() {
+                $('#modalCrearObjetoAccion').modal('show');
+            }
+
+            function cerrarModalCrearObjetoAccion() {
+                $('#modalCrearObjetoAccion').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Matisses Menú</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <h:panelGroup id="panelCrearObjetoAccion">
+                <h:panelGroup rendered="#{menu360MBean.panelAccionObjetoVisible}">
+                    <h:form id="formCrearObjetoAccion">
+                        <div class="modal fade" id="modalCrearObjetoAccion">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                            &times;
+                                        </button>
+                                        <h4 class="modal-title">
+                                            Configurar Acción - Objeto
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <p:remoteCommand name="agregarAccion" actionListener="#{menu360MBean.agregarAccion}"
+                                                                 update=":formCrearObjetoAccion:listaAcciones :formCrearObjetoAccion:txt_nombreAccion :formCrearObjetoAccion:msg"/>
+                                                <div class="row">
+                                                    <div class="col-xs-8 center-component margin-bottom-10">
+                                                        <span style="font-size: 33px">Acciones</span>
+                                                    </div>
+                                                    <div class="col-xs-4 right-component margin-bottom-10">
+                                                        <button type="button" class="btn btn-default btn-lg noround" onclick="agregarAccion();">
+                                                            <span class="glyphicon glyphicon-plus"></span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12 margin-bottom-10">
+                                                        <h:inputText id="txt_nombreAccion" pt:placeholder="Nombre para agregar acción" class="form-control input-lg noround" value="#{menu360MBean.nombreAccion}"
+                                                                     autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                 agregarAccion();
+                                                                                 return false;
+                                                                             }"/>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <h:panelGroup id="listaAcciones">
+                                                        <p:remoteCommand name="seleccionarAccionAsignar" actionListener="#{menu360MBean.seleccionarAccionAsignar}"
+                                                                         update=":formCrearObjetoAccion:txt_accionObjeto"/>
+                                                        <div class="col-xs-12 margin-bottom-10">
+                                                            <select class="form-control input-lg input-lg-auto noround" id="selAccionesDisponibles" size="10">
+                                                                <ui:repeat value="#{menu360MBean.listaAccionesBasicas}" var="accionDisponible">
+                                                                    <option class="pointer-cursor" onclick="seleccionarAccionAsignar([{name: 'idAccion', value: '#{accionDisponible.codigo}'}]);">
+                                                                        #{accionDisponible.nombre}
+                                                                    </option>
+                                                                </ui:repeat>
+                                                            </select>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <p:remoteCommand name="agregarObjeto" actionListener="#{menu360MBean.agregarObjeto}"
+                                                                 update=":formCrearObjetoAccion:listaObjetos :formCrearObjetoAccion:txt_nombreObjeto :formCrearObjetoAccion:msg"/>
+                                                <div class="row">
+                                                    <div class="col-xs-8 center-component margin-bottom-10">
+                                                        <span style="font-size: 33px">Objetos</span>
+                                                    </div>
+                                                    <div class="col-xs-4 right-component margin-bottom-10">
+                                                        <button type="button" class="btn btn-default btn-lg noround" onclick="agregarObjeto();">
+                                                            <span class="glyphicon glyphicon-plus"></span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12 margin-bottom-10">
+                                                        <h:inputText id="txt_nombreObjeto" pt:placeholder="Nombre para agregar objeto" class="form-control input-lg noround" value="#{menu360MBean.nombreObjeto}"
+                                                                     autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                 agregarObjeto();
+                                                                                 return false;
+                                                                             }"/>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <h:panelGroup id="listaObjetos">
+                                                        <p:remoteCommand name="seleccionarObjetoAsignar" actionListener="#{menu360MBean.seleccionarObjetoAsignar}"
+                                                                         update=":formCrearObjetoAccion:txt_accionObjeto"/>
+                                                        <div class="col-xs-12 margin-bottom-10">
+                                                            <select class="form-control input-lg input-lg-auto noround" id="selAccionesDisponibles" size="10">
+                                                                <ui:repeat value="#{menu360MBean.listaObjetos}" var="objeto">
+                                                                    <option class="pointer-cursor" onclick="seleccionarObjetoAsignar([{name: 'idObjeto', value: '#{objeto.idObjeto}'}]);">
+                                                                        #{objeto.nombre}
+                                                                    </option>
+                                                                </ui:repeat>
+                                                            </select>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <p:remoteCommand name="agregarAccionObjeto" actionListener="#{menu360MBean.agregarAccionObjeto}"
+                                                             update=":formCrearObjetoAccion:txt_accionObjeto :formCrearObjetoAccion:listaObjetos :formCrearObjetoAccion:txt_nombreObjeto
+                                                             :formCrearObjetoAccion:msg :formCrearObjetoAccion:listaAcciones :formCrearObjetoAccion:txt_nombreAccion"/>
+                                            <div class="col-xs-9">
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Acción - Objeto"/>
+                                                    <h:inputText id="txt_accionObjeto" value="#{menu360MBean.nombreAccionObjeto}" pt:placeholder="Acción - Objeto" class="form-control input-lg noround"
+                                                                 autocomplete="off" disabled="true" onkeypress="if (event.keyCode === 13) {
+                                                                             return false;
+                                                                         }"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-3 right-component" style="top: 25px">
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="agregarAccionObjeto();">
+                                                    Agregar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                    Cerrar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:form id="formMenuItem">
+                <p:focus for=":formMenuItem:txt_nombre"/>
+                <p:remoteCommand actionListener="#{menu360MBean.seleccionarMenu}" name="seleccionarMenu" update="@form"/>
+                <p:dialog id="dlgListaBusqueda" widgetVar="dlgListaBusqueda" modal="true" fitViewport="true" draggable="true" closable="true"
+                          closeOnEscape="true" maximizable="false" minimizable="false" header="Resultado búsqueda (#{menu360MBean.resultadoBusqueda.size()} resultados)" 
+                          visible="#{menu360MBean.panelBusquedaVisible}">
+                    <div class="container">
+                        <div class="row padding-top-5">
+                            <p:scrollPanel id="listaMenus" style="height:400px">
+                                <ui:fragment rendered="#{empty menu360MBean.resultadoBusqueda}">
+                                    <span style="padding-left: 10px;">No hay elementos para mostrar</span>
+                                </ui:fragment>
+                                <ui:repeat value="#{menu360MBean.resultadoBusqueda}" var="menu" rendered="#{not empty menu360MBean.resultadoBusqueda}">
+                                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+                                        <div class="menuItem" onclick="seleccionarMenu([{name: 'codigo', value: '#{menu.idMenu}'}])">
+                                            <div class="row">
+                                                <div class="col-xs-5">
+                                                    <span class="pull-right"><strong>Nombre:</strong></span>
+                                                </div>
+                                                <div class="col-xs-7">
+                                                    <span class="">#{menu.nombre}</span>
+                                                </div>
+                                                <div class="col-xs-5">
+                                                    <span class="pull-right"><strong>Objeto:</strong></span>
+                                                </div>
+                                                <div class="col-xs-7">
+                                                    <span class="">#{menu.objeto.nombre eq null ? 'N/D' : menu.objeto.nombre}</span>
+                                                </div>
+                                                <div class="col-xs-5">
+                                                    <span class="pull-right"><strong>Ruta:</strong></span>
+                                                </div>
+                                                <div class="col-xs-7">
+                                                    <span class="">#{menu.ruta}</span>
+                                                </div>
+                                                <div class="col-xs-5">
+                                                    <span class="pull-right"><strong>Activo: </strong></span>
+                                                </div>
+                                                <div class="col-xs-7">
+                                                    <span class="">#{menu.activo ? 'Sí' : 'No'}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </p:scrollPanel>
+                        </div>
+                    </div>
+                </p:dialog>
+
+                <p:remoteCommand name="mostrarSubmenu" actionListener="#{menu360MBean.mostrarSubmenu}" update="@form"/>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="#{empty menu360MBean.migas ? 'active' : null}" 
+                                onclick="mostrarSubmenu()">
+                                <a href="#">
+                                    Inicio
+                                </a>
+                            </li>
+                            <ui:repeat value="#{menu360MBean.migas}" var="miga" varStatus="status">
+                                <li class="#{status.last ? 'active' : null}" 
+                                    onclick="mostrarSubmenu([{name: 'codigo', value: '#{miga.idMenu}'}])">
+                                    <a href="#">
+                                        #{miga.nombre}
+                                    </a>
+                                </li>
+                            </ui:repeat>
+                        </ol>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4" style="padding-right: 0px;">
+                        <h:panelGroup id="panelMenu">
+                            <p:remoteCommand name="subirMenu" actionListener="#{menu360MBean.subirMenu}" update=":formMenuItem:panelMenu"/>
+                            <p:remoteCommand name="bajarMenu" actionListener="#{menu360MBean.bajarMenu}" update=":formMenuItem:panelMenu"/>
+                            <ui:repeat value="#{menu360MBean.menuVisible}" var="menuItem" varStatus="status">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="menu-item #{menu360MBean.obtenerEstilosAdicionales(menuItem)}" 
+                                             onclick="seleccionarMenu([{name: 'codigo', value: '#{menuItem.idMenu}'}])">
+                                            <h:outputText class="input-lg" value="#{menuItem.nombre}"/>
+                                            <span style="display: inline-block;" class="pull-right">
+                                                <span class="glyphicon glyphicon-chevron-up" style="visibility: #{status.first ? 'hidden' : 'visible'}"
+                                                      onclick="subirMenu([{name: 'codigo', value: '#{menuItem.idMenu}'}])"></span>
+                                                <span class="glyphicon glyphicon-chevron-down" style="visibility: #{status.last ? 'hidden' : 'visible'}"
+                                                      onclick="bajarMenu([{name: 'codigo', value: '#{menuItem.idMenu}'}])"></span>
+                                                <span style="visibility: #{empty menuItem.hijos ? 'hidden' : 'visible'}" 
+                                                      class="glyphicon glyphicon-chevron-right"
+                                                      onclick="mostrarSubmenu([{name: 'codigo', value: '#{menuItem.idMenu}'}])"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </h:panelGroup>
+                    </div>
+                    <div class="col-xs-8">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                            </div>
+                        </div>
+                        <h:panelGroup id="campos">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Nombre menú:"/>
+                                        <h:inputText id="txt_nombre" value="#{menu360MBean.menuItem.nombre}" pt:placeholder="Nombre menú" class="form-control input-lg noround"
+                                                     autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                 return false;
+                                                             }"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Nombre alterno:"/>
+                                        <h:inputText id="txt_alterno" value="#{menu360MBean.menuItem.nombreAlterno}" pt:placeholder="Nombre alterno" class="form-control input-lg noround"
+                                                     autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                 return false;
+                                                             }"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <p:remoteCommand name="seleccionarMenuPadre" actionListener="#{menu360MBean.seleccionarMenuPadre}" update=":formMenuItem:sel_menuPadre"
+                                                         oncomplete="cerrarModalEspera();"/>
+                                        <h:outputLabel value="Menú padre:"/>
+                                        <h:panelGroup id="sel_menuPadre">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround"
+                                                        style="width: 100%" id="selMenuPadre" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    #{menu360MBean.idMenuPadreSeleccionado}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selMenuPadre" data-live-search="true">
+                                                    <ui:repeat value="#{menu360MBean.listaMenusPadre}" var="menu">
+                                                        <li>
+                                                            <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                    seleccionarMenuPadre([{name: 'idMenuPadre', value: '#{menu.idMenu}'}]);">
+                                                                #{menu.nombre}
+                                                            </a>
+                                                        </li>
+                                                    </ui:repeat>
+                                                </ul>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <p:remoteCommand name="seleccionarDestino" actionListener="#{menu360MBean.seleccionarDestino}" update=":formMenuItem:destinos" oncomplete="cerrarModalEspera();"/>
+                                        <h:outputLabel value="Destino:"/>
+                                        <h:panelGroup id="destinos">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround"
+                                                        style="width: 100%" id="selDestino" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    #{menu360MBean.menuItem.destinoSeleccionado}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selDestino" data-live-search="true">
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                seleccionarDestino([{name: 'destino', value: '_self'}]);">
+                                                            Misma página
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                seleccionarDestino([{name: 'destino', value: '_blank'}]);">
+                                                            Nueva página
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <h:outputLabel value="URL acceso:"/>
+                                        <h:inputText id="txt_ruta" value="#{menu360MBean.menuItem.ruta}" pt:placeholder="URL acceso" class="form-control input-lg noround"
+                                                     autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                 return false;
+                                                             }"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <p:remoteCommand name="seleccionarObjeto" actionListener="#{menu360MBean.seleccionarObjeto}" oncomplete="cerrarModalEspera(); abrirModalCrearObjetoAccion();"
+                                                         update=":formMenuItem:sel_objeto :formMenuItem:sel_accion :panelCrearObjetoAccion"/>
+                                        <h:outputLabel value="Objeto:"/>
+                                        <h:panelGroup id="sel_objeto">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround"
+                                                        style="width: 100%" id="selObjeto" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    #{menu360MBean.idObjetoSeleccionado}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selObjeto" data-live-search="true">
+                                                    <ui:repeat value="#{menu360MBean.listaObjetos}" var="objeto">
+                                                        <li>
+                                                            <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                    seleccionarObjeto([{name: 'idObjeto', value: '#{objeto.idObjeto}'}]);">
+                                                                #{objeto.nombre}
+                                                            </a>
+                                                        </li>
+                                                    </ui:repeat>
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarObjeto([{name: 'idObjeto', value: '-1'}]);">
+                                                            Nuevo
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <p:remoteCommand name="seleccionarAccion" actionListener="#{menu360MBean.seleccionarAccion}" update=":formMenuItem:sel_accion" oncomplete="cerrarModalEspera();"/>
+                                        <h:outputLabel value="Acción:"/>
+                                        <h:panelGroup id="sel_accion">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround #{empty menu360MBean.listaAcciones ? 'disabled' : ''}"
+                                                        style="width: 100%" id="selAccion" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    #{menu360MBean.idAccionSeleccionada}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selAccion" data-live-search="true">
+                                                    <ui:repeat value="#{menu360MBean.listaAcciones}" var="accion">
+                                                        <li>
+                                                            <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                    seleccionarAccion([{name: 'idAccion', value: '#{accion.idAccionObjeto}'}]);">
+                                                                #{accion.nombre}
+                                                            </a>
+                                                        </li>
+                                                    </ui:repeat>
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarObjeto([{name: 'idObjeto', value: '-1'}]);">
+                                                            Nuevo
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <p:remoteCommand name="seleccionarEsMenu" actionListener="#{menu360MBean.seleccionarEsMenu}" update=":formMenuItem:esMenu" oncomplete="cerrarModalEspera();"/>
+                                        <h:outputLabel value="¿Es menú?"/>
+                                        <h:panelGroup id="esMenu">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround"
+                                                        style="width: 100%" id="selEsMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    #{menu360MBean.menuItem.esMenuSeleccionado}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selEsMenu" data-live-search="true">
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                seleccionarEsMenu([{name: 'esMenu', value: '#{true}'}]);">
+                                                            Sí
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                seleccionarEsMenu([{name: 'esMenu', value: '#{false}'}]);">
+                                                            No
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <p:remoteCommand name="seleccionarSeparadorAntes" actionListener="#{menu360MBean.seleccionarSeparadorAntes}" update=":formMenuItem:sel_separadorAntes"
+                                                         oncomplete="cerrarModalEspera();"/>
+                                        <h:outputLabel value="¿Separador antes?"/>
+                                        <h:panelGroup id="sel_separadorAntes">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround"
+                                                        style="width: 100%" id="selSeparadorAntes" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    #{menu360MBean.menuItem.tieneSeparadorAntesSeleccionado}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selSeparadorAntes" data-live-search="true">
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                seleccionarSeparadorAntes([{name: 'separadorAntes', value: '#{true}'}]);">
+                                                            Sí
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                seleccionarSeparadorAntes([{name: 'separadorAntes', value: '#{false}'}]);">
+                                                            No
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <p:remoteCommand name="seleccionarSeparadorDespues" actionListener="#{menu360MBean.seleccionarSeparadorDespues}" update=":formMenuItem:sel_separadorDespues"
+                                                         oncomplete="cerrarModalEspera();"/>
+                                        <h:outputLabel value="¿Separados después?"/>
+                                        <h:panelGroup id="sel_separadorDespues">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround"
+                                                        style="width: 100%" id="selSeparadorDespues" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    #{menu360MBean.menuItem.tieneSeparadorDespuesSeleccionado}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selSeparadorDespues" data-live-search="true">
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                seleccionarSeparadorDespues([{name: 'separadorDespues', value: '#{true}'}]);">
+                                                            Sí
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                seleccionarSeparadorDespues([{name: 'separadorDespues', value: '#{false}'}]);">
+                                                            No
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <p:remoteCommand name="seleccionarActivo" actionListener="#{menu360MBean.seleccionarActivo}" update=":formMenuItem:sel_activo" oncomplete="cerrarModalEspera();"/>
+                                        <h:outputLabel value="¿Activo?"/>
+                                        <h:panelGroup id="sel_activo">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround"
+                                                        style="width: 100%" id="selActivo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    #{menu360MBean.menuItem.activoSeleccionado}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selActivo" data-live-search="true">
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                seleccionarActivo([{name: 'activo', value: '#{true}'}]);">
+                                                            Sí
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                seleccionarActivo([{name: 'activo', value: '#{false}'}]);">
+                                                            No
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                        <div class="row">
+                            <div class="col-xs-12 right-component">
+                                <h:panelGroup id="panelBotones">
+                                    <p:remoteCommand name="crear" actionListener="#{menu360MBean.crear}" update=":formMenuItem" oncomplete="cerrarModalEspera();"/>
+                                    <p:remoteCommand name="limpiar" actionListener="#{menu360MBean.limpiar}" update=":formMenuItem" oncomplete="cerrarModalEspera();"/>
+                                    <p:remoteCommand name="actualizar" actionListener="#{menu360MBean.actualizar}" update=":formMenuItem" oncomplete="cerrarModalEspera();"/>
+
+                                    <button type="button" class="btn btn-primary btn-lg noround #{not menu360MBean.botonCrearVisible ? 'disabled btn-deshabilitado' : ''}"
+                                            onclick="abrirModalEspera(); crear();">
+                                        Crear
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-lg noround #{menu360MBean.botonCrearVisible ? 'disabled btn-deshabilitado' : ''}"
+                                            onclick="abrirModalEspera(); limpiar();">
+                                        Limpiar
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-lg noround #{menu360MBean.botonCrearVisible ? 'disabled btn-deshabilitado' : ''}"
+                                            onclick="abrirModalEspera(); actualizar();">
+                                        Actualizar
+                                    </button>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

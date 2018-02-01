@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" http-equiv="Content-Type"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <title>360 - Contenedores Proveedor</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <h:form id="formContenedores" pt:role="form">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Contenedores Proveedor</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="row">
+                    <p:remoteCommand name="buscar" actionListener="#{contenedoresProveedorMBean.buscarProveedor}"
+                                     update=":formContenedores:slc_contenedores :formContenedores:txt_busqueda :formContenedores:containers
+                                     :formContenedores:contenedores :formContenedores:msg"/>
+                    <div class="col-xs-12 col-sm-8 col-md-offset-5 col-md-7 col-lg-offset-3 col-lg-6 margin-bottom-10">
+                        <h:inputText id="txt_busqueda" pt:placeholder="Código Proveedor" value="#{contenedoresProveedorMBean.parametroBusqueda}"
+                                     class="form-control input-lg noround" autocomplete="off"
+                                     onkeypress="if (event.keyCode === 13) {
+                                                 buscar();
+                                                 return false;
+                                             }"/>
+                    </div>
+                </div>
+                <h:panelGroup id="slc_contenedores">
+                    <h:panelGroup rendered="#{not empty contenedoresProveedorMBean.parametroBusqueda}">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-9 col-md-offset-5 col-md-5 col-lg-offset-3 col-lg-6 margin-bottom-10">
+                                <p:remoteCommand name="seleccionarContenedor" actionListener="#{contenedoresProveedorMBean.seleccionarContenedor}"
+                                                 update=":formContenedores:containers" oncomplete="cerrarModalEspera();"/>
+                                <h:panelGroup id="containers">
+                                    <div class="input-group">
+                                        <span class="input-group-addon input-group-matisses noround">
+                                            Contenedor
+                                        </span>
+                                        <div class="dropdown">
+                                            <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                    id="selContainer" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                #{contenedoresProveedorMBean.idContenedorSeleccionado}
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="selContainer" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                <ui:repeat value="#{contenedoresProveedorMBean.contenedores}" var="cont">
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarContenedor([{name: 'idContenedor', value: '#{cont.idContenedor}'}]);">
+                                                            #{cont.nombre}
+                                                        </a>
+                                                    </li>
+                                                </ui:repeat>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-9 col-md-offset-5 col-md-5 col-lg-offset-3 col-lg-6 right-component">
+                                <h:commandButton class="btn btn-primary btn-lg noround" value="Agregar">
+                                    <f:ajax render=":formContenedores:containers :formContenedores:msg :formContenedores:contenedores"
+                                            listener="#{contenedoresProveedorMBean.agregarContenedorAProveedor}"/>
+                                </h:commandButton>
+                            </div>
+                        </div>
+                        <br/>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <p:messages showDetail="true" showSummary="false" id="msg"/>
+
+                <hr/>
+
+                <h:panelGroup id="contenedores">
+                    <h:panelGroup rendered="#{not empty contenedoresProveedorMBean.contenedoresProveedor}">
+                        <div class="row">
+                            <h:panelGroup id="listaContenedores">
+                                <p:remoteCommand name="remoteDeleteDemand" actionListener="#{contenedoresProveedorMBean.eliminarContenedorAProveedor}"
+                                                 update=":formContenedores:listaContenedores :formContenedores:msg"/>
+                                <ui:fragment rendered="#{empty contenedoresProveedorMBean.contenedoresProveedor}">
+                                    <h4>
+                                        <p>
+                                            No se encontraron datos
+                                        </p>
+                                    </h4>
+                                </ui:fragment>
+                                <ui:repeat value="#{contenedoresProveedorMBean.contenedoresProveedor}" var="resultado"
+                                           rendered="#{not empty contenedoresProveedorMBean.contenedoresProveedor}">
+                                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 center-component">
+                                        <div class="categoria-proveedor" style="font-size: 18px; height: 60px">
+                                            <span>
+                                                #{contenedoresProveedorMBean.nombreContenedor(resultado.idContenedor)}
+                                            </span>
+                                            <span class="btn glyphicon glyphicon-trash eliminar-categoria-proveedor pull-right noround"
+                                                  onclick="remoteDeleteDemand([{name: 'idContenedorProveedor', value: '#{resultado.idContenedorProveedor}'}]);">
+                                            </span>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </h:panelGroup>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </div>
+        </h:form>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

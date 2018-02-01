@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Conteos Cíclicos</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        <div class="container">
+            <h:form id="formSiguienteConteo">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Conteos Cíclicos</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <p:messages id="msg" showDetail="true" showSummary="true" autoUpdate="true"/>
+                <h:panelGroup id="seleccionUbicacion">
+                    <ui:fragment rendered="#{conteoCiclicoMBean.inventarioCiclicoDTO.binCode ne null}">
+                        <div class="row">
+                            <p:remoteCommand name="crearConteoUbicacion" action="#{conteoCiclicoMBean.crearConteoUbicacion}" update=":formSiguienteConteo:seleccionUbicacion"/>
+                            <div class="col-xs-12 col-md-6 col-md-offset-3" onclick="crearConteoUbicacion()" style="cursor: pointer;">
+                                <div class="row">
+                                    <div class="col-xs-12 center-component" style="background-color: #D8D8D8; font-weight: bold; font-size: 25px">
+                                        Siguiente ubicación
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 center-component">
+                                        <div class="row">
+                                            <div class="col-xs-12">Almacén</div>
+                                            <div class="col-xs-12" style="font-weight: bold; font-size: 35px;">#{conteoCiclicoMBean.inventarioCiclicoDTO.whsCode}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6 center-component">
+                                        <div class="row">
+                                            <div class="col-xs-12">Ubicación</div>
+                                            <div class="col-xs-12" style="font-weight: bold; font-size: 35px;">#{conteoCiclicoMBean.inventarioCiclicoDTO.binCode}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 center-component" style="background-color: #D8D8D8; font-size: 25px">
+                                        Haz clic para iniciar el conteo
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ui:fragment>
+                </h:panelGroup>
+                <br/>
+                <br/>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

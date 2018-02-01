@@ -1,0 +1,227 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script type="text/javascript">
+            function abrirModalCorreo() {
+                $('#modalCorreo').modal('show');
+            }
+
+            function cerrarModalCorreo() {
+                $('modalCorreo').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Certificados</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+
+            <h:panelGroup id="panelCorreo">
+                <h:panelGroup rendered="#{certificadosLaboralesMBean.dlgCorreo}">
+                    <h:form id="formCorreo">
+                        <div class="modal fade" id="modalCorreo" data-keyboard="false" data-backdrop="static">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">
+                                            Correo
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <p:remoteCommand name="imprimir" actionListener="#{certificadosLaboralesMBean.imprimir}" update=":formCorreo:chk_imprimir :formCorreo:msg"/>
+
+                                                <h:panelGroup id="chk_imprimir">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon #{certificadosLaboralesMBean.imprimir ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                                  onclick="imprimir();"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <h:outputLabel value="¿Imprimir?" class="label-normal" onclick="imprimir();"/>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <p:remoteCommand name="enviar" actionListener="#{certificadosLaboralesMBean.enviar}" update=":formCorreo:correo :formCorreo:chk_enviar :formCorreo:msg"/>
+
+                                                <h:panelGroup id="chk_enviar">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon #{certificadosLaboralesMBean.enviar ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                                  onclick="enviar();"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <h:outputLabel value="¿Enviar correo?" class="label-normal" onclick="enviar();"/>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                        <h:panelGroup id="correo">
+                                            <ui:fragment rendered="#{certificadosLaboralesMBean.enviar}">
+                                                <div class="row">
+                                                    <div class="col-xs-12 justify-component">
+                                                        <p class="alert alert-warning">
+                                                            <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                            Ingrese el correo al que quiere que le llegue el certificado.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <div class="form-group">
+                                                            <label>Correo:</label>
+                                                            <h:inputText pt:type="email" class="form-control input-lg noround" value="#{certificadosLaboralesMBean.correoEmpleado}"
+                                                                         autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                     return false;
+                                                                                 }"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ui:fragment>
+                                        </h:panelGroup>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <p:remoteCommand name="abrirDlgCorreo" actionListener="#{certificadosLaboralesMBean.abrirDlgCorreo}" update=":formCertificados"/>
+                                                <p:remoteCommand name="modal" update=":panelCorreo" oncomplete="cerrarModalCorreo(); abrirModalEspera(); terminar();"/>
+                                                <p:remoteCommand name="terminar" actionListener="#{certificadosLaboralesMBean.terminar}" update=":panelCorreo :formCertificados"
+                                                                 oncomplete="cerrarModalEspera(); abrirModalCorreo();"/>
+
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="abrirDlgCorreo();">
+                                                    Cancelar
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="modal();" style="margin-left: 0px">
+                                                    Terminar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:form id="formCertificados">
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>
+                                    Certificados laborales
+                                </a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-md-offset-4 col-md-4 margin-bottom-10">
+                        <div class="form-group">
+                            <label>Cedula empleado:</label>
+                            <h:inputText pt:type="number" class="form-control input-lg noround center-component" value="#{certificadosLaboralesMBean.cedula}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                        return false;
+                                    }" disabled="#{userSessionInfoMBean.validarPermisoUsuario('CERTIFICADOS_TODOS', 'GENERAR') ? 'false' : 'true'}"/>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-offset-4 col-md-4 margin-bottom-10">
+                        <div class="form-group">
+                            <label>¿Dirigido a?:</label>
+                            <h:inputText class="form-control input-lg noround center-component" value="#{certificadosLaboralesMBean.dirigido}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                        return false;
+                                    }"/>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-offset-4 col-md-4 margin-bottom-10">
+                        <div class="form-group">
+                            <label>Comisiones:</label>
+                            <h:inputText pt:type="number" class="form-control input-lg noround center-component" value="#{certificadosLaboralesMBean.comision}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                        return false;
+                                    }" disabled="#{userSessionInfoMBean.validarPermisoUsuario('COMISION', 'ASIGNAR') ? 'false' : 'true'}"/>
+                            <ui:fragment rendered="#{userSessionInfoMBean.validarPermisoUsuario('COMISION', 'ASIGNAR') == false}">
+                                <div class="hidden-sm hidden-xs">
+                                    <div class="popover fade right in" role="tooltip" style="left: 100%; display: block; right: -100%; top: 2px; border-color: #F0AD4E; z-index: 1">
+                                        <div class="arrow" style="top: 50%; border-right-color: #F0AD4E"></div>
+                                        <div class="popover-content justify-component">
+                                            <p>
+                                                <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"> </span>
+                                                Si desea un certificado con comisiones solicitelo directamente en <b>Recursos humanos</b>.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hidden-lg hidden-md">
+                                    <div class="popover fade bottom in" role="tooltip" style="left: 16%; right: 10%; display: block; top: 91%; border-color: #F0AD4E; z-index: 1">
+                                        <div class="arrow" style="left: 50%; border-bottom-color: #F0AD4E"></div>
+                                        <div class="popover-content justify-component">
+                                            <p>
+                                                <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"> </span>
+                                                Si desea un certificado con comisiones solicitelo directamente en <b>Recursos humanos</b>.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:fragment>
+                        </div>
+                    </div>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                <div class="row">
+                    <div class="col-xs-12 col-md-offset-4 col-md-4 margin-bottom-10 right-component #{userSessionInfoMBean.validarPermisoUsuario('COMISION', 'ASIGNAR') == false ? 'btn-certificados' : ''}">
+                        <p:remoteCommand name="limpiar" actionListener="#{certificadosLaboralesMBean.limpiar}" update=":formCertificados" oncomplete="cerrarModalEspera();"/>
+                        <p:remoteCommand name="generarCertificado" actionListener="#{certificadosLaboralesMBean.generarCertificado}" update=":panelCorreo :formCertificados:msg"
+                                         oncomplete="cerrarModalEspera(); abrirModalCorreo();"/>
+
+                        <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); limpiar();">
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); generarCertificado();">
+                            Generar
+                        </button>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

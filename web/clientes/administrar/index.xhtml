@@ -1,0 +1,627 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Maestro Clientes</title>
+        <script>
+            function abrirModalContinuar() {
+                $('#modalContinuar').modal('show');
+            }
+
+            function cerrarModalContinuar() {
+                $('modalContinuar').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <h:panelGroup id="panelContinuar">
+            <h:panelGroup rendered="#{maestroClienteMBean.advertencia}">
+                <h:form id="formContinuar">
+                    <div class="modal fade" id="modalContinuar">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header-advertencia">
+                                    <h4 class="modal-title">
+                                        Advertencia
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            <p>
+                                                <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                Los datos modificados del cliente no se pudieron guardar.
+                                                <br/>
+                                                ¿Desea continuar de igual forma?
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <div class="row">
+                                        <div class="col-xs-12 right-component">
+                                            <p:remoteCommand name="continuar" action="#{maestroClienteMBean.continuar}" update=":formCliente :panelContinuar" oncomplete="cerrarModalEspera();"/>
+                                            <p:remoteCommand name="cancelarContinuacion" actionListener="#{maestroClienteMBean.cancelarContinuacion}" update=":formCliente :panelContinuar"
+                                                             oncomplete="cerrarModalEspera();"/>
+
+                                            <button type="button" class="btn btn-default btn-lg noround" onclick="cancelarContinuacion();" data-dismiss="modal">
+                                                No
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-lg noround" style="margin-left: 0px" onclick="continuar();">
+                                                Sí
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+        </h:panelGroup>
+
+        <h:form id="formCliente">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>#{maestroClienteMBean.buscando and not empty clienteSessionMBean.clienteDto.nit ? 'Editando cliente' : maestroClienteMBean.buscando ? 'Buscando cliente' : 'Nuevo cliente'}</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 right-component margin-bottom-10">
+                        <p:remoteCommand name="buscar" actionListener="#{maestroClienteMBean.buscar}" update=":formCliente" oncomplete="cerrarModalEspera();"/>
+                        <p:remoteCommand name="limpiar" actionListener="#{maestroClienteMBean.limpiar}" update=":formCliente" oncomplete="cerrarModalEspera();"/>
+                        <p:remoteCommand name="guardarCliente" actionListener="#{maestroClienteMBean.guardarCliente}" update=":formCliente:datos :formCliente:msgSuperior :formCliente:msgInferior :panelContinuar"
+                                         oncomplete="cerrarModalEspera(); abrirModalContinuar();"/>
+                        <p:remoteCommand name="volverACotizaciones" action="#{maestroClienteMBean.volverACotizaciones}" update=":formCliente" oncomplete="cerrarModalEspera();"/>
+                        <p:remoteCommand name="crearCotizacion" action="#{maestroClienteMBean.crearCotizacion}" update=":formCliente :panelContinuar" oncomplete="cerrarModalEspera(); abrirModalContinuar();"/>
+                        <p:remoteCommand name="continuarProceso" action="#{maestroClienteMBean.continuarProceso}" update=":formCliente :panelContinuar" oncomplete="cerrarModalEspera(); abrirModalContinuar();"/>
+
+                        <ui:fragment rendered="#{maestroClienteMBean.facturando or maestroClienteMBean.cotizacion or maestroClienteMBean.demostracion or maestroClienteMBean.notaCredito}">
+                            <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); volverACotizaciones();">
+                                Atrás
+                            </button>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{maestroClienteMBean.cotizacion}">
+                            <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); crearCotizacion();" style="margin-left: 0px">
+                                Cotizar
+                            </button>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{maestroClienteMBean.facturando || maestroClienteMBean.demostracion || maestroClienteMBean.notaCredito}">
+                            <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); continuarProceso();" style="margin-left: 0px">
+                                Continuar
+                            </button>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{maestroClienteMBean.cotizacion == false and maestroClienteMBean.facturando == false
+                                                 and maestroClienteMBean.demostracion == false and maestroClienteMBean.notaCredito == false}">
+                            <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); limpiar();" style="margin-left: 0px">
+                                Cancelar
+                            </button>
+                            <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); guardarCliente();" style="margin-left: 0px">
+                                Guardar
+                            </button>
+                        </ui:fragment>
+                    </div>
+                </div>
+
+                <p:messages id="msgSuperior" showDetail="true" showSummary="true"/>
+                <br/>
+
+                <h:panelGroup id="datos">
+                    <div class="row">
+                        <div class="col-md-4 visible-md visible-lg vertical-section-name">
+                            <h2>Identificación</h2>
+                        </div>
+                        <div class="col-xs-12 col-md-8">
+                            <div class="row">
+                                <h:panelGroup id="documento">
+                                    <div class="col-xs-12 col-sm-6">
+                                        <div class="form-group">
+                                            <p:focus context="formCliente" for="txt_numeroDocumento"/>
+                                            <h:outputLabel value="Número documento:"/>
+                                            <div class="input-group">
+                                                <h:inputText id="txt_numeroDocumento" class="form-control input-lg noround" pt:placeholder="Número documento" value="#{clienteSessionMBean.clienteDto.nit}"
+                                                             autocomplete="off" disabled="#{maestroClienteMBean.buscando and not empty clienteSessionMBean.clienteDto.nit}"
+                                                             onkeypress="if (event.keyCode === 13) {
+                                                                         abrirModalEspera();
+                                                                         buscar();
+                                                                         return false;
+                                                                     }">
+                                                    <f:ajax event="change" listener="#{maestroClienteMBean.procesarCambioNroDocumento}"
+                                                            render=":formCliente:digitoVerificacion :formCliente:txt_numeroDocumento :formCliente:msgSuperior :formCliente:msgInferior"/>
+                                                </h:inputText>
+                                                <span class="input-group-btn">
+                                                    <ui:fragment rendered="#{maestroClienteMBean.buscando == false}">
+                                                        <button class="btn btn-primary btn-lg noround" type="button" style="font-size: 23px; padding: 8.5px 10px 4.5px 10px" onclick="abrirModalEspera(); buscar();">
+                                                            <span class="glyphicon glyphicon-search"></span>
+                                                        </button>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{maestroClienteMBean.buscando}">
+                                                        <button class="btn btn-primary btn-lg noround" type="button" style="font-size: 23px; padding: 8.5px 10px 4.5px 10px" onclick="abrirModalEspera(); limpiar();">
+                                                            <span class="glyphicon glyphicon-remove"></span>
+                                                        </button>
+                                                    </ui:fragment>
+                                                </span>
+                                            </div>
+                                            <h:panelGroup id="digitoVerificacion">
+                                                <h:panelGroup rendered="#{not empty clienteSessionMBean.clienteDto.digitoVerificacion and clienteSessionMBean.clienteDto.digitoVerificacion gt '0'}">
+                                                    <span class="glyphicon glyphicon-stop" style="position: absolute; right: 60px; top: 12px; font-size: 67px; color: #BF0039; z-index: 10"></span>
+                                                    <span style="position: absolute; right: 84px; top: 34px; color: #FFFFFF; font-size: 20px; z-index: 11">
+                                                        <b>#{clienteSessionMBean.clienteDto.digitoVerificacion}</b>
+                                                    </span>
+                                                </h:panelGroup>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                </h:panelGroup>
+                                <div class="col-xs-12 col-sm-6">
+                                    <p:remoteCommand name="seleccionarTipoDocumento" actionListener="#{maestroClienteMBean.seleccionarTipoDocumento}" oncomplete="cerrarModalEspera();"
+                                                     update=":formCliente:tipoDocumento :formCliente:msgSuperior :formCliente:msgInferior :formCliente:digitoVerificacion"/>
+                                    <div class="form-group">
+                                        <h:panelGroup id="tipoDocumento">
+                                            <h:outputLabel value="Tipo documento:"/>
+                                            <div class="dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                        id="selTipoPersona" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    #{maestroClienteMBean.tipoDocumentoSeleccionado}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selTipoPersona">
+                                                    <ui:repeat value="#{baruApplicationBean.tiposDocumento}" var="tipoDocumento">
+                                                        <li>
+                                                            <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                    seleccionarTipoDocumento([{name: 'tipoDocumento', value: '#{tipoDocumento.codigo}'}]);">
+                                                                #{tipoDocumento.nombre}
+                                                            </a>
+                                                        </li>
+                                                    </ui:repeat>
+                                                </ul>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6">
+                                    <p:remoteCommand name="seleccionarTipoPersona" actionListener="#{maestroClienteMBean.seleccionarTipoPersona}" oncomplete="cerrarModalEspera();"
+                                                     update=":formCliente:tipoPersona :formCliente:informacionPersonal :formCliente:documento :formCliente:direccion :formCliente:msgSuperior :formCliente:msgInferior"/>
+                                    <div class="form-group">
+                                        <h:panelGroup id="tipoPersona">
+                                            <h:outputLabel value="Tipo persona:"/>
+                                            <div class="dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround #{maestroClienteMBean.buscando ? 'disabled' : ''}" style="width: 100%"
+                                                        id="selTipoPersona" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    #{maestroClienteMBean.tipoPersonaSeleccionada}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selTipoPersona">
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                seleccionarTipoPersona([{name: 'tipoPersona', value: '01'}]);">
+                                                            Natural
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                seleccionarTipoPersona([{name: 'tipoPersona', value: '02'}]);">
+                                                            Jurídica
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6">
+                                    <p:remoteCommand name="seleccionarNacionalidad" actionListener="#{maestroClienteMBean.seleccionarNacionalidad}"
+                                                     update=":formCliente:nacionalidad :formCliente:msgSuperior :formCliente:msgInferior" oncomplete="cerrarModalEspera();"/>
+                                    <div class="form-group">
+                                        <h:panelGroup id="nacionalidad">
+                                            <h:outputLabel value="Nacionalidad:"/>
+                                            <div class="dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                        id="selNacionalidad" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    #{maestroClienteMBean.nacionalidadSeleccionado}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selNacionalidad">
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                seleccionarNacionalidad([{name: 'nacionalidad', value: '01'}]);">
+                                                            Nacional
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                seleccionarNacionalidad([{name: 'nacionalidad', value: '02'}]);">
+                                                            Extranjero
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr/>
+
+                    <div class="row">
+                        <h:panelGroup id="informacionPersonal">
+                            <div class="col-md-4 visible-md visible-lg vertical-section-name">
+                                Información<h2 style="margin-top: 0px;">Personal</h2>
+                            </div>
+                            <div class="col-xs-12 col-md-8">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="form-group">
+                                            <h:outputLabel value="Nombres:"/>
+                                            <div class="row">
+                                                <div class="col-xs-12 margin-bottom-10">
+                                                    <h:inputText class="form-control input-lg noround" pt:placeholder="Nombres" value="#{clienteSessionMBean.clienteDto.nombres}"
+                                                                 autocomplete="off" disabled="#{empty clienteSessionMBean.clienteDto.tipoPersona}">
+                                                        <f:ajax event="change" listener="#{maestroClienteMBean.construirRazonSocial}"
+                                                                render=":formCliente:txt_razonSocial :formCliente:msgSuperior :formCliente:msgInferior"/>
+                                                    </h:inputText>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <div class="form-group">
+                                            <h:outputLabel value="Apellidos:"/>
+                                            <div class="row">
+                                                <div class="col-xs-12 #{clienteSessionMBean.clienteDto.tipoPersona eq '02' ? 'col-sm-12' : 'col-sm-6'} margin-bottom-10">
+                                                    <h:inputText class="form-control input-lg noround" pt:placeholder="#{clienteSessionMBean.clienteDto.tipoPersona eq '02' ? 'Apellidos' : 'Primer apellido'}"
+                                                                 value="#{clienteSessionMBean.clienteDto.apellido1}" autocomplete="off" disabled="#{empty clienteSessionMBean.clienteDto.tipoPersona}">
+                                                        <f:ajax event="change" listener="#{maestroClienteMBean.construirRazonSocial}"
+                                                                render=":formCliente:txt_razonSocial :formCliente:msgSuperior :formCliente:msgInferior"/>
+                                                    </h:inputText>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 #{clienteSessionMBean.clienteDto.tipoPersona eq '02' ? 'hidden-xs hidden-sm hidden-md hidden-lg' : ''}">
+                                                    <h:inputText class="form-control input-lg noround" pt:placeholder="Segundo apellido" value="#{clienteSessionMBean.clienteDto.apellido2}"
+                                                                 autocomplete="off" disabled="#{empty clienteSessionMBean.clienteDto.tipoPersona}">
+                                                        <f:ajax event="change" listener="#{maestroClienteMBean.construirRazonSocial}"
+                                                                render=":formCliente:txt_razonSocial :formCliente:msgSuperior :formCliente:msgInferior"/>
+                                                    </h:inputText>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <div class="form-group">
+                                            <h:outputLabel value="Razón social:"/>
+                                            <h:inputText id="txt_razonSocial" class="form-control input-lg noround" pt:placeholder="Ingrese razón social" value="#{clienteSessionMBean.clienteDto.razonSocial}"
+                                                         autocomplete="off" disabled="#{empty clienteSessionMBean.clienteDto.tipoPersona or clienteSessionMBean.clienteDto.tipoPersona eq '01'}"/>
+                                        </div>
+                                    </div>
+                                    <h:panelGroup rendered="#{clienteSessionMBean.clienteDto.tipoPersona eq '01'}">
+                                        <div class="col-xs-12">
+                                            <div class="form-group">
+                                                <h:outputLabel value="Fecha nacimiento:"/>
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-sm-4 margin-bottom-10">
+                                                        <p:remoteCommand name="seleccionarYear" actionListener="#{maestroClienteMBean.seleccionarYear}"
+                                                                         update=":formCliente:years :formCliente:msgSuperior :formCliente:msgInferior" oncomplete="cerrarModalEspera();"/>
+                                                        <h:panelGroup id="years">
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround
+                                                                        #{empty clienteSessionMBean.clienteDto.tipoPersona or clienteSessionMBean.clienteDto.tipoPersona eq '02'? 'disabled' : ''}"
+                                                                        style="width: 100%" id="selYears" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{maestroClienteMBean.yearSeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selYears">
+                                                                    <ui:repeat value="#{baruApplicationBean.anios}" var="year">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                                    seleccionarYear([{name: 'year', value: '#{year}'}]);">
+                                                                                #{year}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </h:panelGroup>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-4 margin-bottom-10">
+                                                        <p:remoteCommand name="seleccionarMonth" actionListener="#{maestroClienteMBean.seleccionarMonth}"
+                                                                         update=":formCliente:months :formCliente:days :formCliente:msgSuperior :formCliente:msgInferior" oncomplete="cerrarModalEspera();"/>
+                                                        <h:panelGroup id="months">
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround
+                                                                        #{empty clienteSessionMBean.clienteDto.tipoPersona or clienteSessionMBean.clienteDto.tipoPersona eq '02'? 'disabled' : ''}"
+                                                                        style="width: 100%" id="selMonths" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{maestroClienteMBean.monthSeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selMonths">
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                                seleccionarMonth([{name: 'month', value: '1'}]);">
+                                                                            Enero
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                                seleccionarMonth([{name: 'month', value: '2'}]);">
+                                                                            Febrero
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                                seleccionarMonth([{name: 'month', value: '3'}]);">
+                                                                            Marzo
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                                seleccionarMonth([{name: 'month', value: '4'}]);">
+                                                                            Abril
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                                seleccionarMonth([{name: 'month', value: '5'}]);">
+                                                                            Mayo
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                                seleccionarMonth([{name: 'month', value: '6'}]);">
+                                                                            Junio
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                                seleccionarMonth([{name: 'month', value: '7'}]);">
+                                                                            Julio
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                                seleccionarMonth([{name: 'month', value: '8'}]);">
+                                                                            Agosto
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                                seleccionarMonth([{name: 'month', value: '9'}]);">
+                                                                            Septiembre
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                                seleccionarMonth([{name: 'month', value: '10'}]);">
+                                                                            Octubre
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                                seleccionarMonth([{name: 'month', value: '11'}]);">
+                                                                            Noviembre
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
+                                                                                seleccionarMonth([{name: 'month', value: '12'}]);">
+                                                                            Diciembre
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </h:panelGroup>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-4 margin-bottom-10">
+                                                        <p:remoteCommand name="seleccionarDay" actionListener="#{maestroClienteMBean.seleccionarDay}"
+                                                                         update=":formCliente:days :formCliente:msgSuperior :formCliente:msgInferior" oncomplete="cerrarModalEspera();"/>
+                                                        <h:panelGroup id="days">
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround
+                                                                        #{empty clienteSessionMBean.clienteDto.tipoPersona or clienteSessionMBean.clienteDto.tipoPersona eq '02'? 'disabled' : ''}"
+                                                                        style="width: 100%" id="selDays" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{maestroClienteMBean.daySeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selDays">
+                                                                    <ui:repeat value="#{maestroClienteMBean.dias}" var="dia">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarDay([{name: 'day', value: '#{dia}'}]);">
+                                                                                #{dia}
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </h:panelGroup>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{clienteSessionMBean.clienteDto.tipoPersona eq '01'}">
+                                        <div class="col-xs-12">
+                                            <div class="form-group">
+                                                <h:outputLabel value="Género:"/>
+                                                <div class="row">
+                                                    <p:remoteCommand name="seleccionarGenero" actionListener="#{maestroClienteMBean.seleccionarGenero}"
+                                                                     update=":formCliente:chk_genero :formCliente:msgSuperior :formCliente:msgInferior"/>
+                                                    <h:panelGroup id="chk_genero">
+                                                        <div class="col-xs-4 center-component">
+                                                            <img class="margin-bottom-10 pointer-cursor" src="#{clienteSessionMBean.clienteDto.sexo eq '1' ? '/360/images/radioClic.png' : '/360/images/radio.png'}"
+                                                                 onclick="seleccionarGenero([{name: 'genero', value: '1'}]);" style="margin-top: 5px"/>
+                                                            <h:outputLabel value="Masculino" class="label-normal" onclick="seleccionarGenero([{name: 'genero', value: '1'}]);"/>
+                                                        </div>
+                                                        <div class="col-xs-4 center-component">
+                                                            <img class="margin-bottom-10 pointer-cursor" src="#{clienteSessionMBean.clienteDto.sexo eq '2' ? '/360/images/radioClic.png' : '/360/images/radio.png'}"
+                                                                 onclick="seleccionarGenero([{name: 'genero', value: '2'}]);" style="margin-top: 5px"/>
+                                                            <h:outputLabel value="Femenino" class="label-normal" onclick="seleccionarGenero([{name: 'genero', value: '2'}]);"/>
+                                                        </div>
+                                                        <div class="col-xs-4 center-component">
+                                                            <img class="margin-bottom-10 pointer-cursor" src="#{clienteSessionMBean.clienteDto.sexo eq '3' ? '/360/images/radioClic.png' : '/360/images/radio.png'}"
+                                                                 onclick="seleccionarGenero([{name: 'genero', value: '3'}]);" style="margin-top: 5px"/>
+                                                            <h:outputLabel value="Ninguno" class="label-normal" onclick="seleccionarGenero([{name: 'genero', value: '3'}]);"/>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                    <hr/>
+
+                    <div class="row">
+                        <h:panelGroup id="informacionTributaria">
+                            <div class="col-md-4 visible-md visible-lg vertical-section-name">
+                                Información<h2 style="margin-top: 0px;">Tributaria</h2>
+                            </div>
+                            <div class="col-xs-12 col-md-8">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <h:panelGroup id="regimenSimplificado">
+                                            <h:outputLabel value="Régimen tributario:"/>
+                                            <div class="dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround disabled"
+                                                        style="width: 100%" id="selRegimenTributario" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    Seleccione régimen tributario
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selRegimenTributario">
+                                                    <li>
+                                                        <a class="pointer-cursor">
+                                                            Faltan datos
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                    <hr/>
+
+                    <div class="row">
+                        <h:panelGroup id="direccion">
+                            <div class="col-md-4 visible-md visible-lg vertical-section-name">
+                                <h2>Dirección</h2>
+                            </div>
+                            <div class="col-xs-12 col-md-8">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-6">
+                                        <div class="form-group">
+                                            <h:outputLabel value="Descripción:"/>
+                                            <h:inputText class="form-control input-lg noround" pt:placeholder="Ej: casa, oficina, nombre edificio" value="#{clienteSessionMBean.direccionCliente.nombre}"
+                                                         autocomplete="off" disabled="#{empty clienteSessionMBean.clienteDto.tipoPersona}"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6">
+                                        <div class="form-group">
+                                            <h:outputLabel value="Dirección:"/>
+                                            <h:inputText class="form-control input-lg noround" pt:placeholder="Ej: cl 52 sur 44 45" value="#{clienteSessionMBean.direccionCliente.direccion}"
+                                                         autocomplete="off" disabled="#{empty clienteSessionMBean.clienteDto.tipoPersona}"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6">
+                                        <div class="form-group">
+                                            <h:outputLabel value="Ciudad:"/>
+                                            <p:autoComplete id="txt_ciudad" class="form-control input-lg noround" placeholder="Ingrese ciudad" value="#{clienteSessionMBean.ciudadBusqueda}"
+                                                            autocomplete="off" disabled="#{empty clienteSessionMBean.clienteDto.tipoPersona}"
+                                                            converter="ciudadConverter" completeMethod="#{clienteSessionMBean.filtrarCiudades}" forceSelection="true"
+                                                            var="ciudad" itemLabel="#{ciudad}" itemValue="#{ciudad}" style="background-color: #{empty clienteSessionMBean.clienteDto.tipoPersona ? '#EEEEEE' : ''}">
+                                                <p:ajax event="itemSelect" resetValues="true" listener="#{clienteSessionMBean.seleccionarCiudad}"/>
+                                            </p:autoComplete>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6">
+                                        <div class="form-group">
+                                            <h:outputLabel value="Teléfono fijo:"/>
+                                            <h:inputText class="form-control input-lg noround" pt:placeholder="Número sin indicativo" value="#{clienteSessionMBean.direccionCliente.telefono}"
+                                                         pt:type="tel" autocomplete="off" disabled="#{empty clienteSessionMBean.clienteDto.tipoPersona}"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6">
+                                        <div class="form-group">
+                                            <h:outputLabel value="Celular:"/>
+                                            <h:inputText class="form-control input-lg noround" pt:placeholder="Número celular" value="#{clienteSessionMBean.direccionCliente.celular}"
+                                                         pt:type="tel" autocomplete="off" disabled="#{empty clienteSessionMBean.clienteDto.tipoPersona}"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6">
+                                        <div class="form-group">
+                                            <h:outputLabel value="Correo:"/>
+                                            <h:inputText class="form-control input-lg noround" pt:placeholder="Correo electrónico" value="#{clienteSessionMBean.direccionCliente.email}"
+                                                         pt:type="email" autocomplete="off" disabled="#{empty clienteSessionMBean.clienteDto.tipoPersona}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </h:panelGroup>
+
+                <p:messages id="msgInferior" showDetail="true" showSummary="true"/>
+
+                <div class="row">
+                    <div class="col-xs-12 right-component margin-bottom-10">
+                        <ui:fragment rendered="#{maestroClienteMBean.facturando or maestroClienteMBean.cotizacion or maestroClienteMBean.demostracion or maestroClienteMBean.notaCredito}">
+                            <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); volverACotizaciones();">
+                                Atrás
+                            </button>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{maestroClienteMBean.cotizacion}">
+                            <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); crearCotizacion();" style="margin-left: 0px">
+                                Cotizar
+                            </button>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{maestroClienteMBean.facturando || maestroClienteMBean.demostracion || maestroClienteMBean.notaCredito}">
+                            <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); continuarProceso();" style="margin-left: 0px">
+                                Continuar
+                            </button>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{maestroClienteMBean.cotizacion == false and maestroClienteMBean.facturando == false
+                                                 and maestroClienteMBean.demostracion == false and maestroClienteMBean.notaCredito == false}">
+                            <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); limpiar();" style="margin-left: 0px">
+                                Cancelar
+                            </button>
+                            <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); guardarCliente();" style="margin-left: 0px">
+                                Guardar
+                            </button>
+                        </ui:fragment>
+                    </div>
+                </div>
+                <br/>
+            </div>
+        </h:form>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

@@ -1,0 +1,1552 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script src="/360/js/arriba.js"></script>
+        <script type="text/javascript">
+            $(window).load(function () {
+                $('#modalFacturacion').modal('show');
+                $('#modalExito').modal('show');
+                $('#modalDemo').modal('show');
+            });
+        </script>
+        <title>360 - Crear Venta</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <span class="ir-arriba hidden-sm hidden-xs">
+                <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+            </span>
+
+            <h:panelGroup id="panelSaldos">
+                <h:panelGroup rendered="#{ventasMBean.dlgSaldos}">
+                    <h:form id="formSaldos">
+                        <div class="modal fade" id="modalSaldos" data-keyboard="false" data-backdrop="static">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">
+                                            Saldos
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-3 center-component margin-bottom-10">
+                                                <b style="font-size: 20px">#{baruGenericMBean.convertirARefCorta(ventasMBean.referencia)}</b>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 center-component margin-bottom-10">
+                                                <b>#{baruGenericMBean.obtenerNombreReferencia(ventasMBean.referencia)}</b>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-3 center-component margin-bottom-10">
+                                                <ui:fragment rendered="#{ventasMBean.descuento le 0}">
+                                                    <b style="color: #BF0039; font-size: 20px">COP #{baruGenericMBean.getValorFormateado('Double', baruGenericMBean.obtenerPrecioVenta(ventasMBean.referencia), 2)}</b>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{ventasMBean.descuento gt 0}">
+                                                    <p style="margin-bottom: -5px">
+                                                        <s style="color: #BBBBBB; font-size: 12px">
+                                                            COP #{baruGenericMBean.getValorFormateado('Double', baruGenericMBean.obtenerPrecioVenta(ventasMBean.referencia), 2)}
+                                                        </s>
+                                                    </p>
+                                                    <p style="color: #BF0039; font-size: 20px">
+                                                        <b>COP #{baruGenericMBean.getValorFormateado('Double', ventasMBean.descuento, 2)}</b>
+                                                    </p>
+                                                </ui:fragment>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-md-6">
+                                                <ui:fragment rendered="#{ventasMBean.porcentajeDescuento gt 0}">
+                                                    <div style="width: 60px; height: 60px; border-radius: 100%; color: #FFFFFF; background-color: #BF0039; padding: 12px 2px 2px 3.5px;
+                                                         font-size: 27px; position: absolute; z-index: 2; right: 0; top: -16px;">
+                                                        #{ventasMBean.porcentajeDescuento}%
+                                                    </div>
+                                                </ui:fragment>
+                                                <div id="images" class="carousel slide">
+                                                    <ol class="carousel-indicators">
+                                                        <ui:repeat value="#{ventasMBean.imagenes}" var="imageIndicator">
+                                                            <li data-target="#images" data-slide-to="#{imageIndicator[1]}" class="#{imageIndicator[1] eq '0' ? 'active' : ''}"></li>
+                                                        </ui:repeat>
+                                                    </ol>
+
+                                                    <div class="carousel-inner">
+                                                        <ui:repeat value="#{ventasMBean.imagenes}" var="image">
+                                                            <div class="item #{image[1] eq '0' ? 'active' : ''}">
+                                                                <img src="#{image[0]}" class="img-responsive" style="max-width: 416px"/>
+                                                            </div>
+                                                        </ui:repeat>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-md-6">
+                                                <table class="table table-striped" style="margin-bottom: 0px">
+                                                    <tr>
+                                                        <th class="head-tabla">
+                                                            Almacén
+                                                        </th>
+                                                        <th class="head-tabla">
+                                                            Disponible
+                                                        </th>
+                                                        <th class="head-tabla">
+                                                            Usado
+                                                        </th>
+                                                    </tr>
+                                                    <ui:repeat value="#{ventasMBean.saldos}" var="saldo">
+                                                        <tr>
+                                                            <td>
+                                                                <div class="row">
+                                                                    <div>
+                                                                        <div class="col-xs-12 center-component" style="position: relative; top: 7px">
+                                                                            #{baruGenericMBean.obtenerNombreWebAlmacen(saldo.almacen)}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="row">
+                                                                    <div>
+                                                                        <div class="col-xs-12 center-component" style="position: relative; top: 7px">
+                                                                            #{saldo.cantidad}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td style="width: 90px">
+                                                                <h:inputText pt:type="number" class="center-component input-360 input-lg noround" value="#{saldo.cantidadNecesaria}"
+                                                                             style="font-size: 15px; padding: 0px; height: 35px">
+                                                                    <f:ajax event="change"/>
+                                                                </h:inputText>
+                                                            </td>
+                                                        </tr>
+                                                    </ui:repeat>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <p:remoteCommand name="limpiarDatosSaldo" actionListener="#{ventasMBean.limpiarDatosSaldo}" update=":formVentas:txt_referencia" oncomplete="focusReferencia();"/>
+                                                <p:remoteCommand name="modalAsignar" update=":panelSaldos" oncomplete="cerrarModalSaldos(); abrirModalEspera(); asignarSaldo();"/>
+                                                <p:remoteCommand name="asignarSaldo" actionListener="#{ventasMBean.asignarSaldo}" oncomplete="cerrarModalEspera(); focusReferencia();"
+                                                                 update=":formVentas:txt_referencia :formVentas:items :formVentas:total :formVentas:msg"/>
+                                                <p:remoteCommand name="modalEliminar" update=":panelSaldos" oncomplete="cerrarModalSaldos(); abrirModalEspera(); eliminarItem();"/>
+                                                <p:remoteCommand name="eliminarItem" oncomplete="cerrarModalEspera(); focusReferencia(); abrirModalEliminar();"
+                                                                 update=":formVentas :panelEliminar"/>
+
+                                                <button type="button" class="btn btn-lg btn-default noround" data-dismiss="modal" onclick="limpiarDatosSaldo();">
+                                                    Cerrar
+                                                </button>
+                                                <ui:fragment rendered="#{ventasMBean.almacen ne null and not empty ventasMBean.almacen}">
+                                                    <button type="button" class="btn btn-default btn-lg noround" onclick="modalEliminar();" style="margin-left: 0px">
+                                                        Eliminar
+                                                    </button>
+                                                </ui:fragment>
+                                                <button type="button" class="btn btn-lg btn-primary noround" onclick="modalAsignar();" style="margin-left: 0px">
+                                                    Guardar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelEliminar">
+                <h:form id="formEliminar">
+                    <div class="modal fade" id="modalEliminar">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header-alerta">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Eliminar referencia
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            <p>
+                                                ¿Está seguro(a) que desea eliminar esta referencia del proceso de venta?
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-6 center-component">
+                                            <img src="#{imagenProductoMBean.obtenerUrlProducto(ventasMBean.referencia, true)}" class="img-mini"/>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-6">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <b>Referencia: </b>#{baruGenericMBean.convertirARefCorta(ventasMBean.referencia)}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <b>Almacén: </b>#{ventasMBean.almacen}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <div class="row">
+                                        <div class="col-xs-12 right-component">
+                                            <p:remoteCommand name="limpiarDatosSaldo" actionListener="#{ventasMBean.limpiarDatosSaldo}" oncomplete="cerrarModalEliminar(); focusReferencia();"
+                                                             update=":formVentas:items :panelEliminar :panelConfirmacion :formVentas:total :formVentas:msg :formVentas:txt_referencia"/>
+                                            <p:remoteCommand name="eliminarReferencia" actionListener="#{ventasMBean.eliminarItem}" oncomplete="cerrarModalEspera(); abrirModalConfirmacion(); focusReferencia();"
+                                                             update=":formVentas :panelEliminar :panelConfirmacion"/>
+                                            <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="limpiarDatosSaldo();">
+                                                Cancelar
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-lg noround" onclick="cerrarModalEliminar(); abrirModalEspera(); eliminarReferencia();" style="margin-left: 0px">
+                                                Eliminar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelConfirmacion">
+                <h:panelGroup rendered="#{ventasMBean.dlgConfirmarEliminacion}">
+                    <h:form id="formConfirmacion">
+                        <div class="modal fade" id="modalConfirmacion" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header-advertencia">
+                                        <h4 class="modal-title">
+                                            Confirmación
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <p>
+                                                    <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                    Usted se encuentra actualmente modificando una cotización,
+                                                    si desea eliminar una referencia tenga en cuenta que no podrá guardar los cambio en SAP para la cotización.
+                                                </p>
+                                                <p>
+                                                    Si desea modificar la cotización debe darle editar nuevamente desde la lista de cotizaciones.
+                                                </p>
+                                                <p>
+                                                    <b>¿Desea continuar con la eliminación de la referencia?</b>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <p:remoteCommand name="cancelarItemEliminar" actionListener="#{ventasMBean.cancelarItemEliminar}"/>
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="cancelarItemEliminar(); focusReferencia();">
+                                                    No
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="cerrarModalConfirmacion(); eliminarReferencia(); focusReferencia();" style="margin-left: 0px">
+                                                    Sí
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelExito">
+                <h:panelGroup rendered="#{ventasSessionMBean.exitoCotizacion || ventasSessionMBean.exitoDemostracion}">
+                    <h:form id="formExito">
+                        <div class="modal fade" id="modalExito" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">
+                                            <ui:fragment rendered="#{ventasSessionMBean.exitoCotizacion}">
+                                                Cotización exitosa
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{ventasSessionMBean.exitoDemostracion}">
+                                                Demostración exitosa
+                                            </ui:fragment>
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <p:remoteCommand name="seleccionarImprimir" actionListener="#{ventasMBean.seleccionarImprimir}" update=":formExito:chk_imprimir"/>
+                                                <h:panelGroup id="chk_imprimir">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon #{ventasMBean.imprimir ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                                  onclick="seleccionarImprimir();"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <h:outputLabel value="¿Imprimir?" class="label-normal" onclick="seleccionarImprimir();"/>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <p:remoteCommand name="seleccionarEnivar" actionListener="#{ventasMBean.seleccionarEnivar}" update=":formExito:chk_enviar"/>
+                                                <h:panelGroup id="chk_enviar">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon #{ventasMBean.enviar ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                                  onclick="seleccionarEnivar();"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <h:outputLabel value="¿Enviar correo?" class="label-normal" onclick="seleccionarEnivar();"/>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <p:remoteCommand name="modal" oncomplete="actualizarDatosCotizacionWeb();" update=":panelExito :formVentas"/>
+                                                <p:remoteCommand name="actualizarDatosCotizacionWeb" actionListener="#{ventasMBean.actualizarDatosCotizacionWeb}" update=":formVentas"
+                                                                 oncomplete="cerrarModalEspera();"/>
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="abrirModalEspera(); modal();">
+                                                    Cerrar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelFacturacion">
+                <h:panelGroup rendered="#{ventasSessionMBean.clienteVerificado and ventasSessionMBean.facturando}">
+                    <h:form id="formFacturacion">
+                        <div class="modal fade" id="modalFacturacion" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">
+                                            Facturación
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p:remoteCommand name="obtenerSiguientePasoFacturacion" actionListener="#{ventasMBean.obtenerSiguientePasoFacturacion}"
+                                                         update=":formFacturacion:pasos :formFacturacion:migas :formFacturacion:msg :formFacturacion:btns"/>
+
+                                        <h:panelGroup id="pasos">
+                                            <h:panelGroup id="migas">
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <h:outputText value="#{ventasMBean.obtenerMigaFacturacion}" escape=""/>
+                                                    </div>
+                                                </div>
+                                            </h:panelGroup>
+                                            <h:panelGroup rendered="#{ventasMBean.pasosFacturacion == 1}">
+                                                <h:panelGroup id="pagos">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component" style="font-size: 20px; top: -17px">
+                                                            Pdte: <span class="color-360-original">COP #{baruGenericMBean.getValorFormateado('Double', ventasMBean.valorPendienteFactura, 0)} </span>
+                                                            - Total: <span class="color-360-original">COP #{baruGenericMBean.getValorFormateado('Double', ventasMBean.totalFactura,0)}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <p:remoteCommand name="seleccionarMedioPago" actionListener="#{ventasMBean.seleccionarMedioPago}"
+                                                                     update=":formFacturacion:pagos :formFacturacion:migas :formFacturacion:msg"/>
+                                                    <p:remoteCommand name="obtenerSiguientePasoPago" actionListener="#{ventasMBean.obtenerSiguientePasoPago}"
+                                                                     update=":formFacturacion:pagos :formFacturacion:migas :formFacturacion:msg"/>
+
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <div class="row">
+                                                                <div class="col-xs-4 col-md-3">
+                                                                    <ui:fragment rendered="#{userSessionInfoMBean.validarPermisoUsuario('EFECTIVO', 'PAGAR')}">
+                                                                        <div class="row">
+                                                                            <div class="col-xs-12 margin-bottom-10 center-component">
+                                                                                <div class="#{ventasMBean.medioPago == 1 ? 'contenedor-pago-activo' : 'contenedor-pago'} pointer-cursor"
+                                                                                     onclick="seleccionarMedioPago([{name: 'medioPago', value: '1'}]);">
+                                                                                    Efectivo
+                                                                                    <ui:fragment rendered="#{ventasMBean.valorEfectivo gt 0}">
+                                                                                        <span class="badge badge-gray">1</span>
+                                                                                    </ui:fragment>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                    <div class="row">
+                                                                        <div class="col-xs-12 margin-bottom-10 center-component">
+                                                                            <div class="#{ventasMBean.medioPago == 2 ? 'contenedor-pago-activo' : 'contenedor-pago'} pointer-cursor"
+                                                                                 onclick="seleccionarMedioPago([{name: 'medioPago', value: '2'}]);">
+                                                                                Tarjetas
+                                                                                <ui:fragment rendered="#{ventasMBean.pagosTarjetas.size() gt 0}">
+                                                                                    <span class="badge badge-gray">#{ventasMBean.pagosTarjetas.size()}</span>
+                                                                                </ui:fragment>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-xs-12 margin-bottom-10 center-component">
+                                                                            <div class="#{ventasMBean.medioPago == 3 ? 'contenedor-pago-activo' : 'contenedor-pago'} pointer-cursor"
+                                                                                 onclick="seleccionarMedioPago([{name: 'medioPago', value: '3'}]);">
+                                                                                Cruces
+                                                                                <ui:fragment rendered="#{ventasMBean.valorCruce gt 0}">
+                                                                                    <span class="badge badge-gray">1</span>
+                                                                                </ui:fragment>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-xs-12 margin-bottom-10 center-component">
+                                                                            <div class="#{ventasMBean.medioPago == 4 ? 'contenedor-pago-activo' : 'contenedor-pago'} pointer-cursor"
+                                                                                 onclick="seleccionarMedioPago([{name: 'medioPago', value: '4'}]);">
+                                                                                Pendiente
+                                                                                <ui:fragment rendered="#{ventasMBean.valorPagoPendiente gt 0}">
+                                                                                    <span class="badge badge-gray">1</span>
+                                                                                </ui:fragment>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-xs-8 col-md-9">
+                                                                    <p:remoteCommand name="asignarValorTotal" actionListener="#{ventasMBean.asignarValorTotal}"
+                                                                                     update=":formFacturacion:pagos :formFacturacion:migas :formFacturacion:msg"/>
+                                                                    <p:remoteCommand name="aplicarPago" actionListener="#{ventasMBean.aplicarPago}"
+                                                                                     update=":formFacturacion:pagos :formFacturacion:migas :formFacturacion:msg"/>
+                                                                    <p:remoteCommand name="quitarPago" actionListener="#{ventasMBean.quitarPago}"
+                                                                                     update=":formFacturacion:pagos :formFacturacion:migas :formFacturacion:msg"/>
+
+                                                                    <ui:fragment rendered="#{ventasMBean.medioPago == 1}">
+                                                                        <div class="row" style="margin-top: 14%">
+                                                                            <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-3 col-md-6">
+                                                                                <h:outputLabel class="label-360" value="Valor efectivo:"/>
+                                                                                <h:inputText id="txt_valorEfectivo" value="#{ventasMBean.valorEfectivo}" pt:type="number"
+                                                                                             class="center-component #{ventasMBean.valorEfectivo gt 0 ? 'input-360-disabled' : 'input-360'} input-lg noround"
+                                                                                             autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                                         asignarValorTotal();
+                                                                                                         return false;
+                                                                                                     }" style="padding-right: 61px"/>
+                                                                                <span class="glyphicon glyphicon-magnet glyphicon-search-360 pointer-cursor" onclick="asignarValorTotal();"
+                                                                                      style="right: -82%; margin-right: 5px"></span>
+                                                                                <ui:fragment rendered="#{ventasMBean.valorEfectivo gt 0}">
+                                                                                    <span class="glyphicon glyphicon-remove glyphicon-search-360 pointer-cursor" style="right: -82%; color: #B94743"
+                                                                                          onclick="quitarPago([{name: 'valor', value: '#{ventasMBean.valorEfectivo}'}]);"></span>
+                                                                                </ui:fragment>
+                                                                                <ui:fragment rendered="#{ventasMBean.valorEfectivo le 0 or ventasMBean.valorEfectivo eq null}">
+                                                                                    <span class="glyphicon glyphicon-ok glyphicon-search-360 pointer-cursor" style="right: -82%; color: #4E9D4E"
+                                                                                          onclick="aplicarPago([{name: 'valor', value: '#{ventasMBean.valorEfectivo}'}]);"></span>
+                                                                                </ui:fragment>
+                                                                            </div>
+                                                                        </div>
+                                                                    </ui:fragment>
+
+                                                                    <ui:fragment rendered="#{ventasMBean.medioPago == 2}">
+                                                                        <ui:fragment rendered="#{ventasMBean.pasosPago == 1}">
+                                                                            <p:remoteCommand name="seleccionarPagoTarjeta" actionListener="#{ventasMBean.seleccionarPagoTarjeta}"
+                                                                                             update=":formFacturacion:pagos :formFacturacion:migas :formFacturacion:msg"/>
+
+                                                                            <div class="row">
+                                                                                <ui:repeat value="#{ventasMBean.pagosTarjetas}" var="pago">
+                                                                                    <div class="col-xs-12 col-sm-6 col-md-4 center-component">
+                                                                                        <div class="#{pago.identificador eq ventasMBean.pagoTarjeta ? 'pago-tarjeta-seleccionado' : 'pago-tarjeta'} pointer-cursor"
+                                                                                             onclick="seleccionarPagoTarjeta([{name: 'idPago', value: '#{pago.identificador}'}]);">
+                                                                                            <div class="row">
+                                                                                                <div class="col-xs-12 center-component">
+                                                                                                    <b>Voucher: </b>#{pago.voucher}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="row">
+                                                                                                <div class="col-xs-12 center-component">
+                                                                                                    <b>Dígitos: </b>#{pago.digitos}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="row">
+                                                                                                <div class="col-xs-12 center-component">
+                                                                                                    COP #{baruGenericMBean.getValorFormateado('Double', pago.valorPago, 2)}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div style="position: absolute; top: 0; width: 77%; opacity: 0.2">
+                                                                                                <img src="#{baruApplicationBean.obtenerValorPropiedad('facturacion.url.logoBanco')}#{pago.idBanco}.png"
+                                                                                                     style="width: 130px"/>
+                                                                                            </div>
+                                                                                            <div class="row">
+                                                                                                <div class="col-xs-12 center-component">
+                                                                                                    <img src="#{baruApplicationBean.obtenerValorPropiedad('facturacion.url.web.franquicias')}#{pago.franquicia}.png"
+                                                                                                         style="width: 62px"/>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </ui:repeat>
+                                                                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                                                                    <ui:fragment rendered="#{ventasMBean.pagoTarjeta eq null or ventasMBean.pagoTarjeta eq 0}">
+                                                                                        <div class="agregar-pago-tarjeta pointer-cursor center-component" onclick="obtenerSiguientePasoPago();">
+                                                                                            <span class="glyphicon glyphicon-plus"></span>
+                                                                                        </div>
+                                                                                    </ui:fragment>
+                                                                                    <ui:fragment rendered="#{ventasMBean.pagoTarjeta ne null and ventasMBean.pagoTarjeta gt 0}">
+                                                                                        <div class="agregar-pago-tarjeta pointer-cursor center-component" onclick="quitarPago();">
+                                                                                            <span class="glyphicon glyphicon-minus"></span>
+                                                                                        </div>
+                                                                                    </ui:fragment>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{ventasMBean.pasosPago == 2}">
+                                                                            <div class="row" style="margin-top: 50px">
+                                                                                <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10">
+                                                                                    <h:outputLabel class="label-360" value="Voucher:"/>
+                                                                                    <h:inputText id="txt_voucher" value="#{ventasMBean.voucher}" class="center-component input-360 input-lg noround"
+                                                                                                 autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                                             return false;
+                                                                                                         }"/>
+                                                                                </div>
+                                                                                <div class="col-xs-12 col-sm-6 col-md-3 margin-bottom-10">
+                                                                                    <h:outputLabel class="label-360" value="Últimos digitos:"/>
+                                                                                    <h:inputText id="txt_digitos" value="#{ventasMBean.digitos}" class="center-component input-360 input-lg noround"
+                                                                                                 autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                                             return false;
+                                                                                                         }"/>
+                                                                                </div>
+                                                                                <div class="col-xs-12 col-sm-12 col-md-5 margin-bottom-10">
+                                                                                    <h:outputLabel class="label-360" value="Valor tarjeta:"/>
+                                                                                    <h:inputText id="txt_valorTarjeta" value="#{ventasMBean.valorTarjeta}" pt:type="number"
+                                                                                                 class="center-component input-360 input-lg noround" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                                             asignarValorTotal();
+                                                                                                             return false;
+                                                                                                         }" style="padding-right: 30px"/>
+                                                                                    <span class="glyphicon glyphicon-magnet glyphicon-search-360 pointer-cursor" onclick="asignarValorTotal();"></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 right-component">
+                                                                                    <button type="button" class="btn btn-default btn-lg noround" onclick="obtenerSiguientePasoPago();">
+                                                                                        Siguiente
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{ventasMBean.pasosPago == 3}">
+                                                                            <p:remoteCommand name="seleccionarFranquicia" actionListener="#{ventasMBean.seleccionarFranquicia}"
+                                                                                             update=":formFacturacion:pagos :formFacturacion:migas :formFacturacion:msg"/>
+
+                                                                            <div class="row" style="margin-top: 15%">
+                                                                                <ui:repeat value="#{ventasMBean.franquicias}" var="franquicia">
+                                                                                    <div class="col-xs-6 col-sm-4 col-md-2 center-component">
+                                                                                        <div onclick="seleccionarFranquicia([{name: 'franquicia', value: '#{franquicia}'}]);">
+                                                                                            <img src="#{baruApplicationBean.obtenerValorPropiedad('facturacion.url.web.franquicias')}#{franquicia}"
+                                                                                                 style="width: 100px" class="imagen-franquicia pointer-cursor"/>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </ui:repeat>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{ventasMBean.pasosPago == 4}">
+                                                                            <p:remoteCommand name="seleccionarBanco" actionListener="#{ventasMBean.seleccionarBanco}"
+                                                                                             update=":formFacturacion:pagos :formFacturacion:migas :formFacturacion:msg"/>
+
+                                                                            <div class="row">
+                                                                                <ui:repeat value="#{ventasMBean.bancos}" var="banco">
+                                                                                    <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
+                                                                                        <div onclick="seleccionarBanco([{name: 'idBanco', value: '#{banco.idBancoFacturacion}'}]);" style="height: 115px">
+                                                                                            <div class="row">
+                                                                                                <div class="col-xs-12 center-component">
+                                                                                                    <img src="#{baruApplicationBean.obtenerValorPropiedad('facturacion.url.logoBanco')}#{banco.idBancoFacturacion}.png"
+                                                                                                         class="imagen-banco pointer-cursor"/>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="row">
+                                                                                                <div class="col-xs-12 center-component" style="font-size: 12px">
+                                                                                                    #{banco.nombreBanco}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </ui:repeat>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{ventasMBean.pasosPago == 5}">
+                                                                            <p:remoteCommand name="seleccionarTarjeta" actionListener="#{ventasMBean.seleccionarTarjeta}"
+                                                                                             update=":formFacturacion:pagos :formFacturacion:migas :formFacturacion:msg"/>
+
+                                                                            <div class="row">
+                                                                                <div class="col-xs-6 col-sm-4 col-md-3 center-component margin-bottom-10">
+                                                                                    <div class="tarjeta pointer-cursor" onclick="seleccionarTarjeta([{name: 'tarjeta', value: 'TD - Clásica'}]);">
+                                                                                        <b>TD</b>
+                                                                                        <br/>
+                                                                                        Clásica
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-xs-6 col-sm-4 col-md-3 center-component margin-bottom-10">
+                                                                                    <div class="tarjeta pointer-cursor" onclick="seleccionarTarjeta([{name: 'tarjeta', value: 'TC - Black'}]);">
+                                                                                        <b>TC</b>
+                                                                                        <br/>
+                                                                                        Black
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-xs-6 col-sm-4 col-md-3 center-component margin-bottom-10">
+                                                                                    <div class="tarjeta pointer-cursor" onclick="seleccionarTarjeta([{name: 'tarjeta', value: 'TC - Gold'}]);">
+                                                                                        <b>TC</b>
+                                                                                        <br/>
+                                                                                        Gold
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-xs-6 col-sm-4 col-md-3 center-component margin-bottom-10">
+                                                                                    <div class="tarjeta pointer-cursor" onclick="seleccionarTarjeta([{name: 'tarjeta', value: 'TC - Platinum'}]);">
+                                                                                        <b>TC</b>
+                                                                                        <br/>
+                                                                                        Platinum
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-xs-6 col-sm-4 col-md-3 center-component margin-bottom-10">
+                                                                                    <div class="tarjeta pointer-cursor" onclick="seleccionarTarjeta([{name: 'tarjeta', value: 'TC - Clásica'}]);">
+                                                                                        <b>TC</b>
+                                                                                        <br/>
+                                                                                        Clásica
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-xs-6 col-sm-4 col-md-3 center-component margin-bottom-10">
+                                                                                    <div class="tarjeta pointer-cursor" onclick="seleccionarTarjeta([{name: 'tarjeta', value: 'TC - Signature'}]);">
+                                                                                        <b>TC</b>
+                                                                                        <br/>
+                                                                                        Signature
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-xs-6 col-sm-4 col-md-3 center-component margin-bottom-10">
+                                                                                    <div class="tarjeta pointer-cursor" onclick="seleccionarTarjeta([{name: 'tarjeta', value: 'TC - Joven'}]);">
+                                                                                        <b>TC</b>
+                                                                                        <br/>
+                                                                                        Joven
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{ventasMBean.pasosPago == 6}">
+                                                                            <p:remoteCommand name="seleccionarDatafono" actionListener="#{ventasMBean.seleccionarDatafono}"
+                                                                                             update=":formFacturacion:pagos :formFacturacion:migas :formFacturacion:msg"/>
+
+                                                                            <div class="row">
+                                                                                <ui:repeat value="#{ventasMBean.datafonos}" var="datafono">
+                                                                                    <div class="col-xs-6 col-sm-6 col-md-4 center-component margin-bottom-10">
+                                                                                        <div class="datafono pointer-cursor" onclick="seleccionarDatafono([{name: 'datafono', value: '#{datafono.creditCardId}'}]);">
+                                                                                            <div class="row">
+                                                                                                <div class="col-xs-12">
+                                                                                                    #{datafono.franchiseName}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="row">
+                                                                                                <div class="col-xs-12">
+                                                                                                    <img src="/360/images/datafono.png"/>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </ui:repeat>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                    </ui:fragment>
+
+                                                                    <ui:fragment rendered="#{ventasMBean.medioPago == 3}">
+                                                                        <div class="row" style="margin-top: 14%">
+                                                                            <div class="col-xs-12 center-component margin-bottom-10" style="font-size: 16px">
+                                                                                Disponible: <span class="color-360-original">COP #{baruGenericMBean.getValorFormateado('Double', ventasMBean.saldoFavor, 2)}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-3 col-md-6">
+                                                                                <h:outputLabel class="label-360" value="Valor cruce:"/>
+                                                                                <h:inputText id="txt_valorCruce" value="#{ventasMBean.valorCruce}" pt:type="number"
+                                                                                             class="center-component #{ventasMBean.valorCruce gt 0 ? 'input-360-disabled' : 'input-360'} input-lg noround"
+                                                                                             autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                                         asignarValorTotal();
+                                                                                                         return false;
+                                                                                                     }" style="padding-right: 61px"/>
+                                                                                <span class="glyphicon glyphicon-magnet glyphicon-search-360 pointer-cursor" onclick="asignarValorTotal();"
+                                                                                      style="right: -82%; margin-right: 5px"></span>
+                                                                                <ui:fragment rendered="#{ventasMBean.valorCruce gt 0}">
+                                                                                    <span class="glyphicon glyphicon-remove glyphicon-search-360 pointer-cursor" style="right: -82%; color: #B94743"
+                                                                                          onclick="quitarPago([{name: 'valor', value: '#{ventasMBean.valorCruce}'}]);"></span>
+                                                                                </ui:fragment>
+                                                                                <ui:fragment rendered="#{ventasMBean.valorEfectivo le 0 or ventasMBean.valorCruce eq null}">
+                                                                                    <span class="glyphicon glyphicon-ok glyphicon-search-360 pointer-cursor" style="right: -82%; color: #4E9D4E"
+                                                                                          onclick="aplicarPago([{name: 'valor', value: '#{ventasMBean.valorCruce}'}]);"></span>
+                                                                                </ui:fragment>
+                                                                            </div>
+                                                                        </div>
+                                                                    </ui:fragment>
+
+                                                                    <ui:fragment rendered="#{ventasMBean.medioPago == 4}">
+                                                                        <div class="row">
+                                                                            <div class="col-xs-12">
+                                                                                <ui:fragment rendered="#{ventasMBean.pasosPago == 1}">
+                                                                                    <div class="row" style="margin-top: 10%">
+                                                                                        <div class="col-xs-12 center-component">
+                                                                                            <p>
+                                                                                                <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                                                                Para realizar la factura por este medio de pago, necesita autorización de una persona con permisos.
+                                                                                                <br/>
+                                                                                                <b>¿Desea solicitar la autorización?</b>
+                                                                                            </p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-xs-12 center-component">
+                                                                                            <button type="button" class="btn btn-default btn-lg noround" onclick="obtenerSiguientePasoPago();">
+                                                                                                Solicitar
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </ui:fragment>
+                                                                                <ui:fragment rendered="#{ventasMBean.pasosPago == 2}">
+                                                                                    <div class="row">
+                                                                                        <div class="col-xs-12 center-component">
+                                                                                            <p>
+                                                                                                <span class="glyphicon glyphicon-info-sign" style="color: #75C9E6; font-size: 16px"></span>
+                                                                                                Seleccione a quien desea enviarle la solicitud de aprobación.
+                                                                                            </p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row" style="margin-top: 4%">
+                                                                                        <p:remoteCommand name="seleccionarAprobador" actionListener="#{ventasMBean.seleccionarAprobador}"
+                                                                                                         update=":formFacturacion:pagos :formFacturacion:migas :formFacturacion:msg"/>
+                                                                                        <ui:repeat value="#{ventasMBean.autorizadoresPagoFactura}" var="autorizador">
+                                                                                            <div class="col-xs-12 col-sm-6 col-md-4 center-component margin-bottom-10" style="height: 142px">
+                                                                                                <div class="row">
+                                                                                                    <div class="col-xs-12">
+                                                                                                        <img class="#{autorizador.seleccionado ? 'imagen-empleado-factura-seleccionada' : 'imagen-empleado-factura'}
+                                                                                                             pointer-cursor" src="#{baruGenericMBean.obtenerRutaFotoEmpleadoComision(autorizador.cedula)}"
+                                                                                                             onclick="seleccionarAprobador([{name: 'codigoVenta', value: '#{autorizador.codigoVentas}'}]);"/>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div class="row">
+                                                                                                    <div class="col-xs-12" style="font-size: 12px">
+                                                                                                        #{baruGenericMBean.obtenerNombreAsesor(autorizador.codigoVentas)}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </ui:repeat>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-xs-12 center-component">
+                                                                                            <button type="button" class="btn btn-default btn-lg noround" onclick="obtenerSiguientePasoPago();">
+                                                                                                Siguiente
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </ui:fragment>
+                                                                                <ui:fragment rendered="#{ventasMBean.pasosPago == 3}">
+                                                                                    <div class="row">
+                                                                                        <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-3 col-md-6" style="margin-bottom: -5px">
+                                                                                            <h:outputLabel class="label-360" value="Valor solicitado:"/>
+                                                                                            <h:inputText id="txt_valorPendiente" value="#{ventasMBean.valorPagoPendiente}" pt:type="number"
+                                                                                                         class="center-component input-360 input-lg noround" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                                                                     asignarValorTotal();
+                                                                                                                     return false;
+                                                                                                                 }" style="padding-right: 30px"/>
+                                                                                            <span class="glyphicon glyphicon-magnet glyphicon-search-360 pointer-cursor" onclick="asignarValorTotal(
+                                                                                                            );"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-3 col-md-6" style="height: 70px">
+                                                                                            <p:remoteCommand name="seleccionarCondicionPago" actionListener="#{ventasMBean.seleccionarCondicionPago}"
+                                                                                                             update=":formFacturacion:pagos :formFacturacion:migas :formFacturacion:msg"/>
+                                                                                            <h:panelGroup id="condicionesPago">
+                                                                                                <h:outputLabel class="label-select-360" value="Condición pago:"/>
+                                                                                                <div class="dropdown">
+                                                                                                    <button type="button" class="btn btn-default select-360 input-lg noround" style="width: 100%"
+                                                                                                            id="selCondicionesPago" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                                                        #{ventasMBean.condicionPagoSeleccionado}
+                                                                                                        <span class="caret"></span>
+                                                                                                    </button>
+                                                                                                    <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selCondicionesPago">
+                                                                                                        <ui:repeat value="#{ventasMBean.condicionesPago}" var="condicion">
+                                                                                                            <li>
+                                                                                                                <a class="pointer-cursor"
+                                                                                                                   onclick="seleccionarCondicionPago([{name: 'condicionPago', value: '#{condicion.groupNum}'}]);">
+                                                                                                                    #{condicion.pymntGroup}
+                                                                                                                </a>
+                                                                                                            </li>
+                                                                                                        </ui:repeat>
+                                                                                                    </ul>
+                                                                                                </div>
+                                                                                            </h:panelGroup>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-3 col-md-6 margin-bottom-10">
+                                                                                            <h:outputLabel class="label-360" value="Comentario:"/>
+                                                                                            <h:inputTextarea id="txt_comentarioPago" class="center-component textarea-360 input-lg noround"
+                                                                                                             value="#{ventasMBean.comentarioPagoPendiente}"/>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-xs-12 center-component">
+                                                                                            <p:remoteCommand name="solicitarAprobacion" actionListener="#{ventasMBean.solicitarAprobacion}"
+                                                                                                             update=":formFacturacion:pagos :formFacturacion:migas :formFacturacion:msg"/>
+                                                                                            <button type="button" class="btn btn-default btn-lg noround" onclick="solicitarAprobacion();">
+                                                                                                Solicitar
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </ui:fragment>
+                                                                                <ui:fragment rendered="#{ventasMBean.pasosPago == 4}">
+                                                                                    <p:remoteCommand name="consultarEstadoAprobacion" actionListener="#{ventasMBean.consultarEstadoAprobacion}"
+                                                                                                     update=":formFacturacion:pagos :formFacturacion:migas :formFacturacion:msg"/>
+
+                                                                                    <div class="row">
+                                                                                        <div class="col-xs-12 center-component">
+                                                                                            <span class="glyphicon glyphicon-refresh refresh-pago-pendiente pointer-cursor"
+                                                                                                  onclick="consultarEstadoAprobacion();"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </ui:fragment>
+                                                                                <ui:fragment rendered="#{ventasMBean.pasosPago == 5}">
+                                                                                    <div class="row">
+                                                                                        <ui:repeat value="#{ventasMBean.autorizaciones}" var="autorizacion">
+                                                                                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                                                                                <div style="border: 1px solid #DDDDDD; margin: 0 5px; padding: 5px; margin-top: 40px">
+                                                                                                    <div class="row" style="position: absolute; width: 90%; top: -13px">
+                                                                                                        <div class="col-xs-12 center-component margin-bottom-10">
+                                                                                                            <img src="#{baruGenericMBean.obtenerRutaFotoEmpleadoComision(autorizacion.usuarioAprueba)}"
+                                                                                                                 style="border-radius: 100%; border: 1px solid #DDDDDD"/>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <ui:fragment rendered="#{autorizacion.respuesta == false}">
+                                                                                                        <div class="row" style="padding-top: 60px">
+                                                                                                            <div class="col-xs-12 justify-component" style="height: 123px">
+                                                                                                                #{autorizacion.comentarioAprueba}
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </ui:fragment>
+                                                                                                    <ui:fragment rendered="#{autorizacion.respuesta}">
+                                                                                                        <div class="row">
+                                                                                                            <div class="col-xs-12 center-component" style="height: 183px; padding-top: 91px; font-size: 20px">
+                                                                                                                COP #{baruGenericMBean.getValorFormateado('Double', autorizacion.valorSolicitado, 0)}
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </ui:fragment>
+                                                                                                    <div class="row">
+                                                                                                        <div class="col-xs-12 center-component">
+                                                                                                            <ui:fragment rendered="#{autorizacion.respuesta}">
+                                                                                                                <span class="glyphicon glyphicon-ok" style="font-size: 30px; color: #5CB85C"></span>
+                                                                                                            </ui:fragment>
+                                                                                                            <ui:fragment rendered="#{autorizacion.respuesta == false}">
+                                                                                                                <span class="glyphicon glyphicon-remove" style="font-size: 30px; color: #D9534F"></span>
+                                                                                                            </ui:fragment>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </ui:repeat>
+                                                                                    </div>
+                                                                                </ui:fragment>
+                                                                            </div>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </h:panelGroup>
+                                            <h:panelGroup rendered="#{ventasMBean.pasosFacturacion == 2}">
+                                                <h:panelGroup id="items">
+                                                    <div class="row">
+                                                        <div class="col-xs-6 center-component margin-bottom-10" style="font-size: 18px">
+                                                            <b>Referencia: </b>#{baruGenericMBean.convertirARefCorta(ventasMBean.detalleVenta.referencia)}
+                                                        </div>
+                                                        <div class="col-xs-6 center-component margin-bottom-10" style="font-size: 18px">
+                                                            <b>Almacén: </b>#{baruGenericMBean.obtenerNombreWebAlmacen(ventasMBean.detalleVenta.bodega)}
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 col-md-6">
+                                                            <div id="images" class="carousel slide">
+                                                                <ol class="carousel-indicators">
+                                                                    <ui:repeat value="#{ventasMBean.imagenes}" var="imageIndicator">
+                                                                        <li data-target="#images" data-slide-to="#{imageIndicator[1]}" class="#{imageIndicator[1] eq '0' ? 'active' : ''}"></li>
+                                                                    </ui:repeat>
+                                                                </ol>
+
+                                                                <div class="carousel-inner">
+                                                                    <ui:repeat value="#{ventasMBean.imagenes}" var="image">
+                                                                        <div class="item #{image[1] eq '0' ? 'active' : ''}">
+                                                                            <img src="#{image[0]}" class="img-responsive" style="max-width: 416px"/>
+                                                                        </div>
+                                                                    </ui:repeat>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                                            <div class="row">
+                                                                <h:panelGroup id="cantidades">
+                                                                    <div style="background-color: #DDDDDD; height: 37px; padding: 8px; margin: 0px 15px 5px 15px">
+                                                                        <div class="col-xs-4 center-component">
+                                                                            <span>
+                                                                                <b>Cantidad: </b>#{ventasMBean.detalleVenta.cantidad}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="col-xs-4 center-component">
+                                                                            <span>
+                                                                                <b>Asignado: </b>#{ventasMBean.detalleVenta.cantidadUsada}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="col-xs-4 center-component">
+                                                                            <span>
+                                                                                <b>Restante: </b>#{ventasMBean.detalleVenta.cantidad - ventasMBean.detalleVenta.cantidadUsada}
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </h:panelGroup>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xs-12">
+                                                                    <p:remoteCommand name="asignarUbicacion" actionListener="#{ventasMBean.asignarUbicacion}"
+                                                                                     update=":formFacturacion:ubicaciones :formFacturacion:msg :formFacturacion:cantidades"/>
+                                                                    <p:remoteCommand name="quitarUbicacion" actionListener="#{ventasMBean.quitarUbicacion}"
+                                                                                     update=":formFacturacion:ubicaciones :formFacturacion:msg :formFacturacion:cantidades"/>
+
+                                                                    <h:panelGroup id="ubicaciones">
+                                                                        <table class="table table-striped">
+                                                                            <tr>
+                                                                                <th class="head-tabla">
+                                                                                    Ubicación
+                                                                                </th>
+                                                                                <th class="head-tabla">
+                                                                                    Disponible
+                                                                                </th>
+                                                                                <th class="head-tabla">
+                                                                                    Usado
+                                                                                </th>
+                                                                                <th class="head-tabla"></th>
+                                                                            </tr>
+                                                                            <ui:repeat value="#{ventasMBean.detalleVenta.ubicaciones}" var="ubicacion">
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        <div class="row">
+                                                                                            <div>
+                                                                                                <div class="col-xs-12">
+                                                                                                    #{ubicacion.binCode}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <div class="row">
+                                                                                            <div>
+                                                                                                <div class="col-xs-12 center-component">
+                                                                                                    #{ubicacion.onHandQty}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <div class="row">
+                                                                                            <div>
+                                                                                                <div class="col-xs-12 center-component">
+                                                                                                    #{ubicacion.onHandQtyUsado}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <div class="row">
+                                                                                            <div>
+                                                                                                <div class="col-xs-6 center-component pointer-cursor">
+                                                                                                    <span class="glyphicon glyphicon-chevron-down"
+                                                                                                          onclick="quitarUbicacion([{name: 'ubicacion', value: '#{ubicacion.ubicacion}'}]);"></span>
+                                                                                                </div>
+                                                                                                <div class="col-xs-6 center-component pointer-cursor">
+                                                                                                    <span class="glyphicon glyphicon-chevron-up"
+                                                                                                          onclick="asignarUbicacion([{name: 'ubicacion', value: '#{ubicacion.ubicacion}'}]);"></span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </ui:repeat>
+                                                                        </table>
+                                                                    </h:panelGroup>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xs-12">
+                                                                    <div class="form-group">
+                                                                        <p:remoteCommand name="seleccionarEstadoItem" actionListener="#{ventasMBean.seleccionarEstadoItem}"
+                                                                                         update=":formFacturacion:estado :formFacturacion:msg"/>
+
+                                                                        <h:panelGroup id="estado">
+                                                                            <div class="dropdown">
+                                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                                        id="selEstado" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                                    #{ventasMBean.estadoSeleccionado}
+                                                                                    <span class="caret"></span>
+                                                                                </button>
+                                                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selEstado">
+                                                                                    <li>
+                                                                                        <a class="pointer-cursor" onclick="seleccionarEstadoItem([{name: 'estado', value: 'P'}]);">
+                                                                                            Pendiente entrega 1 a 10 días
+                                                                                        </a>
+                                                                                    </li>
+                                                                                    <li>
+                                                                                        <a class="pointer-cursor" onclick="seleccionarEstadoItem([{name: 'estado', value: 'D'}]);">
+                                                                                            Despachado - Entrega inmediata
+                                                                                        </a>
+                                                                                    </li>
+                                                                                    <li>
+                                                                                        <a class="pointer-cursor" onclick="seleccionarEstadoItem([{name: 'estado', value: 'G'}]);">
+                                                                                            Enviar a DAKA
+                                                                                        </a>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        </h:panelGroup>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </h:panelGroup>
+                                            <h:panelGroup rendered="#{ventasMBean.pasosFacturacion == 3}">
+                                                <p:remoteCommand name="cambiarTagAsesor" actionListener="#{ventasMBean.cambiarTagAsesor}" update=":formFacturacion:comisiones :formFacturacion:msg"/>
+                                                <p:remoteCommand name="seleccionarAsesor" actionListener="#{ventasMBean.seleccionarAsesor}" update=":formFacturacion:comisiones :formFacturacion:msg"/>
+
+                                                <h:panelGroup id="comisiones">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <ul class="nav nav-pills">
+                                                                <ui:repeat value="#{ventasMBean.empleadosComision.entrySet().toArray()}" var="emp">
+                                                                    <li class="noround #{ventasMBean.tabAsesor eq emp.key ? 'active' : ''}">
+                                                                        <a href="#tab_#{emp.key}" data-toggle="pill" class="input-lg noround" role="tab"
+                                                                           onclick="cambiarTagAsesor([{name: 'tabAsesor', value: '#{emp.key}'}]);">
+                                                                            #{emp.key}
+                                                                        </a>
+                                                                    </li>
+                                                                </ui:repeat>
+                                                            </ul>
+                                                            <div class="tab-content">
+                                                                <ui:repeat value="#{ventasMBean.empleadosComision.entrySet().toArray()}" var="asesor">
+                                                                    <div role="tabpanel" class="tab-pane #{ventasMBean.tabAsesor eq asesor.key ? 'active' : ''}" id="tab_#{asesor.key}">
+                                                                        <div class="row">
+                                                                            <ui:repeat value="#{asesor.value.toArray()}" var="value">
+                                                                                <div class="col-xs-6 col-sm-3 col-md-2 center-component margin-bottom-10">
+                                                                                    <div class="pointer-cursor" onclick="seleccionarAsesor([{name: 'asesor', value: '#{value.codigoAsesor}'}]);">
+                                                                                        <div class="row">
+                                                                                            <div class="col-xs-12">
+                                                                                                <img src="#{baruGenericMBean.obtenerRutaFotoEmpleadoComision(value.cedula)}"
+                                                                                                     class="#{value.asesorSeleccionado ? 'imagen-empleado-factura-seleccionada' : 'imagen-empleado-factura'}"/>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="row">
+                                                                                            <div class="col-xs-12 center-component" style="font-size: 11px">
+                                                                                                #{value.nombre}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </ui:repeat>
+                                                                        </div>
+                                                                    </div>
+                                                                </ui:repeat>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </h:panelGroup>
+                                            <h:panelGroup rendered="#{ventasMBean.pasosFacturacion == 4}">
+                                                <p:remoteCommand name="seleccionarDecorador" actionListener="#{ventasMBean.seleccionarDecorador}" update=":formFacturacion:msg :formFacturacion:decoradores"/>
+
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-sm-6">
+                                                        <div class="form-group">
+                                                            <h:outputLabel value="Decorador:"/>
+                                                            <h:panelGroup id="decoradores">
+                                                                <div class="dropdown">
+                                                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                            id="selDecoradores" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                        #{ventasMBean.decoradorSeleccionado}
+                                                                        <span class="caret"></span>
+                                                                    </button>
+                                                                    <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selDecoradores">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarDecorador([{name: 'decorador', value: '#{null}'}]);">
+                                                                                Ninguno
+                                                                            </a>
+                                                                        </li>
+                                                                        <ui:repeat value="#{ventasMBean.decoradores}" var="decorador">
+                                                                            <li>
+                                                                                <a class="pointer-cursor" onclick="seleccionarDecorador([{name: 'decorador', value: '#{decorador.name}'}]);">
+                                                                                    #{decorador.name}
+                                                                                </a>
+                                                                            </li>
+                                                                        </ui:repeat>
+                                                                    </ul>
+                                                                </div>
+                                                            </h:panelGroup>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-6">
+                                                        <h:inputTextarea class="form-control input-lg noround" pt:placeholder="Comentario factura" style="resize: none; height: 140px"
+                                                                         value="#{ventasMBean.comentarioFactura}">
+                                                            <f:ajax event="change"/>
+                                                        </h:inputTextarea>
+                                                    </div>
+                                                </div>
+                                            </h:panelGroup>
+                                        </h:panelGroup>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 justify-component">
+                                                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <h:panelGroup id="btns">
+                                                    <p:remoteCommand name="cancelarFacturacion" actionListener="#{ventasMBean.cancelarFacturacion}" update=":panelFacturacion"
+                                                                     oncomplete="cerrarModalFacturacion(); focusReferencia();"/>
+
+                                                    <button type="button" class="btn btn-default btn-lg noround" onclick="cancelarFacturacion();">
+                                                        Cancelar
+                                                    </button>
+                                                    <ui:fragment rendered="#{ventasMBean.posicionItem gt 0 and ventasMBean.pasosFacturacion == 2}">
+                                                        <p:remoteCommand name="obtenerAnteriorPasoFacturacion" actionListener="#{ventasMBean.obtenerAnteriorPasoFacturacion}"
+                                                                         update=":formFacturacion:pasos :formFacturacion:migas :formFacturacion:msg :formFacturacion:btns"/>
+
+                                                        <button type="button" class="btn btn-default btn-lg noround" onclick="obtenerAnteriorPasoFacturacion();">
+                                                            Atrás
+                                                        </button>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{ventasMBean.pasosFacturacion != 4}">
+                                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="obtenerSiguientePasoFacturacion();" style="margin-left: 0px">
+                                                            Siguiente
+                                                        </button>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{ventasMBean.pasosFacturacion == 4}">
+                                                        <p:remoteCommand name="validarFacturar" actionListener="#{ventasMBean.validarFacturar}" oncomplete="cerrarModalFacturacion; abrirModalCrearFactura();"
+                                                                         update=":panelFacturacion :panelCrearFactura"/>
+
+                                                        <button type="button" class="btn btn-primary btn-lg noround" style="margin-left: 0px" onclick="validarFacturar();">
+                                                            Facturar
+                                                        </button>
+                                                    </ui:fragment>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelCrearFactura">
+                <h:panelGroup rendered="#{ventasMBean.dlgCrearFactura}">
+                    <h:form id="formCrearFactura">
+                        <div class="modal fade" id="modalCrearFactura" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header-advertencia">
+                                        <h4 class="modal-title">
+                                            Advertencia
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <p>
+                                                    <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                    Este documento no puede modificarse tras la creación. ¿Desea continuar?.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <p:remoteCommand name="cerrar" update=":panelCrearFactura" oncomplete="cerrarModalCrearFactura(); abrirModalEspera(); facturar();"/>
+                                                <p:remoteCommand name="facturar" actionListener="#{ventasMBean.facturar}" oncomplete="cerrarModalEspera(); abrirModalFacturacion();"
+                                                                 update=":panelCrearFactura :formVentas :panelFacturacion :formFacturacion:msg"/>
+                                                <p:remoteCommand name="validarFacturar" actionListener="#{ventasMBean.validarFacturar}" oncomplete="cerrarModalCrearFactura(); abrirModalFacturacion();"
+                                                                 update=":panelFacturacion :panelCrearFactura"/>
+
+                                                <button type="button" class="btn btn-default btn-lg noround" onclick="validarFacturar();">
+                                                    No
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="cerrar();" style="margin-left: 0px">
+                                                    Sí
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelDemo">
+                <h:panelGroup rendered="#{ventasSessionMBean.clienteVerificado and ventasMBean.dlgDemostracion}">
+                    <h:form id="formDemo">
+                        <div class="modal fade" id="modalDemo" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">
+                                            Datos demostración
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-xs-offset-0 col-sm-6 col-sm-offset-3">
+                                                <h:outputLabel class="label-360" value="Nombre demostración:"/>
+                                                <ui:fragment rendered="#{ventasSessionMBean.idDemostracion eq null or ventasSessionMBean.idDemostracion eq 0}">
+                                                    <h:inputText value="#{ventasMBean.nombreDemostracion}" autocomplete="off" class="input-lg noround center-component input-360"
+                                                                 onkeypress="if (event.keyCode === 13) {
+                                                                             return false;
+                                                                         }">
+                                                        <f:ajax event="change"/>
+                                                    </h:inputText>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{ventasSessionMBean.idDemostracion ne null and ventasSessionMBean.idDemostracion gt 0}">
+                                                    <h:inputText value="#{ventasMBean.nombreDemostracion}" autocomplete="off" class="input-lg noround center-component input-360-disabled"
+                                                                 readonly="true" onkeypress="if (event.keyCode === 13) {
+                                                                             return false;
+                                                                         }"/>
+                                                </ui:fragment>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row">
+                                            <div class="col-xs-6 margin-bottom-10">
+                                                <h:outputLabel class="label-360-mask" value="Fecha demostración:" style="top: 14px !important"/>
+                                                <p:calendar id="fechaDemo" pattern="dd-MM-yyyy" class="mask-360 input-lg noround" value="#{ventasMBean.fechaDemostracion}"
+                                                            style="padding-left: 0px; padding-right: 0px">
+                                                    <p:ajax event="dateSelect" rendered=":formDemo:fechaDemo"/>
+                                                </p:calendar>
+                                            </div>
+                                            <div class="col-xs-6 margin-bottom-10">
+                                                <p:remoteCommand name="seleccionarFactura" actionListener="#{ventasMBean.seleccionarFactura}" update=":formDemo:facturas"/>
+
+                                                <h:outputLabel class="label-360" value="Factura asociada:" style="z-index: 2"/>
+                                                <h:panelGroup id="facturas">
+                                                    <div class="dropdown">
+                                                        <button type="button" class="dropdown-360 dropdown-toggle noround" id="selDecoradores" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                            #{ventasMBean.facturaAsociadaSeleccionada}
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selDecoradores">
+                                                            <li>
+                                                                <a class="pointer-cursor" onclick="seleccionarFactura([{name: 'factura', value: '0'}]);">
+                                                                    Ninguno
+                                                                </a>
+                                                            </li>
+                                                            <ui:repeat value="#{ventasMBean.facturas}" var="factura">
+                                                                <li>
+                                                                    <a class="pointer-cursor" onclick="seleccionarFactura([{name: 'factura', value: '#{factura}'}]);">
+                                                                        #{factura}
+                                                                    </a>
+                                                                </li>
+                                                            </ui:repeat>
+                                                        </ul>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <h:inputTextarea class="form-control input-lg noround" pt:placeholder="Comentario demostración" style="resize: none; height: 140px"
+                                                                 value="#{ventasMBean.comentarioDemostracion}">
+                                                    <f:ajax event="change"/>
+                                                </h:inputTextarea>
+                                            </div>
+                                        </div>
+                                        <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <p:remoteCommand name="modal" oncomplete="crearDemostracion();" update=":panelDemo :formDemo"/>
+                                        <p:remoteCommand name="modalModificar" oncomplete="modificaDemostracion();" update=":panelDemo :formDemo"/>
+                                        <p:remoteCommand name="modificaDemostracion" actionListener="#{ventasMBean.modificaDemostracion}" update=":formVentas:msg :panelDemo :panelExito"
+                                                         oncomplete="cerrarModalEspera(); abrirModalDemo(); abrirModalExito();"/>
+                                        <p:remoteCommand name="cancelarProcesoDemo" actionListener="#{ventasMBean.cancelarProcesoDemo}" oncomplete="cerrarModalDemo();" update=":panelDemo"/>
+
+                                        <button type="button" class="btn btn-default btn-lg noround" onclick="cancelarProcesoDemo();">
+                                            Cancelar
+                                        </button>
+                                        <ui:fragment rendered="#{ventasSessionMBean.idDemostracion eq null or ventasSessionMBean.idDemostracion eq 0}">
+                                            <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); modal();" style="margin-left: 0px">
+                                                Crear
+                                            </button>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{ventasSessionMBean.idDemostracion ne null and ventasSessionMBean.idDemostracion gt 0}">
+                                            <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); modalModificar();" style="margin-left: 0px">
+                                                Modificar
+                                            </button>
+                                        </ui:fragment>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>                
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelFacturarDemo">
+                <h:panelGroup rendered="#{ventasMBean.dlgFacturarDemo}">
+                    <h:form id="formFacturarDemo">
+                        <div class="modal fade" id="modalFacturarDemo" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header-advertencia">
+                                        <h4 class="modal-title">
+                                            Advertencia
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <p>
+                                                    <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                    Este proceso generará el traslado de la mercancía al almacén de ventas respectivo a la ubicación
+                                                    <b> DEMO</b> y la cotización. ¿Desea continuar?
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <p:remoteCommand name="cerrar" update=":panelFacturarDemo" oncomplete="cerrarModalFacturarDemo(); abrirModalEspera(); facturarDemostracion();"/>
+                                                <p:remoteCommand name="facturarDemostracion" actionListener="#{ventasMBean.facturarDemostracion}" oncomplete="cerrarModalEspera();"
+                                                                 update=":formVentas :formFacturacion:msg"/>
+                                                <p:remoteCommand name="cancelarFacturarDemo" actionListener="#{ventasMBean.cancelarFacturarDemo}" oncomplete="cerrarModalFacturarDemo();"
+                                                                 update=":panelFacturarDemo :formVentas"/>
+
+                                                <button type="button" class="btn btn-default btn-lg noround" onclick="cancelarFacturarDemo();">
+                                                    No
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="cerrar();" style="margin-left: 0px">
+                                                    Sí
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:form id="formVentas">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>
+                                    <h:outputText value="#{ventasMBean.obtenerMiga}" escape=""/>
+                                </a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-4 col-md-offset-2" style="height: 70px">
+                        <div class="form-group" style="margin-bottom: 0px !important">
+                            <p:remoteCommand name="obtenerSaldos" actionListener="#{ventasMBean.obtenerSaldos}" update=":panelSaldos :formVentas:msg" oncomplete="abrirModalSaldos();"/>
+                            <p:focus context="formVentas" for="txt_referencia"/>
+                            <h:outputLabel class="label-360" value="Referencia:"/>
+                            <h:inputText id="txt_referencia" class="center-component input-360 input-lg noround" value="#{ventasMBean.referencia}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                        obtenerSaldos();
+                                        return false;
+                                    }"/>
+                            <span class="glyphicon glyphicon-search glyphicon-search-360 pointer-cursor" onclick="obtenerSaldos(
+
+                                            );"></span>
+                        </div>
+                    </div>
+                    <h:panelGroup id="total">
+                        <div class="hidden-xs col-sm-6 col-md-4 center-component">
+                            <h:panelGroup style="position: relative; top: 40px; font-size: 20px">
+                                <b>Total: </b><span style="color: #BF0039">COP #{baruGenericMBean.getValorFormateado('Double', ventasMBean.totalVenta, 2)}</span>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 hidden-sm hidden-md hidden-lg center-component">
+                            <span style="font-size: 20px">
+                                <b>Total: </b><span style="color: #BF0039">COP #{baruGenericMBean.getValorFormateado('Double', ventasMBean.totalVenta, 2)}</span>
+                            </span>
+                        </div>
+                    </h:panelGroup>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                <hr/>
+
+                <div class="row">
+                    <div class="col-xs-12 right-component">
+                        <p:remoteCommand name="crearCotizacion" action="#{ventasMBean.crearCotizacion}" update=":formVentas :panelDemo :panelExito"
+                                         oncomplete="cerrarModalEspera(); abrirModalDemo(); abrirModalExito();"/>
+                        <p:remoteCommand name="cancelarVenta" actionListener="#{ventasMBean.cancelarVenta}" update=":formVentas" oncomplete="cerrarModalEspera();"/>
+                        <p:remoteCommand name="cancelarEdicionCotizacion" action="#{ventasMBean.cancelarEdicionCotizacion}" update=":formVentas" oncomplete="cerrarModalEspera();"/>
+                        <p:remoteCommand name="crearFactura" action="#{ventasMBean.crearFactura}" oncomplete="cerrarModalEspera(); abrirModalFacturarDemo();" update=":formVentas:msg :panelFacturarDemo"/>
+                        <p:remoteCommand name="crearDemostracion" action="#{ventasMBean.crearDemostracion}" oncomplete="cerrarModalEspera(); abrirModalDemo(); abrirModalExito();"
+                                         update=":formVentas:msg :panelDemo :panelExito"/>
+
+                        <button type="button" class="btn btn-default btn-lg noround margin-bottom-10"
+                                onclick="abrirModalEspera(); #{ventasSessionMBean.modificando ? 'cancelarEdicionCotizacion();' : 'cancelarVenta();'}">
+                            Cancelar
+                        </button>
+                        <ui:fragment rendered="#{ventasMBean.mostrarModificar()}">
+                            <button type="button" class="btn btn-primary btn-lg noround margin-bottom-10" onclick="abrirModalEspera(); crearCotizacion();">
+                                #{ventasSessionMBean.modificando ? 'Modificar' : 'Cotizar'}
+                            </button>
+                        </ui:fragment>
+                        <button type="button" class="btn btn-default btn-lg noround margin-bottom-10" onclick="abrirModalEspera(); crearFactura();">
+                            Facturar
+                        </button>
+                        <button type="button" onclick="abrirModalEspera(); crearDemostracion();" class="btn btn-default btn-lg noround margin-bottom-10
+                                #{ventasSessionMBean.modificando and ventasSessionMBean.idDemostracion ne null and ventasSessionMBean.idDemostracion != 0 ? 'disabled btn-deshabilitado' : ''}">
+                            Demo
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <h:panelGroup id="items">
+                                <p:remoteCommand name="seleccionarItemEliminar" actionListener="#{ventasMBean.seleccionarItemEliminar}" update=":panelSaldos" oncomplete="abrirModalSaldos();"/>
+
+                                <ui:repeat value="#{ventasMBean.saldosAcumulados}" var="saldo">
+                                    <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                        <div class="pointer-cursor #{saldo.estado ne null and saldo.estado eq 'C' ? 'contenedor-items-ventas-cerrada' : 'contenedor-items-ventas'}"
+                                             onclick="seleccionarItemEliminar([{name: 'referencia', value: '#{saldo.referencia}'}, {name: 'almacen', value: '#{saldo.almacen}'}]);">
+                                            <div class="row">
+                                                <ui:fragment rendered="#{saldo.descuento gt 0}">
+                                                    <div style="position: absolute; z-index: 2; background-color: #DDDDDD; color: #BF0039; border-radius: 100%; height: 50px; width: 50px; font-size: 20px;
+                                                         padding-top: 11px; padding-left: 5px; top: -7px; right: 50%">
+                                                        #{saldo.descuento}%
+                                                    </div>
+                                                </ui:fragment>
+                                                <div class="col-xs-5">
+                                                    <img src="#{imagenProductoMBean.obtenerUrlProducto(saldo.referencia, true)}" class="img-mini"
+                                                         style="opacity: #{saldo.estado ne null and saldo.estado eq 'C' ? '0.6' : '1'}"/>
+                                                </div>
+                                                <div class="col-xs-7 center-component">
+                                                    <div class="row">
+                                                        <div class="col-xs-12" style="font-size: 27px">
+                                                            <b>#{baruGenericMBean.convertirARefCorta(saldo.referencia)}</b>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12" style="font-size: 12px">
+                                                            #{baruGenericMBean.obtenerNombreWebAlmacen(saldo.almacen)}
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12" style="font-size: 15px">
+                                                            <span class="badge badge-gray" style="#{saldo.estado ne null and saldo.estado eq 'C' ? 'background-color: #707070' : ''}">
+                                                                #{saldo.cantidadNecesaria}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div style="background-color: #{saldo.estado ne null and saldo.estado eq 'C' ? '#707070' : '#DDDDDD'}; height: 30px; margin: 0 9px; padding: 5px">
+                                                    <ui:fragment rendered="#{saldo.descuento le 0}">
+                                                        <div class="col-xs-6 center-component" style="font-size: 15px">
+                                                            <span style="color: #BF0039">COP #{baruGenericMBean.getValorFormateado('Double', baruGenericMBean.obtenerPrecioVenta(saldo.referencia), 2)}</span>
+                                                        </div>
+                                                        <div class="col-xs-6 center-component" style="font-size: 15px; border-left: 1px solid #FFFFFF">
+                                                            <span style="color: #BF0039">
+                                                                COP #{baruGenericMBean.getValorFormateado('Double', (baruGenericMBean.obtenerPrecioVenta(saldo.referencia)) * (saldo.cantidadNecesaria), 2)}
+                                                            </span>
+                                                        </div>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{saldo.descuento gt 0}">
+                                                        <div class="col-xs-6 center-component" style="font-size: 15px; margin-top: -10px">
+                                                            <s style="color: #000000; font-size: 11px">
+                                                                COP #{baruGenericMBean.getValorFormateado('Double', baruGenericMBean.obtenerPrecioVenta(saldo.referencia), 2)}
+                                                            </s>
+                                                            <p style="color: #BF0039; margin-top: -7px; margin-bottom: 0px">
+                                                                COP #{baruGenericMBean.getValorFormateado('Double', baruGenericMBean.obtenerPrecioVentaDescuento(saldo.descuento, saldo.referencia), 0)}
+                                                            </p>
+                                                        </div>
+                                                        <div class="col-xs-6 center-component" style="font-size: 15px; margin-top: -10px">
+                                                            <s style="color: #000000; font-size: 11px">
+                                                                COP #{baruGenericMBean.getValorFormateado('Double', baruGenericMBean.obtenerPrecioVenta(saldo.referencia) * saldo.cantidadNecesaria, 2)}
+                                                            </s>
+                                                            <p style="color: #BF0039; margin-top: -7px; margin-bottom: 0px">
+                                                                COP #{baruGenericMBean.getValorFormateado('Double',
+                                                                      baruGenericMBean.obtenerPrecioVentaDescuento(saldo.descuento, saldo.referencia) * saldo.cantidadNecesaria, 0)}
+                                                            </p>
+                                                        </div>
+                                                    </ui:fragment>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 justify-component">
+                                                    #{baruGenericMBean.obtenerNombreReferencia(saldo.referencia)}
+                                                </div>
+                                            </div>
+                                            <ui:fragment rendered="#{saldo.estado ne null and saldo.estado eq 'C'}">
+                                                <div class="center-component" style="position: absolute; top: 33%; width: 100%; left: 0; color: #FFFFFF; font-size: 50px">
+                                                    <span>
+                                                        CERRADA
+                                                    </span>
+                                                </div>
+                                            </ui:fragment>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+        <script src="/360/js/ventas.js"></script>
+    </h:body>
+</html>

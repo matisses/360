@@ -1,0 +1,272 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <title>360 - Ayuda Consulta Ubicación</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        <div class="panel-body">
+            <div class="container" style="text-align: justify">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h1 class="h1_manual">
+                            Consultar Saldo Ubicación
+                        </h1>
+                        <p>
+                            Este módulo le permite al usuario realizar consultas de la mercancía que se encuentra en las ubicaciones y en que ubicaciones se
+                            encuentra un artículo en específico.
+                        </p>
+                    </div>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Para consultar, ingrese un valor y de Enter. El sistema relacionara el valor con datos encontrados y mostrara la información.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <p>
+                            Veremos un ejemplo del proceso descrito anteriormente.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <p>
+                                    <b>Paso 1 </b> El usuario debe localizar el campo de búsqueda, ver <b>Imagen 2</b>; aquí se debe ingresar lo que se quiere
+                                    buscar.
+                                </p>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <img class="img-responsive" src="/360/images/ayuda/ubicaciones/consulta/campoParametroBusqueda.png"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12" style="text-align: center">
+                                        <i>[Imagen 2]</i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <p>
+                                    <b>Paso 2 </b> Ingrese la ubicación o la referencia que se quiere buscar y después de Enter para proceder con la búsqueda.
+                                    En la <b>Imagen 3</b>, vemos un ejemplo con la ubicación TM.
+                                </p>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <img class="img-responsive" src="/360/images/ayuda/ubicaciones/consulta/buscando.png"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12" style="text-align: center">
+                                        <i>[Imagen 3]</i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <p>
+                                    <b>Paso 3 </b> Aquí vemos los resultados obtenidos con el valor suministrado. Ver <b>Imagen 4</b>.
+                                </p>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <img class="img-responsive" src="/360/images/ayuda/ubicaciones/consulta/resultadoBusqueda.png"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12" style="text-align: center">
+                                        <i>[Imagen 4]</i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Una vez obtenidos los resultados se mostraran unos contenedores, que muestran datos de la ubicación y del artículo, que pueden
+                            ser de gran ayuda al usuario para llevar a cabo su labor.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <img class="img-responsive" src="/360/images/ayuda/ubicaciones/consulta/contenedor.png"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12" style="text-align: center">
+                                <i>[Imagen 1]</i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <p>
+                            La anterior imagen se compone de los siguientes elementos:
+                        </p>
+                        <p>
+                            <b>1 - </b>Foto artículo.
+                            <br/>
+                            <b>2 - </b>Referencia corta.
+                            <br/>
+                            <b>3 - </b>Almacén en el que se encontró saldo.
+                            <br/>
+                            <b>4 - </b>Ubicación en la que se encuentra la referencia.
+                            <br/>
+                            <b>5 - </b>Cantidad disponible en la ubicación.
+                            <br/>
+                            <b>6 - </b>Descripción del artículo.
+                        </p>
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="mensajesSistema" class="h2_manual anchor">Mensajes del Sistema</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Si en algún momento el usuario recibe uno de los siguientes mensajes por parte del sistema, esta guía le ayudara a identificarlo y 
+                            solucionarlo.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="row table-row">
+                            <div class="col-sm-1 hidden-xs center-component">
+                                <span class="table-ayuda">
+                                    Tipo
+                                </span>
+                            </div>
+                            <div class="col-sm-3 hidden-xs center-component">
+                                <span class="table-ayuda">
+                                    Mensaje
+                                </span>
+                            </div>
+                            <div class="col-sm-4 hidden-xs center-component">
+                                <span class="table-ayuda">
+                                    Causa
+                                </span>
+                            </div>
+                            <div class="col-sm-4 hidden-xs center-component">
+                                <span class="table-ayuda">
+                                    Solución
+                                </span>
+                            </div>
+                        </div>
+                        <ui:repeat value="#{consultaUbicacionAyudaMBean.mensajes}" var="mensaje">
+                            <div class="row table-row">
+                                <div class="col-sm-1 hidden-sm hidden-md hidden-lg">
+                                    <span class="table-ayuda">
+                                        Tipo
+                                    </span>
+                                </div>
+                                <div class="col-sm-1 center-component">
+                                    <span class="#{mensaje[0] eq 'E' ? 'glyphicon glyphicon-remove-sign' : mensaje[0] eq 'I' ? 'glyphicon glyphicon-info-sign'
+                                                   : mensaje[0] eq 'A' ? 'glyphicon glyphicon-question-sign': ''}"
+                                          title="#{mensaje[0] eq 'E' ? 'Error' : mensaje[0] eq 'I' ? 'Información' : mensaje[0] eq 'A' ? 'Advertencia': ''}"
+                                          style="font-size: 30px; #{mensaje[0] eq 'E' ? 'color: #DD5555;' : mensaje[0] eq 'I' ? 'color: #46B8DA;'
+                                                                    : mensaje[0] eq 'A' ? 'color: #FFBF00;': ''}"></span>
+                                </div>
+                                <div class="col-sm-3 hidden-sm hidden-md hidden-lg">
+                                    <span class="table-ayuda">
+                                        Mensaje
+                                    </span>
+                                </div>
+                                <div class="col-sm-3">
+                                    <span class="col-xs-12">
+                                        #{mensaje[1]}
+                                    </span>
+                                </div>
+                                <div class="col-sm-4 hidden-sm hidden-md hidden-lg">
+                                    <span class="table-ayuda">
+                                        Causa
+                                    </span>
+                                </div>
+                                <div class="col-sm-4">
+                                    <span class="col-xs-12">
+                                        #{mensaje[2]}
+                                    </span>
+                                </div>
+                                <div class="col-sm-4 hidden-sm hidden-md hidden-lg">
+                                    <span class="table-ayuda">
+                                        Solución
+                                    </span>
+                                </div>
+                                <div class="col-sm-4">
+                                    <span class="col-xs-12">
+                                        #{mensaje[3]}
+                                    </span>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

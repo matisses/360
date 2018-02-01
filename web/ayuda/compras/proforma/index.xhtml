@@ -1,0 +1,1155 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <title>360 - Ayuda Proforma</title>
+    </h:head>
+    <h:body>
+        <m:navbar/>
+        <div class="panel-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h1 class="h1_manual">
+                            Proforma
+                        </h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            En este modulo se puede administrar todo lo que corresponde con una proforma, para despues generar el documento final con la información que sera enviada al proveedor.
+                        </p>
+                        <p>
+                            el modulo posee varias funcionalidades que seran explicadas a continuación.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 class="h2_manual">
+                            Contenido
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ul>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#seleccionar_proforma">Seleccionar Proforma</a>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#proforma">Proforma</a>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#contenedor">Contenedor</a>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#pagos">Pagos</a>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <ul>
+                                        <div class="row">
+                                            <li class="padding-top-1">
+                                                <div class="col-xs-12">
+                                                    <a href="#crear_cuenta">Crear Cuenta</a>
+                                                </div>
+                                            </li>
+                                        </div>
+                                        <div class="row">
+                                            <li class="padding-top-1">
+                                                <div class="col-xs-12">
+                                                    <a href="#crear_transaccion">Crear Transacción</a>
+                                                </div>
+                                            </li>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#cbm">CBM</a>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#totales">Totales</a>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#re_calcular_datos">Re Calcular Datos</a>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#vista_tabla">Vista Tabla</a>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#descargar">Descargar</a>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#cerrar_proforma">Cerrar Proforma</a>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#mensajes_recibidos">Mensajes Recibidos</a>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <br/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="seleccionar_proforma" class="h2_manual anchor">
+                            Seleccionar Proforma
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Lo primero que el usuario debe hacer es seleccionar una proforma con la que trabajara. Para seleccionar una proforma siga los siguientes pasos:
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/proforma/contenedorProforma.png"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            En la anterior imagen se muestra el contenedor en el que se muestran los datos de cada una de las proformas; ahora explicaremos que significa cada ítem de este contenedor.
+                            <p>
+                                <b>1 - Estado </b>Es el estado en el que se encuentra actualmente la proforma,
+                                de estos estados el usuario podra ver los siguientes estados que le ayudaran a saber como y que esperar de la proforma.
+                            </p>
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ul>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10 justify-component">
+                                                <p>
+                                                    <b>PENDIENTE </b>Cuando la proforma se encuentra en este estado, esta se puede gestionar de la forma que el usuario quiera;
+                                                    debido a que este es un estado de creación y de trabajo.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10 justify-component">
+                                                <p>
+                                                    <b>APROBADA </b>Este estado no permite la modificacion de los datos de la proforma,
+                                                    debido a que es un estado de cerrado en el cual las personas implicadas ya han aprobado la proforma.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10 justify-component">
+                                                <p>
+                                                    <b>PENDIENTE APROBACIÓN </b>Estado de cerrado en el que no se permite modificar sino unicamente los datos de importación.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10 justify-component">
+                                                <p>
+                                                    <b>NO APROBADO </b>Significa que las personas que deben aprobar la proforma, no aprobaron los datos suministrados en la proforma.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10 justify-component">
+                                                <b>CERRADA </b>Estado temporal que se ve unicamente cuando un usuario esta cerrando la proforma,
+                                                este estado se coloca para evitar que otro usuario entre y modifique los datos y dañe el cierre de esta.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10 justify-component">
+                                                <b>SIN ESTADO </b>Sucede cuando la proforma presenta algun problema y el sistema no es capaz de detectar en que estado se encuentra la proforma.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            <b>2 - Código proveedor </b>Es el codigo que identicara a la proforma de que proveedor es.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            <b>3 - Año </b>Año en el que se creo la proforma.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            <b>4 - Consecutivo </b>Número que identifica que proforma es.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            <b>5 - Identificador </b>El ítem 2, 3 y 4 componen el identificador de la proforma, este se mostrara en todos los lugares donde se deben identificar las proformas.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            En cualquier momento el usuario puede filtrar las proformas, para poder encontrar la que se desea con mas facilidad;
+                            para esto copie el texto con el que desea filrar en el campo <b>Parámetro Busqueda</b>,
+                            ubicado encima de los contenedores de las proformas.
+                        </p>
+                        <p>
+                            Al seleccionar una proforma se habilitaran tags consecutivos al de <b>Seleccionar</b>, los cuales permitiran el trabajo en la proforma.
+                        </p>
+                        <p>
+                            <b>Nota: </b>Si es la primera vez que se va a abrir la proforma, esta se demorara unos minutos realizando calculos y organizando la información para su buen manejo.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="proforma" class="h2_manual anchor">
+                            Proforma
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Quizas el tag más importante sea este,
+                            debido a que aquí el usuario podra modificar los datos de la proforma y realizar más operaciones que facilitaran la labor.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/proforma/vistaProforma.png"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            <b>1 - Foto del ítem </b>Aquí se pueden ver las fotos del ítem, permitiendo ver cada una de estas en un tamaño desente,
+                            además si el usuario desea ver la foto en un tamaño mayor, de clic sobre la imagen y esta abrira una ventana emergente con la foto en un tamaño superior.
+                        </p>
+                        <p>
+                            <b>2 - Páginador de los ítems </b>En este componente el usuario podra navegar de una forma mas agil por todos los items o por el item que desee,
+                            se puede dar clic en el icono <span class="glyphicon glyphicon-chevron-right"></span>,
+                            para avanzar al siguiente ítem o el icono <span class="glyphicon glyphicon-chevron-left"></span>, para ir a un ítem anterior.
+                            También se pueden usar los botones ubicados en los laterales del componente para ir al primer o ultimo ítem;
+                            ademas de poder seleccionar de la lista disponible de ítems para ir al que el usuario desee.
+                        </p>
+                        <p>
+                            <b>3 - Agregar columna a la proforma </b>
+                            Al dar clic en este componente se abrira una ventana emergente con una lista de las columnas disponibles y que no se han incluido en la proforma,
+                            seleccione una columna de las disponibles y de clic en el botón <b>Asignar</b> para guardar el cambio o de clic en <b>Cancelar</b> para no hacer nada;
+                            tenga presente que en la ventana emergente habra una advertencia en la que se informa que si la columna seleccionada es una columna calculada,
+                            se incluiran automáticamente las columnas necesarias y que no estan en la proforma.
+                        </p>
+                        <p>
+                            <b>4 - Opciones de imagenes </b>Se muestran una serie de circulos (<b>Uno por cada imagen</b>),
+                            los cuales se pueden seleccionar para que se vean en el contenedor mencionado en <b>Foto del ítem</b>.
+                            Para saber que circulo esta activo este se colorea de un color rojo.
+                        </p>
+                        <p>
+                            <b>5 - Incluir o excluir ítem de la proforma </b>El usuario puede incluir o excluir de la proforma cualquier ítem,
+                            esto ayuda a efectuar los calculos de totales que son importante para la realización de la proforma;
+                            al excluir el ítem este dejara de afectar y de salir en los informes.
+                        </p>
+                        <p>
+                            <b>6 - Agregar un nuevo ítem a la proforma </b>Si se necesitan mas items de los que se cargaron inicialmente,
+                            de clic en el botón de agregar nuevo item y se creara uno con todos los campos vacios, para que así el usuario pueda trabajar en el.
+                        </p>
+                        <p>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                    <p>
+                                        <b>7 - Asignar fotos a otros ítems </b>Es posible coger una imagen de un ítem y asignarsela a otro,
+                                        para esto el usuario debe dar clic en el botón correspondiente y posteriormente se le abrira una ventana emergente,
+                                        donde podra seleccionar las imagenes y los ítems a los que se van a asignar las fotos.
+                                    </p>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                    <img class="img-responsive" src="/360/images/ayuda/compras/proforma/asignarFotos.png"/>
+                                </div>
+                            </div>
+                        </p>
+                        <p>
+                            <b>8 - Crear nuevo ítem a partir </b>Si desea crear un nuevo ítem con los valores de las columnas pero modificando unicamente el valor de una columna,
+                            de clic en el botón correspondiente y se abrira una ventana emergente donde el usuario debera seleccionar la columna habilitada para modificar,
+                            solo el valor de esa columan que seleccione sera diferente las demas quedaran con los valores iguales; ingrese el nuevo valor y de clic en el botón <b>Crear</b>,
+                            o de clic en <b>Cancelar</b> para no realizar nada.
+                        </p>
+                        <p>
+                            <b>9 - Columnas importantes </b>Aquí se veran las columnas que el usuario posiciono en las primeras 5;
+                            estas columnas se tratan como especiales debido a que no se pueden filtrar y presentan la información mas relevante para el usuario.
+                            Para saber mas sobre esto lea el manual de <b>Cargar Proforma</b>.
+                        </p>
+                        <p>
+                            <b>10 - Eliminar el item que se esta viendo </b>Si no desea tener ítems basura o en la carga se creeran ítems que no van,
+                            de clic en el botón de eliminar un ítem para que este se elimine, al dar clic se abrira una ventana emergente pidiendo al confirmación de la eliminada,
+                            de clie en <b>Sí</b> apar efectual el proceso o de clic en <b>No</b> para cancelarlo.
+                        </p>
+                        <p>
+                            <b>11 - Buscador </b>Puede filtrar las columnas y los valores de las columnas, ingresando el texto con el que desea buscar y dando enter para que esta se ejecute,
+                            para mostrar nuevamente todos los valores borre el texto y de nuevamente enter.
+                        </p>
+                        <p>
+                            <b>12 - Filtro de ordenado </b>Ordenar los datos es posible a partir de este componente,
+                            se disponen de dos tipos de ordenado por: <b>Columnas</b> o <b>Valore</b>; seleccione el que desea y se efectuara el ordenamiento,
+                            puede tambien cambiar de modo de ordenamiento de ascendente a descendente y viceversa.
+                        </p>
+                        <p>
+                            <b>13 - Gestionar contenedores para el ítem </b>Para cada ítem se dispone de una lista con los contenedores asignados a la proforma,
+                            si hay mas de un contenedor se habilitara este botón al cual dandole clic,
+                            se abrira una ventana emergente con la lista de contenedores y un campo para asignar la cantidad que se necesita;
+                            además de informa cuanto se necesita y cuanto se ha asigandao en cantidad, una vez ingresadas las cantidades de clic en <b>Cerrar</b>,
+                            para finalizar el proceso.
+                        </p>
+                        <p>
+                            Si el usuario ve que el color del botón es de un color rojo, es porque este esta alertando que la cantidad asiganda es superior o inferior a la solicitada,
+                            si por el contrario aparece verde es porque las cantidades coinciden.
+                        </p>
+                        <p>
+                            Si el botón esta de color rojo este generara constantemente una alerta que indicara que la cantidad no coincide.
+                        </p>
+                        <p>
+                            <b>14 - Agregar imagen al ítem </b>Este componente no se encuentra habilitado por el momento.
+                        </p>
+                        <p>
+                            <b>15 - Columnas por ítem </b>Aquí se ven las columnas sobrante con su respectiva informacón,
+                            además se pueden ver en toda la vista columnas habilitadas y que se dejan modificar y otras que no,
+                            esto se debe a que las columnas calculadas y las que no permiten modificación no se pueden dejar modificar por motivos de tratamiento de datos y porque se llenan solas.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="contenedor" class="h2_manual anchor">
+                            Contenedor
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Aquí en este tag se podran asignar los contenedores necesarios para la proforma, además de poder asignar fecha de embarque, Eliminar o ver los datos en una tabla conpleta.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Para agregar un contenedor seleccione uno de la lista disponible con estos, despues de que lo seleccione de clic en el botón de <b>Agregar</b>;
+                            en la tabla ubicada en la parte inferior de la pantalla se podra visualizar los contenedores que ya se habia agregado y el nuevo.
+                        </p>
+                        <p>
+                            Puede modifica la fecha en la que se embarcara el contenedor dando clic sobre el campo especifico y seleccionando una fecha del calendario que se despliega.
+                        </p>
+                        <p>
+                            Se mostrara a motivo de información el nombre corto del contenedor, valor total en la moneda asiganda para la proforma,
+                            cbm total acumulado, un icono para ver en modo tabla los datos del contenedor y un botón para eliminar el contenedor y sus datos.
+                        </p>
+                        <p>
+                            En el campo del cbm total se mostraran 3 diferentes iconos como los que se muestran a continuación:
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <ul>
+                                        <div class="row">
+                                            <li class="padding-top-1">
+                                                <div class="col-xs-12">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <p>
+                                                                <span class="glyphicon glyphicon-ok" style="color: #5BC0DE"></span> - Este icono quiere informarle al usuario que los datos de CBM se encuentran 
+                                                                dentro del limite permitido del contenedor.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </div>
+                                        <div class="row">
+                                            <li class="padding-top-1">
+                                                <div class="col-xs-12">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <p>
+                                                                <span class="glyphicon glyphicon-remove" style="color: #D9534F"></span> - Este icono informa que se a sobre pasado el limite permitido del contenedor 
+                                                                en cuanto a CBM.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </div>
+                                        <div class="row">
+                                            <li class="padding-top-1">
+                                                <div class="col-xs-12">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <p>
+                                                                <span class="glyphicon glyphicon-alert" style="color: #F0AD4E"></span> - Icono que informa que el CBM en permitido 
+                                                                pero que se encuentra en el limite de sobre pasarlo.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </div>
+                        </p>
+                        <p>
+                            Si el usuario quiere visualizar los datos de una forma mas eficaz,
+                            de clic en el botón con el siguiente icono <span class="glyphicon glyphicon-th-list"></span>,
+                            y se abrira en una nueva ventana del explorador una vista en modo tabla en la que el usuario podra ver y comparar cada ítem de la proforma.
+                        </p>
+                        <p>
+                            <b>Nota: </b>Solo se veran los datos que estan usando el contenedor.
+                        </p>
+                        <p>
+                            Para eliminar un contenedor de clic en el botón identificado con el icono <span class="glyphicon glyphicon-remove"></span>,
+                            este proceso no pide confirmación por lo que se debe tener en cuenta al realizar el proceso.
+                        </p>
+                        <p>
+                            <b>Nota: </b>Si es la primera vez que se va a usar la proforma, se exigira insertar un contenedor para poder iniciar el trabajo,
+                            puede iniciar con el contenedor denominado <b>CARGA SUELTA </b>para los datos y a medida del proceso cambiar de contenedor,
+                            además si el CBM cabe en el contenedor con menor capacidad se mostrara una alerta informando esto.
+                            Cuando se inserte el primer contenedor se asignaran automaticamnte las cantidades de cada ítem al contenedor.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="pagos" class="h2_manual anchor">
+                            Pagos
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Para realizar procesos de pagos, se deben hacer por este medio;
+                            para iniciar el sistema solicitara la asignación de una moneda para la proforma con la que se realizaran todos los procesos de pagos.
+                        </p>
+                        <p>
+                            Seleccione una moneda de las disponibles y de clic en <b>Usar</b>, para poder continuar y de clic en <b>Cerrar</b>; de lo contrario de clic en <b>Cerrar</b>,
+                            para no hacer nada, tenga en cuenta que si hace esto sin asignar la moneda lo devolvera al ultimo tag visitado.
+                        </p>
+                        <p>
+                            Una vez haya seleccionado la moneda, se habilitara el trabajo de transacciones (<b>Pagos</b>),
+                            en el que se podran hacer anticipos, pagos con anticipos a cuenta y balance a cuentas del proveedor.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3 id="crear_cuenta" class="h3_manual anchor">
+                            Crear Cuenta
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Para crear una cuenta, sucursal o banco siga las siguientes indicaciones empezando por seleccionar de la lista de cuentas la que dice <b>Cuenta nueva</b>,
+                            al hacer esto se abrira una ventana emergente con los datos que se necesitan para crear la cuenta nueva.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <ul>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proforma/paso1.png"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                                <p id="paso1" class="anchor">
+                                                    <b>Paso 1 - </b>Banco de la cuenta.
+                                                    <p style="margin-left: 25px">
+                                                        <b>1 - Razón social banco</b>: Nombre legal del banco.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>2 - Bancos</b>: Lista de bancos disponibles o cree un nuevo banco.
+                                                    </p>
+                                                </p>
+                                                <p>
+                                                    El usuario debe seleccionar uno de los bancos disponibles en la lista de bancos, para poder gestionarlo,
+                                                    selecciónelo para que la razón social se llene y pueda editar el nombre del banco,
+                                                    después de que lo cambie de clic en <b>Guardar</b>; o seleccione <b>Nuevo banco</b> e inserte el nombre del banco y de clic en guardar;
+                                                    una vez seleccione un banco se activara el botón de <b>Siguiente</b>, de clic en este para ir al próximo paso.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proforma/paso2.png"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                                <p id="paso2" class="anchor">
+                                                    <b>Paso 2 - </b>Sucursal bancaria.
+                                                    <p style="margin-left: 25px">
+                                                        <b>1 - Dirección sucursal</b>: Lugar donde se encuentra ubicada la sucursal del banco.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>2 - Swift</b>: Confirmación de giro.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>3 - País</b>: País de la sucursal del banco.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>4 - Estado</b>: Estado del país de la sucursal.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>5 - Ciudad</b>: Ciudad del estado de la sucursal.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>6 - Sucursales</b>: Lista de sucursales asociadas al banco o cree una nueva sucursal.
+                                                    </p>
+                                                </p>
+                                                <p>
+                                                    Seleccione una sucursal existente para que se carguen todos los datos relacionados a la sucursal y si es la necesidad,
+                                                    cámbielos y de clic en <b>Guardar</b> para que se almacenen los cambios;
+                                                    o seleccione <b>Nueva sucursal</b> y llene todos los datos necesarios para crear la sucursal del banco,
+                                                    una vez llene los datos no olvide dar clic en <b>Guardar</b>; una vez seleccione una sucursal se activara nuevamente el botón de <b>Siguiente</b>,
+                                                    de clic en este para ir al próximo paso.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proforma/paso3.png"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                                <p id="paso3" class="anchor">
+                                                    <b>Paso 3 - </b>Cuenta bancaria.
+                                                    <p style="margin-left: 25px">
+                                                        <b>1 - Cuenta bancaria</b>: Número de la cuenta bancaria.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>2 - Iban</b>: Serie de caracteres alfanuméricos que identifican una cuenta determinada en una entidad financiera.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>3 - Aba</b>: Serie que identifican una cuenta determinada en una entidad financiera.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>4 - Cuentas</b>: Lista de cuentas asociadas a la sucursal o cree una nueva cuenta.
+                                                    </p>
+                                                </p>
+                                                <p>
+                                                    Al seleccionar una cuenta existente se cargaran los datos correspondientes a esta y cambie los datos si es necesario,
+                                                    modifique y de clic en <b>Guardar</b> para almacenar cambios o seleccione
+                                                    <b> Nueva cuenta</b> y llene los datos que se necesitan y de clic en <b>Guardar</b>. Una vez realizado esto la cuenta quedara relacionada al proveedor.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            En los pasos 2 y 3 el usuario puede devolverse a los pasos anteriores dando clic en el botón <b>Anterior</b> y de clic en el botón <b>Cerrar</b>,
+                            para finalizar el proceso y usar la nueva cuenta.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3 id="crear_transaccion" class="h3_manual anchor">
+                            Crear Transacción
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Despues de que llene los datos solicitados, de clic en <b>Cerrar</b> para terminar el proceso.
+                        </p>
+                        <p>
+                            Luego de tener la cuenta que se necesita seleccionela y luego seleccione el tipo de giro.
+                            <p style="margin-left: 25px">
+                                <b>Anticipo</b>: Es cuando se le va a girar al proveedor un porcentaje del dinero total.
+                            </p>
+                            <p style="margin-left: 25px">
+                                <b>Balance</b>: Se usa cuando se va a pagar el total que se debe de la proforma.
+                            </p>
+                            <p style="margin-left: 25px">
+                                <b>Roll on</b>: El usuario puede usar este tipo siempre y cuando,
+                                se disponga de anticipo en cuenta a usar de la cuenta seleccionada y de la moneda de la proforma.
+                            </p>
+                        </p>
+                        <p>
+                            Si se selecciona el tipo de giro <b>Anticipo</b>, se habilitara este campo para permitir la asignación de un valor a girar de la moneda de la proforma;
+                            recuerde que aquí se debe insertar un valor inferior al total de la proforma.
+                        </p>
+                        <p>
+                            Una vez se haya ingresado un <b>Anticipo $</b>, se calculara automáticamente el porcentaje de anticipo a girar.
+                        </p>
+                        <p>
+                            Al seleccionar el tipo de giro <b>Balance</b>, se habilitara el campo que contendrá el total a girar.
+                        </p>
+                        <p>
+                            En el total a girar, al seleccionar el tipo de giro <b>Balance</b>,
+                            se permitirá insertar un valor superior a lo que se debe; la diferencia será registrada como <b>Anticipo cuenta</b>.
+                        </p>
+                        <p>
+                            Ingrese un comentario para justificar la transacción.
+                        </p>
+                        <p>
+                            Despues de diligenciar los datos correspondiente, de clic en el botón de <b>Crear Pago</b> para guardar la transacción.
+                            Luego vera la transacción en la tabla inferior donde se muestra la forma como se realizo esta,
+                            además de disponer de 3 botones, el primero identificado con el icono <span class="glyphicon glyphicon-print"></span>,
+                            que sirve para visualizar el archivo de transacción, recuerde que estos documento se encuentran cifrados y la contraseña es el <b>código del proveedor + el código secreto</b>.
+                        </p>
+                        <p>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                    <img class="img-responsive" src="/360/images/ayuda/compras/proforma/encabezadoPDFTransaccion.png"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                    <p>
+                                        En la anterior imagen se puede apreciar el encabezado del documento que se compone de la información principal que identificara cada transacción.
+                                        <p style="margin-left: 25px">
+                                            <b>1 - Logo de la marca.</b>
+                                        </p>
+                                        <p style="margin-left: 25px">
+                                            <b>2 - Información de la compañía.</b>
+                                        </p>
+                                        <p style="margin-left: 25px">
+                                            <b>3 - Número de la transacción.</b>
+                                        </p>
+                                        <p style="margin-left: 25px">
+                                            <b>4 - Fecha y número de la proforma.</b>
+                                        </p>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                    <img class="img-responsive" src="/360/images/ayuda/compras/proforma/datosProveedorPDFTransaccion.png"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                    <p>
+                                        En esta otra imagen se pueden ver los datos del proveedor.
+                                        <p style="margin-left: 25px">
+                                            <b>1 - Datos principales del proveedor.</b>
+                                        </p>
+                                        <p style="margin-left: 25px">
+                                            <b>2 - Logo del proveedor </b>Si el proveedor no posee logo no se verá nada.
+                                        </p>
+                                        <p style="margin-left: 25px">
+                                            <b>3 - Espacios para firmas de aprobación.</b>
+                                        </p>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                    <img class="img-responsive" src="/360/images/ayuda/compras/proforma/datosBancariosPDFTransaccion.png"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                    <p>
+                                        La imagen anterior es la que contiene los datos del banco y la cuenta a la que se va a realizar el giro.
+                                        <p style="margin-left: 25px">
+                                            <b>1 - Datos del banco y la cuenta.</b>
+                                        </p>
+                                        <p style="margin-left: 25px">
+                                            <b>2 - Espacios para firmas de aprobación.</b>
+                                        </p>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                    <img class="img-responsive" src="/360/images/ayuda/compras/proforma/detalleGiroPDFTransaccion.png"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                    <p>
+                                        En esta imagen el usuario encontrara los datos de la transacción para el pago.
+                                        <p style="margin-left: 25px">
+                                            <b>1 - Valores a girar dependiendo del tipo de giro.</b>
+                                        </p>
+                                        <p style="margin-left: 25px">
+                                            <b>2 - Descripción para la transacción.</b>
+                                        </p>
+                                        <p style="margin-left: 25px">
+                                            <b>3 - Espacios para firmas de aprobación.</b>
+                                        </p>
+                                        <p style="margin-left: 25px">
+                                            <b>4 - Tipo de giro y valor total a girar.</b>
+                                        </p>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                    <img class="img-responsive" src="/360/images/ayuda/compras/proforma/espaciosFirmaPDFTransaccion.png"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                    <p>
+                                        La imagen anterior es el pie del documento y es donde se encontraran las firmas de autorización de todos los implicados en el proceso de pago.
+                                    </p>
+                                </div>
+                            </div>
+                        </p>
+                        <p>
+                            En el botón identificado con el icono <span class="glyphicon glyphicon-open"></span>,
+                            tiene el objetivo de permitir la modificación del archivo de la transacción;
+                            se debe usar solo cuando el nuevo documento se encuentra con las firmas solicitadas.
+                            De clic en el botón para abrir una ventana emergente en la que podra seleccionar el archivo de extención <b>.pdf</b>,
+                            una vez abra la ventana emergente de clic en el botón de <b>Navegar</b>,
+                            seleccione el documento y de clic en <b>Abrir</b> luego de clic en <b>Guardar</b>,
+                            para el remplazo del archivo o de clic en <b>Cancelar</b>.
+                        </p>
+                        <p>
+                            <img class="img-responsive" src="/360/images/ayuda/compras/proforma/cargarTransaccionBancariaAutorizada.png"/>
+                        </p>
+                        <p>
+                            Tambien es posible cancelar una transacción hecha anteriormente pero que no se ha girado,
+                            para esto de clic en el botón <span class="glyphicon glyphicon-remove"></span>,
+                            una vez de clic el sistema le pedira la confirmación de cancelación,
+                            de clic en <b>Sí</b> para cancelar o <b>No</b> para continuar con la transacción;
+                            luego de que cancele la transacción la linea de esta en la tabla quedara bloqueada.
+                        </p>
+                        <p>
+                            Recuerde que por proforma el sistema mostrara cual es el saldo <b>Total</b>, <b>Pendiente</b>, <b>Transferido</b> y <b>Moneda</b>,
+                            que se están usando para esta. Lo anterior con el fin de facilitar al usuario los datos necesarios para realizar el control de pagos al proveedor por proforma.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="cbm" class="h2_manual anchor">
+                            CBM
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            En el tag del CBM se vera el acumulado total de la proforma, esto ayuda al usuario a controlar las cantidades vs los contenedores que se han agregado,
+                            además de mostrar un icono con el estado del CBM con el fin de que el usuario entienda que le esta informando el sistema.
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <ul>
+                                        <div class="row">
+                                            <li class="padding-top-1">
+                                                <div class="col-xs-12">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <p>
+                                                                <span class="glyphicon glyphicon-ok" style="color: #5BC0DE"></span> - Este icono quiere informarle al usuario que los datos de CBM se encuentran 
+                                                                dentro del limite permitido del contenedor.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </div>
+                                        <div class="row">
+                                            <li class="padding-top-1">
+                                                <div class="col-xs-12">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <p>
+                                                                <span class="glyphicon glyphicon-remove" style="color: #D9534F"></span> - Este icono informa que se a sobre pasado el limite permitido del contenedor 
+                                                                en cuanto a CBM.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </div>
+                                        <div class="row">
+                                            <li class="padding-top-1">
+                                                <div class="col-xs-12">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <p>
+                                                                <span class="glyphicon glyphicon-alert" style="color: #F0AD4E"></span> - Icono que informa que el CBM en permitido 
+                                                                pero que se encuentra en el limite de sobre pasarlo.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </div>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="totales" class="h2_manual anchor">
+                            Totales
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Este tag permite la visualización de los totales en dinero de la proforma,
+                            si esta tiene <b>Descuentos</b>, se mostrara una lista con el total y el descuento para que el usuario pueda seleccionar que valor desea mirar,
+                            de lo contrario se mostrara unicamente el valor total de la proforma.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="re_calcular_datos" class="h2_manual anchor">
+                            Re Calcular Datos
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            El tag identificado con el siguiente icono <span class="glyphicon glyphicon-retweet"></span>,
+                            se permite calcular nuevamente los valores de la proforma, permitiendo así corregir posibles errores en los datos que el sistema calcula automaticamente.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="vista_tabla" class="h2_manual anchor">
+                            Vista Tabla
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Como se habia hablado anteriormente en el caso de los contenedores,
+                            aquí se explicara más a fondo de que se trata la vista en tabla,
+                            de clic en el botón con el icono de <span class="glyphicon glyphicon-th-list"></span> para abrir los datos en una nueva ventana del explorador,
+                            la idea de esta vista es que el usuario pueda ver los datos como si estuviera en excel,
+                            pero es de destacar que en este tipo de vista no se pueden modificar los datos.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            Para visualizar la foto en una resolución un poco mas grande, pase por encima de la imagen y se desplegara la imagen como se muestra a continuación.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/proforma/imagenVistaTabla.png"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            Para filtrar los datos de clic en el botón que se mantendra flotando en la pantalla como el que se muestra en la siguiente imagen.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/proforma/buscadorCerrado.png"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            Una vez de clic se desplegara el campo para ingresar el texto con el que desea filtrar,
+                            ingrese el texto y de enter para ejecutar la busqueda; si desea cerrar el proceso de busqueda de clic en el botón nuevamente para cerrar tal como se muestra en la imagen.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/proforma/buscadorAbierto.png"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Seleccione la columna en la que quiere trabajar, para cargarla en el area de trabajo.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="descargar" class="h2_manual anchor">
+                            Descargar
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Para descargar el documento de la proforma de clic en el botón con el icono <span class="glyphicon glyphicon-download-alt"></span>,
+                            para abrir la ventana emergente en la que se pedira que tipo de proforma quiere descarga,
+                            completa o por contenedor; seleccione el tipo y de clic en <b>Descargar</b> o de clic en <b>Cerrar</b> para cancelar.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="cerrar_proforma" class="h2_manual anchor">
+                            Cerrar Proforma
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            De clic en el botón con el icono <span class="glyphicon glyphicon-lock"></span> para comenzar el cierre de la proforma,
+                            luego de que de clic se abrira una ventana emergente en la que se pediran los siguientes datos necesarios para el cierre.
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <ul>
+                                        <div class="row">
+                                            <li class="padding-top-1">
+                                                <div class="col-xs-12">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                            <img class="img-responsive" src="/360/images/ayuda/compras/proforma/terminos.png"/>
+                                                        </div>
+                                                        <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                            <p>
+                                                                Lo primero que se debe ingresar al momento de cerrar la proforma son los terminos tanto de pago como de entrega,
+                                                                es importante debido a que de esta forma la proforma quedara documentada con la información suministrada, luego de clic en <b>Siguiente</b>.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </div>
+                                        <div class="row">
+                                            <li class="padding-top-1">
+                                                <div class="col-xs-12">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                            <img class="img-responsive" src="/360/images/ayuda/compras/proforma/puertos.png"/>
+                                                        </div>
+                                                        <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                            <p>
+                                                                Después seleccione el puerto de salida del país del proveedor y el puerto de llegada de Colombia,
+                                                                seleccionar estos es tambien obligatorio para poder continuar, luego de clic en <b>Siguiente</b>.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </div>
+                                        <div class="row">
+                                            <li class="padding-top-1">
+                                                <div class="col-xs-12">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                            <img class="img-responsive" src="/360/images/ayuda/compras/proforma/incoterm.png"/>
+                                                        </div>
+                                                        <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                            <p>
+                                                                Por ultimo seleccione el tipo de incoterm que se va a usar para la proforma y de clic en <b>Cerrar proforma</b>,
+                                                                para finalizar el cierre y mandar la notificación a las personas que deben autorizar la proforma.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </div>
+                        </p>
+                        <p>
+                            En los pasos en los que aparece el botón de <b>Anterior</b>, se puede usar para devolverse a un paso anterior.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="mensajes_recibidos" class="h2_manual anchor">
+                            Mensajes Recibidos
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Si en algún momento usted recibe alguno de estos mensajes por parte del sistema, esto le ayudara a identificar cual es la gravedad 
+                            y el significado de este:
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <th class="head-tabla">
+                                    Tipo
+                                </th>
+                                <th class="head-tabla">
+                                    Msj
+                                </th>
+                                <th class="head-tabla">
+                                    Causa / Solución
+                                </th>
+                            </tr>
+                            <ui:repeat value="#{proformaAyudaMBean.mensajes}" var="mensaje">
+                                <tr>
+                                    <td>
+                                        <span class="#{mensaje[0] eq 'E' ? 'glyphicon glyphicon-remove-sign' : mensaje[0] eq 'I' ? 'glyphicon glyphicon-info-sign'
+                                                       : mensaje[0] eq 'A' ? 'glyphicon glyphicon-question-sign': ''}"
+                                              title="#{mensaje[0] eq 'E' ? 'Error' : mensaje[0] eq 'I' ? 'Información' : mensaje[0] eq 'A' ? 'Advertencia': ''}"
+                                              style="font-size: 30px; #{mensaje[0] eq 'E' ? 'color: #DD5555;' : mensaje[0] eq 'I' ? 'color: #46B8DA;'
+                                                                        : mensaje[0] eq 'A' ? 'color: #FFBF00;': ''}"></span>
+                                    </td>
+                                    <td class="justify-component">
+                                        #{mensaje[1]}
+                                    </td>
+                                    <td class="justify-component">
+                                        <p>
+                                            #{mensaje[2]}
+                                        </p>
+                                        <ui:fragment rendered="#{not empty mensaje[3]}">
+                                            <hr/>
+                                            <p>
+                                                #{mensaje[3]}
+                                            </p>
+                                        </ui:fragment>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </table>
+                    </div>
+                </div>
+                <br/>
+            </div>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

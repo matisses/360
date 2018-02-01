@@ -1,0 +1,618 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script src="/360/js/arriba.js"></script>
+        <script src="/360/js/ventas.js"></script>
+        <title>360 - Listar Facturas</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <span class="ir-arriba hidden-sm hidden-xs">
+                <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+            </span>
+
+            <h:panelGroup id="panelCorreo">
+                <h:panelGroup>
+                    <h:form id="formCorreo">
+                        <div class="modal fade" id="modalCorreo">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <button type="button" class="close" data-dismiss="modal" data-hidden="true">
+                                            &times;
+                                        </button>
+                                        <h4 class="modal-title">
+                                            Enviar correo
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Correo electronico:"/>
+                                                    <h:inputText class="form-control input-lg noround" pt:placeholder="Correo electronico" value="#{listaFacturasMBean.correoCliente}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <p:remoteCommand name="cerrarModal" update=":panelCorreo" oncomplete="cerrarModalCorreo(); abrirModalEspera(); enviarCorreoCliente();"/>
+                                                <p:remoteCommand name="enviarCorreoCliente" actionListener="#{listaFacturasMBean.enviarCorreoCliente}" update=":panelCorreo :formFacturas:msg"
+                                                                 oncomplete="cerrarModalEspera();"/>
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                    Cerrar
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="cerrarModal();">
+                                                    Enviar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelNotaCredito">
+                <h:panelGroup rendered="#{listaFacturasMBean.dlgNotasCredito}">
+                    <h:form id="formNotaCredito">
+                        <div id="modalNotaCredito" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">Notas crédito</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p class="center-component">
+                                            <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"> </span>
+                                            Seleccione el tipo de nota crédico que desea realizar.
+                                        </p>
+                                        <div class="row"> 
+                                            <p:remoteCommand name="abrirConfirmacion" update=":panelConfirmacion" oncomplete="abrirModalConfirmacion();"/>
+
+                                            <div class="col-xs-12 col-sm-offset-3 col-sm-6 center-component">
+                                                <div class="contenedor-tipo-nota-credito pointer-cursor" data-dismiss="modal" onclick="abrirConfirmacion();">
+                                                    #{listaFacturasMBean.tipoNotaCredito eq 'A' ? 'ANULACIÓN' : 'DEVOLUCIÓN'}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <p:remoteCommand name="limpiarNotaCredito" actionListener="#{listaFacturasMBean.limpiarNotaCredito}" update=":formNotaCredito"/>
+
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="limpiarNotaCredito();">Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelConfirmacion">
+                <h:panelGroup rendered="#{listaFacturasMBean.dlgNotasCredito}">
+                    <h:form id="formConfirmacion">
+                        <div id="modalConfirmacion" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header-advertencia">
+                                        <h4 class="modal-title">Advertencia</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <p>
+                                                    <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                    Este documento no puede modificarse tras la creación. ¿Desea continuar?.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <p:remoteCommand name="limpiarNotaCredito" actionListener="#{listaFacturasMBean.limpiarNotaCredito}" update=":formConfirmacion"/>
+                                        <p:remoteCommand name="modal" update=":panelConfirmacion" oncomplete="crearNotaCredito();"/>
+                                        <p:remoteCommand name="crearNotaCredito" action="#{listaFacturasMBean.crearNotaCredito}" update=":formFacturas" oncomplete="cerrarModalEspera();"/>
+
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="limpiarNotaCredito();">
+                                            No
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="modal(); abrirModalEspera();" style="margin-left: 0px">
+                                            Sí
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:form id="formFacturas">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Facturas</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Aqui van todos los p:remoteCommand que se van a usar, para que funcione tanto en pc como en mobil -->
+                <p:remoteCommand name="seleccionarFiltroEstado" actionListener="#{listaFacturasMBean.seleccionarFiltroEstado}" oncomplete="cerrarModalEspera();"
+                                 update=":formFacturas:filtroEstados :formFacturas:filtroEstadosMovil :formFacturas:facturas :formFacturas:msg
+                                 :formFacturas:filtroAsesores :formFacturas:filtroAsesoresMovil :formFacturas:paginador :formFacturas:paginadorMovil"/>
+                <p:remoteCommand name="seleccionarAsesor" actionListener="#{listaFacturasMBean.seleccionarAsesor}" oncomplete="cerrarModalEspera();"
+                                 update=":formFacturas:filtroEstados :formFacturas:filtroEstadosMovil :formFacturas:facturas :formFacturas:filtroAsesores
+                                 :formFacturas:filtroAsesoresMovil :formFacturas:paginador :formFacturas:paginadorMovil :formFacturas:msg"/>
+                <p:remoteCommand name="aplicarFiltroFechas" actionListener="#{listaFacturasMBean.aplicarFiltroFechas}" oncomplete="cerrarModalEspera();"
+                                 update=":formFacturas:facturas :formFacturas:filtroAsesores :formFacturas:filtroAsesoresMovil :formFacturas:paginador
+                                 :formFacturas:paginadorMovil :formFacturas:msg"/>
+                <p:remoteCommand name="aplicarFiltroFechasMovil" actionListener="#{listaFacturasMBean.aplicarFiltroFechasMovil}" oncomplete="cerrarModalEspera();"
+                                 update=":formFacturas:facturas :formFacturas:filtroAsesores :formFacturas:filtroAsesoresMovil :formFacturas:paginador
+                                 :formFacturas:paginadorMovil :formFacturas:msg"/>
+                <p:remoteCommand name="aplicarParametroBusqueda" actionListener="#{listaFacturasMBean.aplicarParametroBusqueda}" oncomplete="cerrarModalEspera();"
+                                 update=":formFacturas:facturas :formFacturas:filtroAsesores :formFacturas:filtroAsesoresMovil :formFacturas:paginador
+                                 :formFacturas:paginadorMovil :formFacturas:msg"/>
+                <p:remoteCommand name="cambiarSizePage" actionListener="#{listaFacturasMBean.cambiarSizePage}" oncomplete="cerrarModalEspera();"
+                                 update=":formFacturas:facturas :formFacturas:filtroAsesores :formFacturas:filtroAsesoresMovil :formFacturas:datosMostrar
+                                 :formFacturas:datosMostrarMovil :formFacturas:paginador :formFacturas:paginadorMovil :formFacturas:msg"/>
+                <p:remoteCommand name="mostrarPrimeraPagina" actionListener="#{listaFacturasMBean.mostrarPrimeraPagina}" oncomplete="cerrarModalEspera();"
+                                 update=":formFacturas:facturas :formFacturas:paginador :formFacturas:paginadorMovil :formFacturas:msg"/>
+                <p:remoteCommand name="mostrarPaginaAnterior" actionListener="#{listaFacturasMBean.mostrarPaginaAnterior}" oncomplete="cerrarModalEspera();"
+                                 update=":formFacturas:facturas :formFacturas:paginador :formFacturas:paginadorMovil :formFacturas:msg"/>
+                <p:remoteCommand name="mostrarPaginaEspecifica" actionListener="#{listaFacturasMBean.mostrarPaginaEspecifica}" oncomplete="cerrarModalEspera();"
+                                 update=":formFacturas:facturas :formFacturas:paginador :formFacturas:paginadorMovil :formFacturas:msg"/>
+                <p:remoteCommand name="mostrarPaginaSiguiente" actionListener="#{listaFacturasMBean.mostrarPaginaSiguiente}" oncomplete="cerrarModalEspera();"
+                                 update=":formFacturas:facturas :formFacturas:paginador :formFacturas:paginadorMovil :formFacturas:msg"/>
+                <p:remoteCommand name="mostrarUltimaPagina" actionListener="#{listaFacturasMBean.mostrarUltimaPagina}" oncomplete="cerrarModalEspera();"
+                                 update=":formFacturas:facturas :formFacturas:paginador :formFacturas:paginadorMovil :formFacturas:msg"/>
+
+                <div class="row hidden-sm hidden-xs">
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group">
+                            <h:outputLabel value="Filtrar estado:"/>
+                            <h:panelGroup id="filtroEstados">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                            id="selEstado" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        #{listaFacturasMBean.estadoSeleccionado}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selEstado">
+                                        <li>
+                                            <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFiltroEstado([{name: 'estado', value: ''}]);">
+                                                Todos
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFiltroEstado([{name: 'estado', value: 'C'}]);">
+                                                Cerrada
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFiltroEstado([{name: 'estado', value: 'O'}]);">
+                                                Abierta
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-4">
+                        <div class="form-group">
+                            <h:outputLabel value="Filtrar asesor:"/>
+                            <h:panelGroup id="filtroAsesores">
+                                <div class="dropdown">
+                                    <button type="button" style="width: 100%" id="selAsesor" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"
+                                            class="btn btn-default dropdown-toggle input-lg noround #{userSessionInfoMBean.validarPermisoUsuario('FACTURAS_TODAS', 'VISUALIZAR') ? '' : 'disabled'}">
+                                        #{listaFacturasMBean.asesorSeleccionado}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selAsesor">
+                                        <li>
+                                            <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarAsesor([{name: 'asesor', value: ''}]);">
+                                                Todos
+                                            </a>
+                                        </li>
+                                        <ui:repeat value="#{listaFacturasMBean.asesores}" var="asesor">
+                                            <li>
+                                                <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarAsesor([{name: 'asesor', value: '#{asesor[1]}'}]);">
+                                                    #{asesor[0]}
+                                                </a>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-5">
+                        <div class="form-group">
+                            <h:outputLabel value="Filtrar fecha:"/>
+                            <div class="input-group">
+                                <p:calendar id="fechaInicio" pattern="dd-MM-yyyy" class="input-lg mask" pt:placeholder="Fecha Inicial" value="#{listaFacturasMBean.fechaInicial}">
+                                    <p:ajax event="dateSelect" rendered=":formFacturas:fechaInicio"/>
+                                </p:calendar>
+                                <span class="input-group-addon noround" style="border-left:  none; border-right: none"> a </span>
+                                <p:calendar id="fechaFin" pattern="dd-MM-yyyy" class="input-lg mask" pt:placeholder="Fecha Final" value="#{listaFacturasMBean.fechaFinal}">
+                                    <p:ajax event="dateSelect" rendered=":formFacturas:fechaFin"/>
+                                </p:calendar>
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); aplicarFiltroFechas();">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-4">
+                        <div class="form-group">
+                            <h:outputLabel value="Parámetro búsqueda:"/>
+                            <h:inputText class="form-control input-lg noround" pt:placeholder="Parámetro búsqueda" value="#{listaFacturasMBean.parametroBusqueda}" style="font-size: 15px !important"
+                                         autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                     abrirModalEspera();
+                                                     aplicarParametroBusqueda();
+                                                     return false;
+                                                 }"/>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group">
+                            <h:outputLabel value="Datos mostrar: "/>
+                            <h:panelGroup id="datosMostrar">
+                                <div class="input-group">
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                id="selSizePage" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            #{listaFacturasMBean.sizePage}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="selSizePage">
+                                            <li>
+                                                <a class="pointer-cursor" onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '12'}]);">
+                                                    12
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="pointer-cursor" onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '24'}]);">
+                                                    24
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="pointer-cursor" onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '48'}]);">
+                                                    48
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <span class="input-group-addon input-group-matisses noround">x pag.</span>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-5 center-component" style="top: 25px">
+                        <div class="form-group">
+                            <h:panelGroup id="paginador">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarPrimeraPagina();">
+                                        1
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarPaginaAnterior();">
+                                        <span class="glyphicon glyphicon-chevron-left"></span>
+                                    </button>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-default dropdown-toggle btn-lg noround" data-toggle="dropdown"
+                                                aria-haspopup="true" aria-expanded="false">
+                                            #{listaFacturasMBean.pagina} de #{listaFacturasMBean.totalPaginas}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" style="max-height: 165px; overflow-y: auto">
+                                            <ui:repeat value="#{listaFacturasMBean.paginas}" var="pagina">
+                                                <li>
+                                                    <a onclick="abrirModalEspera(); mostrarPaginaEspecifica([{name: 'pagina', value: '#{pagina}'}])" style="cursor: pointer">
+                                                        #{pagina}
+                                                    </a>
+                                                </li>
+                                            </ui:repeat>
+                                        </ul>
+                                    </div>
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarPaginaSiguiente();">
+                                        <span class="glyphicon glyphicon-chevron-right"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarUltimaPagina();">
+                                        #{listaFacturasMBean.totalPaginas}
+                                    </button>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <hr/>
+                </div>
+                <div class="row hidden-lg hidden-md margin-bottom-10">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <p:remoteCommand name="mostrarFiltrosMovil" actionListener="#{listaFacturasMBean.mostrarFiltrosMovil}" update=":formFacturas:btnFitros"/>
+                        <h:panelGroup id="btnFitros">
+                            <button type="button" class="btn btn-default btn-lg form-control noround" style="height: 46px" data-toggle="collapse" data-target="#collapseFiltros"
+                                    onclick="mostrarFiltrosMovil();">
+                                <div class="col-xs-10">
+                                    Filtros <span class="glyphicon glyphicon-filter"></span>
+                                </div>
+                                <div class="col-xs-2 right-component">
+                                    <span class="glyphicon #{listaFacturasMBean.mostrarFiltros ? 'glyphicon-triangle-top' : 'glyphicon-triangle-bottom'}"></span>
+                                </div>
+                            </button>
+                        </h:panelGroup>
+                    </div>
+                    <div style="padding: 0 15px">
+                        <div class="collapse" id="collapseFiltros">
+                            <div class="col-xs-12" style="padding: 0 0px; background-color: #DDDDDD">
+                                <div class="col-xs-12 col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Filtrar estado:"/>
+                                        <h:panelGroup id="filtroEstadosMovil">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                        id="selEstado" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    #{listaFacturasMBean.estadoSeleccionado}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selEstado">
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFiltroEstado([{name: 'estado', value: ''}]);">
+                                                            Todos
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFiltroEstado([{name: 'estado', value: 'C'}]);">
+                                                            Cerrada
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFiltroEstado([{name: 'estado', value: 'O'}]);">
+                                                            Abierta
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Filtrar asesor:"/>
+                                        <h:panelGroup id="filtroAsesoresMovil">
+                                            <div class="dropdown">
+                                                <button type="button" style="width: 100%" id="selAsesor" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"
+                                                        class="btn btn-default dropdown-toggle input-lg noround #{userSessionInfoMBean.validarPermisoUsuario('FACTURAS_TODAS', 'VISUALIZAR') ? '' : 'disabled'}">
+                                                    #{listaFacturasMBean.asesorSeleccionado}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selAsesor">
+                                                    <li>
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarAsesor([{name: 'asesor', value: ''}]);">
+                                                            Todos
+                                                        </a>
+                                                    </li>
+                                                    <ui:repeat value="#{listaFacturasMBean.asesores}" var="asesor">
+                                                        <li>
+                                                            <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarAsesor([{name: 'asesor', value: '#{asesor[1]}'}]);">
+                                                                #{asesor[0]}
+                                                            </a>
+                                                        </li>
+                                                    </ui:repeat>
+                                                </ul>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-5">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Filtrar fecha:"/>
+                                        <div class="input-group">
+                                            <h:inputText class="form-control input-lg noround" pt:placeholder="dd/mm/aaaa" value="#{listaFacturasMBean.fechaInicialMovil}"
+                                                         style="font-size: 15px !important">
+                                                <f:ajax event="change"/>
+                                            </h:inputText>
+                                            <span class="input-group-addon noround" style="border-left:  none; border-right: none"> a </span>
+                                            <h:inputText class="form-control input-lg noround" pt:placeholder="dd/mm/aaaa" value="#{listaFacturasMBean.fechaFinalMovil}"
+                                                         style="font-size: 15px !important">
+                                                <f:ajax event="change"/>
+                                            </h:inputText>
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); aplicarFiltroFechasMovil();">
+                                                    <span class="glyphicon glyphicon-ok"></span>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Parámetro búsqueda:"/>
+                                        <h:inputText class="form-control input-lg noround" pt:placeholder="Parámetro búsqueda" value="#{listaFacturasMBean.parametroBusqueda}" style="font-size: 15px !important"
+                                                     autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                 abrirModalEspera();
+                                                                 aplicarParametroBusqueda();
+                                                                 return false;
+                                                             }"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <h:outputLabel value="Datos mostrar: "/>
+                                        <h:panelGroup id="datosMostrarMovil">
+                                            <div class="input-group">
+                                                <div class="dropdown">
+                                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                            id="selSizePage" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                        #{listaFacturasMBean.sizePage}
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="selSizePage">
+                                                        <li>
+                                                            <a class="pointer-cursor" onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '12'}]);">
+                                                                12
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="pointer-cursor" onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '24'}]);">
+                                                                24
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="pointer-cursor" onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '48'}]);">
+                                                                48
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <span class="input-group-addon input-group-matisses noround">x pag.</span>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-5 center-component margin-bottom-10">
+                                    <div class="form-group">
+                                        <h:panelGroup id="paginadorMovil">
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarPrimeraPagina();">
+                                                    1
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarPaginaAnterior();">
+                                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                                                </button>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-default dropdown-toggle btn-lg noround" data-toggle="dropdown"
+                                                            aria-haspopup="true" aria-expanded="false">
+                                                        #{listaFacturasMBean.pagina} de #{listaFacturasMBean.totalPaginas}
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu" style="max-height: 165px; overflow-y: auto">
+                                                        <ui:repeat value="#{listaFacturasMBean.paginas}" var="pagina">
+                                                            <li>
+                                                                <a onclick="abrirModalEspera(); mostrarPaginaEspecifica([{name: 'pagina', value: '#{pagina}'}])" style="cursor: pointer">
+                                                                    #{pagina}
+                                                                </a>
+                                                            </li>
+                                                        </ui:repeat>
+                                                    </ul>
+                                                </div>
+                                                <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarPaginaSiguiente();">
+                                                    <span class="glyphicon glyphicon-chevron-right"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarUltimaPagina();">
+                                                    #{listaFacturasMBean.totalPaginas}
+                                                </button>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                <div class="row">
+                    <div class="col-xs-12 right-component margin-bottom-10">
+                        <p:remoteCommand name="seleccionarEnvioCorreoCliente" actionListener="#{listaFacturasMBean.seleccionarEnvioCorreoCliente}" update=":panelCorreo" oncomplete="abrirModalCorreo();"/>
+                        <p:remoteCommand name="validarTiposNotaCredito" actionListener="#{listaFacturasMBean.validarTiposNotaCredito}" update=":panelNotaCredito :formFacturas:msg"
+                                         oncomplete="abrirModalNotaCredito();"/>
+
+                        <h:panelGroup id="btns">
+                            <button type="button" onclick="validarTiposNotaCredito();" 
+                                    class="btn btn-primary btn-lg noround #{listaFacturasMBean.factura eq null or listaFacturasMBean.factura.numeroFactura eq null ? 'disabled btn-deshabilitado' : ''}">
+                                Nota crédito
+                            </button>
+                            <button type="button" onclick="#{listaFacturasMBean.abrirPdf()}"
+                                    class="btn btn-default btn-lg noround #{listaFacturasMBean.factura eq null or listaFacturasMBean.factura.numeroFactura eq null ? 'disabled btn-deshabilitado' : ''}">
+                                PDF
+                            </button>
+                            <button type="button" onclick="seleccionarEnvioCorreoCliente();"
+                                    class="btn btn-default btn-lg noround #{listaFacturasMBean.factura eq null or listaFacturasMBean.factura.numeroFactura eq null ? 'disabled btn-deshabilitado' : ''}">
+                                Enviar
+                            </button>
+                        </h:panelGroup>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <p:remoteCommand name="seleccionarFactura" actionListener="#{listaFacturasMBean.seleccionarFactura}" update=":formFacturas:btns :formFacturas:facturas" oncomplete="cerrarModalEspera();"/>
+
+                    <h:panelGroup id="facturas">
+                        <ui:repeat value="#{listaFacturasMBean.facturas}" var="factura">
+                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                <div onclick="abrirModalEspera(); seleccionarFactura([{name: 'docNum', value: '#{factura.numeroFactura}'}]);"
+                                     class="pointer-cursor #{listaFacturasMBean.factura.numeroFactura eq factura.numeroFactura ? 'contenedor-facturas-activo' : 'contenedor-facturas'}">
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            #{factura.nitCliente}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component" style="height: 50px">
+                                            <b style="font-size: 17px">#{baruGenericMBean.obtenerNombreUsuario(factura.nitCliente)}</b>
+                                        </div>
+                                    </div>
+                                    <hr style="border-bottom: 1px solid #BF0039; margin-top: 15px; margin-bottom: 15px"/>
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component" style="height: 60px">
+                                            #{baruGenericMBean.obtenerNombreAsesor(factura.asesor)}
+                                            <br/>
+                                            <b>Asesor</b>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component" style="font-size: 25px; margin-top: 10px">
+                                            <b style="color: #BF0039">
+                                                #{factura.estado eq 'C' ? 'CERRADA' : factura.estado eq 'O' ? 'ABIERTA' : 'SIN ESTADO'}
+                                            </b>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-6 center-component" style="font-size: 15px; border-right: 1px solid #BF0039; margin-top: 10px">
+                                            <h:outputText value="#{factura.fechaFactura}">
+                                                <f:convertDateTime pattern="yyyy-MM-dd"/>
+                                            </h:outputText>
+                                        </div>
+                                        <div class="col-xs-6 center-component" style="font-size: 15px; margin-top: 10px">
+                                            ##{factura.numeroFactura}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </h:panelGroup>
+                </div>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

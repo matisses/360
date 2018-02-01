@@ -1,0 +1,169 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <script type="text/javascript">
+            function focusReferencia() {
+                document.getElementById('formConsulta:txt_referencia').focus();
+            }
+        </script>
+        <title>360 - Consulta descuentos</title>
+    </h:head>
+    <h:body>
+        <m:navbarNormal/>
+        <div class="container">
+            <span class="ir-arriba">
+                <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+            </span>
+
+            <h:form id="formConsulta">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Consulta descuentos</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 col-sm-offset-4">
+                        <p:remoteCommand name="consultarDescuentoReferencia" actionListener="#{consultarDescuentosMBean.consultarDescuentoReferencia}"
+                                         update=":formConsulta:datos :formConsulta:txt_referencia :formConsulta:msg" oncomplete="cerrarModalEspera(); focusReferencia();"/>
+
+                        <p:focus context="formNotaCredito" for="txt_referencia"/>
+                        <label>Referencia:</label>
+                        <div class="input-group">
+                            <h:inputText id="txt_referencia" class="form-control input-lg noround" value="#{consultarDescuentosMBean.parametroBusqueda}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                        abrirModalEspera();
+                                        consultarDescuentoReferencia();
+                                        return false;
+                                    }">
+                                <f:ajax event="change"/>
+                            </h:inputText>
+                            <div class="input-group-btn">
+                                <button class="btn btn-primary btn-lg noround" type="button" style="font-size: 23px; padding: 9.5px 10px 4.5px 10px" onclick="abrirModalEspera(); consultarDescuentoReferencia();">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                <hr/>
+
+                <h:panelGroup id="datos">
+                    <h:panelGroup rendered="#{not empty consultarDescuentosMBean.referencia}">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div id="images" class="carousel slide">
+                                            <ol class="carousel-indicators">
+                                                <ui:repeat value="#{consultarDescuentosMBean.imagenes}" var="imageIndicator">
+                                                    <li data-target="#images" data-slide-to="#{imageIndicator[1]}" class="#{imageIndicator[1] eq '0' ? 'active' : ''}"></li>
+                                                </ui:repeat>
+                                            </ol>
+
+                                            <div class="carousel-inner">
+                                                <ui:repeat value="#{consultarDescuentosMBean.imagenes}" var="image">
+                                                    <div class="item #{image[1] eq '0' ? 'active' : ''}">
+                                                        <img src="#{image[0]}" style="width: 100%"/>
+                                                    </div>
+                                                </ui:repeat>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <b style="font-size: 20px">#{consultarDescuentosMBean.referencia}</b>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        #{baruGenericMBean.obtenerNombreReferencia(consultarDescuentosMBean.referencia)}
+                                    </div>
+                                    <div class="col-xs-12" style="color: #BF0039">
+                                        COP #{baruGenericMBean.getValorFormateado('Double', baruGenericMBean.obtenerPrecioVenta(consultarDescuentosMBean.referencia), 0)}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-8">
+                                <div class="row">
+                                    <ui:fragment rendered="#{not empty consultarDescuentosMBean.descuentos}">
+                                        <ui:repeat value="#{consultarDescuentosMBean.descuentos}" var="descuento">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <div style="border: 1px solid #{descuento.canal eq 'TS' ? '#BF0039' : descuento.canal eq 'PO' ? '#DDDDDD' : descuento.canal eq 'WE' ? '#5B5B5B' :
+                                                                                descuento.canal eq 'ME' ? '#F6DC01' : descuento.canal eq 'SA' ? '#00337F' : ''}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <div style="height: 10px; background-color: #{descuento.canal eq 'TS' ? '#BF0039' : descuento.canal eq 'PO' ? '#DDDDDD' :
+                                                                                                          descuento.canal eq 'WE' ? '#5B5B5B' : descuento.canal eq 'ME' ? '#F6DC01' :
+                                                                                                          descuento.canal eq 'SA' ? '#00337F' : ''}"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <b style="font-size: 25px">#{descuento.canal eq 'TS' ? '360' : descuento.canal eq 'PO' ? 'POS' :
+                                                                                         descuento.canal eq 'WE' ? 'WEB' : descuento.canal eq 'ME' ? 'MERCADO LIBRE' :
+                                                                                         descuento.canal eq 'SA' ? 'SAP' : ''}</b>
+                                                        </div>
+                                                    </div>
+                                                    <hr/>
+                                                    <div class="row">
+                                                        <div class="col-xs-6 center-component margin-bottom-10" style="font-size: 20px">
+                                                            <div>
+                                                                #{baruGenericMBean.getValorFormateado('Double', descuento.porcentaje, 0)}%
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-6 center-component margin-bottom-10" style="font-size: 20px">
+                                                            COP #{baruGenericMBean.getValorFormateado('Double', baruGenericMBean.obtenerPrecioVentaDescuento(descuento.porcentaje, consultarDescuentosMBean.referencia), 0)}
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-6 center-component margin-bottom-10">
+                                                            <label>Inicio:</label>
+                                                            <p>#{baruGenericMBean.getValorFormateado('Datetime', descuento.fechaInicio, 0)}</p>
+                                                        </div>
+                                                        <div class="col-xs-6 center-component margin-bottom-10">
+                                                            <label>Fin:</label>
+                                                            <p>#{baruGenericMBean.getValorFormateado('Datetime', descuento.fechaFin, 0)}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{empty consultarDescuentosMBean.descuentos or consultarDescuentosMBean.descuentos eq null}">
+                                        <div class="col-xs-12 center-component">
+                                            <h3>No se encontraron descuentos activos</h3>
+                                        </div>
+                                    </ui:fragment>
+                                </div>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:form>
+            <br/>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

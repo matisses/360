@@ -1,0 +1,121 @@
+<style type="text/css">
+    body, html, .body {
+        /*background: #f3f3f3 !important; */
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+        color: #444;
+    }
+
+    .advertencia{
+        color: #1F497D;
+    }
+
+    .empleado{
+        max-width: 216px;
+        min-width: 100px;
+    }
+</style>
+<container>
+    <spacer size="16"></spacer>
+    <row>
+        <columns large="8">
+            <table style="width: 300px">
+                <tr>
+                    <td>
+                        <img id="empleado" src="http://192.168.5.56:8080/shared/empleados/firmas/${cedula}-1.jpg" alt="" style=""/>
+                    </td>
+                    <td>
+                        <table style="width: 250px">
+                            <tr>
+                                <td style="text-align: center">
+                                    <img src="http://192.168.5.56:8080/shared/matissesLogoNuevo1.png" alt="" style="width: 189px"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; height: 19px; color: #FFFFFF; background-color: #5E5E5E; font-family: Verdana; font-size: 11px">
+                                    ${departamento}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td style="width: 20px"></td>
+                                            <td style="color: #5E5E5E; font-family: Verdana; font-size: 11px">
+                                                ${nombre}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td style="width: 20px"></td>
+                                            <td style="color: #5E5E5E; font-family: Verdana; font-size: 11px">
+                                                ${funcion}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <table>
+                                                    <tr>
+                                                        <td>
+                                                            <img src="http://192.168.5.56:8080/shared/logoPhone3.png" alt="" style="width: 34px"/>
+                                                        </td>
+                                                        <td>
+                                                            <a style="color: #5E5E5E; font-family: Verdana; font-size: 11px" href="tel:+57${celular}">${celular}</a>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            <td>
+                                                <table>
+                                                    <tr>
+                                                        <td>
+                                                            <img src="http://192.168.5.56:8080/shared/logoSkype3.png" alt="" style="width: 34px"/>
+                                                        </td>
+                                                        <td>
+                                                            <a style="color: #5E5E5E; font-family: Verdana; font-size: 11px" href="skype:${skype}?chat">${skype}</a>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <table style="width: 100%">
+                <tr>
+                    <td class="advertencia" style="text-align: justify; font-size: 13px">
+                        Este mensaje y los archivos anexos son confidenciales, privilegiados y/o protegidos por derechos de autor.
+                        Est&aacute;n dirigidos &uacute;nica y exclusivamente para uso del destinatario.
+                        Su reproducci&oacute;n, distribuci&oacute;n, lectura y uso est&aacute;n prohibidos a cualquier persona diferente y puede ser ilegal.
+                        Si por error lo ha recibido, por favor disc&uacute;lpenos, notif&iacute;quenoslo y elim&iacute;nelo.
+                        Las opiniones, conclusiones y otra informaci&oacute;n contenida en este correo no relacionada con el negocio oficial del remitente,
+                        deben entenderse como personal y de ninguna manera son avaladas por <b>DISTRIBUCIONES BARU &REG;</b> y/o sus filiales. Gracias.
+                    </td>
+                </tr>
+                <tr>
+                    <td class="advertencia" style="text-align: justify; font-size: 13px">
+                        This e-mail and any files transmitted with it contain confidential and privileged information and are for the sole use of the intended recipient(s).
+                        If you are not the intended recipient we offer apology, please contact the sender by reply e-mail and destroy all copies of the original message.
+                        Any unauthorized review, use, disclosure, dissemination, forwarding, printing or copying of this e-mail or any action taken in relation to this e-mail is strictly prohibited and may be unlawful.
+                        Opinions, conslusions and any other information contained in this message no related with official business of the expeditor,
+                        must to be understood as personal and by no means, in no way represent the opinions of <b>DISTRIBUCIONES BARU &REG;</b> and/or its subsidiaries. Thank you.
+                    </td>
+                </tr>
+            </table>
+        </columns>
+    </row>
+</container>

@@ -1,0 +1,1216 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <title>360 - Ayuda Datos Proveedor</title>
+    </h:head>
+    <h:body>
+        <m:navbar/>
+        <div class="panel-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h1 class="h1_manual">
+                            Datos Proveedor
+                        </h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            En esta página se le permite al usuario realizar registros, consultas y/o modificaciones de los datos para el proveedor.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 class="h2_manual">
+                            Contenido
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ul>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <a href="#administrarProveedor">Administrar Proveedor</a>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <ul>
+                                                    <div class="row">
+                                                        <li class="padding-top-1">
+                                                            <div class="col-xs-12">
+                                                                <a href="#datos_proveedor">Datos Proveedor</a>
+                                                            </div>
+                                                        </li>
+                                                    </div>
+                                                    <div class="row">
+                                                        <li class="padding-top-1">
+                                                            <div class="col-xs-12">
+                                                                <a href="#imagenes">Imágenes</a>
+                                                            </div>
+                                                        </li>
+                                                    </div>
+                                                    <div class="row">
+                                                        <li class="padding-top-1">
+                                                            <div class="col-xs-12">
+                                                                <a href="#contenedores">Contenedores</a>
+                                                            </div>
+                                                        </li>
+                                                    </div>
+                                                    <div class="row">
+                                                        <li class="padding-top-1">
+                                                            <div class="col-xs-12">
+                                                                <a href="#transaccionesBancarias">Transacciones Bancarias</a>
+                                                            </div>
+                                                        </li>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <ul>
+                                                                <div class="row">
+                                                                    <li class="padding-top-1">
+                                                                        <div class="col-xs-12">
+                                                                            <a href="#crear_transaccion">Crear transacción</a>
+                                                                        </div>
+                                                                    </li>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <li class="padding-top-1">
+                                                                        <div class="col-xs-12">
+                                                                            <a href="#usar_saldos">Usar saldos</a>
+                                                                        </div>
+                                                                    </li>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <li class="padding-top-1">
+                                                                        <div class="col-xs-12">
+                                                                            <a href="#visualizar_transaccion">Visualizar transacción</a>
+                                                                        </div>
+                                                                    </li>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <li class="padding-top-1">
+                                                                        <div class="col-xs-12">
+                                                                            <a href="#verPDF">Ver PDF</a>
+                                                                        </div>
+                                                                    </li>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <li class="padding-top-1">
+                                                                        <div class="col-xs-12">
+                                                                            <a href="#reGenerar_PDF">Re-generar PDF</a>
+                                                                        </div>
+                                                                    </li>
+                                                                </div>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <li class="padding-top-1">
+                                                            <div class="col-xs-12">
+                                                                <a href="#anticipo_cuenta">Anticipo Cuenta</a>
+                                                            </div>
+                                                        </li>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <ul>
+                                                                <div class="row">
+                                                                    <li class="padding-top-1">
+                                                                        <div class="col-xs-12">
+                                                                            <a href="#agregar">Agregar</a>
+                                                                        </div>
+                                                                    </li>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <li class="padding-top-1">
+                                                                        <div class="col-xs-12">
+                                                                            <a href="#quitar">Quitar</a>
+                                                                        </div>
+                                                                    </li>
+                                                                </div>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <li class="padding-top-1">
+                                                            <div class="col-xs-12">
+                                                                <a href="#crear_cuenta_bancaria">Crear Cuenta Bancaria</a>
+                                                            </div>
+                                                        </li>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <ul>
+                                                                <div class="row">
+                                                                    <li class="padding-top-1">
+                                                                        <div class="col-xs-12">
+                                                                            <a href="#paso1">Paso 1</a>
+                                                                        </div>
+                                                                    </li>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <li class="padding-top-1">
+                                                                        <div class="col-xs-12">
+                                                                            <a href="#paso2">Paso 2</a>
+                                                                        </div>
+                                                                    </li>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <li class="padding-top-1">
+                                                                        <div class="col-xs-12">
+                                                                            <a href="#paso3">Paso 3</a>
+                                                                        </div>
+                                                                    </li>
+                                                                </div>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#crear_proveedor">Crear Proveedor</a>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <ul>
+                                        <div class="row">
+                                            <li class="padding-top-1">
+                                                <div class="col-xs-12">
+                                                    <a href="#campos">Campos</a>
+                                                </div>
+                                            </li>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#exportar_informe">Exportar Informe</a>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#mensajes_recibidos">Mensajes Recibidos</a>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <br/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="administrarProveedor" class="h2_manual anchor">
+                            Administrar Proveedor
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Para administrar los datos, consignaciones y proformas de un proveedor; escriba el código o nombre de este en el campo de filtro, para buscarlo.
+                            Luego de colocar el parámetro de búsqueda de <b>Enter </b>para ejecutar la consulta.
+                        </p>
+                        <p>
+                            Una vez ejecutada la consulta se desplegara un dialogo con los resultados relacionados con la búsqueda; el dialogo se verá como la siguiente imagen.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/busquedaProveedores.png"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            Luego de tener los datos y de encontrar el proveedor que se necesita, de clic sobre este y se cargaran los datos correspondientes al proveedor.
+                        </p>
+                        <p>
+                            Cada celda que contiene el proveedor está compuesta por 2 características:
+                            <p style="margin-left: 25px">
+                                <b>1 - Imagen </b>Se le mostrara al usuario el logo que se encontró del proveedor; si este no posee logo se mostrara una imagen estándar.
+                            </p>
+                            <p style="margin-left: 25px">
+                                <b>2 - Código proveedor </b>El código que le corresponde a cada proveedor.
+                            </p>
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Al usuario seleccionar un proveedor, se cargaran en la parte inferior unos tags:
+                            <p style="margin-left: 25px">
+                                <b>Datos proveedor</b>
+                            </p>
+                            <p style="margin-left: 25px">
+                                <b>Contenedores</b>
+                            </p>
+                            <p style="margin-left: 25px">
+                                <b>Transacciones bancarias</b>
+                            </p>
+                            <p style="margin-left: 25px">
+                                <b>Anticipo cuenta</b>
+                            </p>
+                        </p>
+                        <p>
+                            A continuación, se explicara uno a uno de los tags y que acciones podemos realizar.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3 id="datos_proveedor" class="h3_manual anchor">
+                            Datos Proveedor
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            En este tag se podrán editar los datos del proveedor, vea <a class="a_href_manual" href="#campos">Campos</a>.
+                        </p>
+                        <p>
+                            Una vez se haya modificado alguno de los anteriores datos, el usuario debe dar clic en <b>Actualizar</b> y los cambios quedaran guardados;
+                            si el usuario no quiere realizar ningún cambio basta con no dar clic.
+                        </p>
+                        <p>
+                            El usuario puede también cambiar el logo del proveedor; pero es de tener en cuenta que una vez seleccionada una imagen para cambiar,
+                            esta quedara cambiada automáticamente. Para ver más acerca de imágenes vaya a <a class="a_href_manual" href="#imagenes">Imágenes</a>.
+                        </p>
+                    </div>
+                </div>
+                <br/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3 id="imagenes" class="h3_manual anchor">
+                            Imágenes
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Para asignar una imagen al proveedor siga los siguientes pasos:
+                            <p style="margin-left: 25px">
+                                <b>1. </b>De clic en <b>Navegar</b>, como se muestra en la siguiente imagen.
+                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/navegar.png"/>
+                            </p>
+                            <p style="margin-left: 25px">
+                                <b>2. </b>Se abrirá una ventana emergente del explorador de archivos de Windows.
+                            </p>
+                            <p style="margin-left: 25px">
+                                <b>3. </b>Seleccione una imagen con una de las siguientes extensiones: <b>png</b>, <b>jpg</b> o <b>jpeg</b> y de medidas como máximo de <b>260px</b> * <b>260px</b>.
+                            </p>
+                            <p style="margin-left: 25px">
+                                <b>4. </b>La foto será asignada automáticamente.
+                            </p>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3 id="contenedores" class="h3_manual anchor">
+                            Contenedores
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            El tag de contenedores, permite gestionar los contenedores de cada proforma permitiendo modificar los datos que se explicaran a continuación:
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <th class="head-tabla">
+                                    Campo
+                                </th>
+                                <th class="head-tabla">
+                                    Descripción
+                                </th>
+                                <th class="head-tabla">
+                                    Modificable
+                                </th>
+                            </tr>
+                            <ui:repeat value="#{datosProveedorAyudaMBean.datosContenedor}" var="datoContenedor">
+                                <tr>
+                                    <td class="center-component">
+                                        #{datoContenedor[0]}
+                                    </td>
+                                    <td class="justify-component">
+                                        #{datoContenedor[1]}
+                                    </td>
+                                    <td class="center-component">
+                                        <ui:fragment rendered="#{datoContenedor[2] eq 'Si'}">
+                                            <span class="glyphicon glyphicon-ok center-component" style="color: #5CB85C"></span>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{datoContenedor[2] eq 'No'}">
+                                            <span class="glyphicon glyphicon-remove center-component" style="color: #BF0039"></span>
+                                        </ui:fragment>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            Además, se permite al usuario registrar un comentario para la proforma desde este tag. También se muestra un resumen de cuantos contenedores se han asignado a la proforma,
+                            tal y como se muestra en la siguiente imagen.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/resumenContenedores.png"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            <b>Nota</b>: Es muy importante tener en cuenta que por este medio no se pueden agregar más contenedores a la proforma,
+                            para agregar más contenedores debe hacerlo por medio del módulo de proformas.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3 id="transaccionesBancarias" class="h3_manual anchor">
+                            Transacciones Bancarias
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Este tag permite la administración y gestión de los pagos realizados a una proforma; aquí el usuario puede crear, usar saldos, asignar fechas de giros,
+                            visualizar una transacción, ver pdf y re-generar pdf.
+                        </p>
+                        <p>
+                            A continuación, se explicaran cada una de las funcionalidades mencionadas anteriormente:
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <ul>
+                            <div class="row">
+                                <li id="crear" class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <p id="crear_transaccion" class="anchor">
+                                                    <b>Crear transacción </b>Para crear una nueva transacción a una proforma se debe tener en cuenta las siguientes exigencias:
+                                                    <p style="margin-left: 25px">
+                                                        <b>Saldo pendiente </b>La proforma debe tener saldo pendiente por pagar, para poder realizar este.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>Moneda </b>Se debe asignar una moneda a usar para la proforma; esto ayuda a que las transacciones queden registradas con esta.
+                                                        <br/>
+                                                        <b>Nota</b>: Por este módulo no se puede asignar monedas a las proformas, para asignar estas debe realizarlo por el módulo de proformas.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>Cuentas </b>El proveedor debe tener al menos una cuenta asignada al proveedor. Para asignar cuentas a un proveedor vaya a
+                                                        <a class="a_href_manual" href="#crear_cuenta"> Crear cuenta</a>.
+                                                    </p>
+                                                </p>
+                                                <p>
+                                                    Luego de tener los datos necesarios procedamos con la creación de una nueva transacción. Dando clic en el botón 
+                                                    <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/btnCrearTransaccion.png"/>
+                                                </p>
+                                                <p>
+                                                    Al dar clic en el botón anterior, abrirá un dialogo como el de la siguiente imagen y con las siguientes características:
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/dialogoTransaccion.png"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <p>
+                                                    <b>1 - Cuenta bancaria </b>El usuario debe seleccionar una de las cuentas bancarias disponibles para el proveedor.
+                                                </p>
+                                                <p>
+                                                    <b>2 - Fecha giro </b>Si se dispone de la fecha en que se va a girar el dinero ingrésela,
+                                                    para esto seleccione una fecha del calendario que se despliega al dar clic en el campo de fecha.
+                                                </p>
+                                                <p>
+                                                    <b>3 - Tipo giro </b>Seleccione un giro de la lista de giros, a continuación se explica cada tipo:
+                                                    <p id="anticipo" class="anchor" style="margin-left: 25px">
+                                                        <b>Anticipo</b>: Es cuando se le va a girar al proveedor un porcentaje del dinero total.
+                                                    </p>
+                                                    <p id="balance" class="anchor" style="margin-left: 25px">
+                                                        <b>Balance</b>: Se usa cuando se va a pagar el total que se debe de la proforma.
+                                                    </p>
+                                                    <p id="rollOn" class="anchor" style="margin-left: 25px">
+                                                        <b>Roll on</b>: El usuario puede usar este tipo siempre y cuando,
+                                                        se disponga de anticipo en cuenta a usar de la cuenta seleccionada y de la moneda de la proforma.
+                                                    </p>
+                                                </p>
+                                                <p id="anticipoMoneda" class="anchor">
+                                                    <b>4 - Anticipo $ </b>Si se selecciona el tipo de giro <a class="a_href_manual" href="#anticipo">Anticipo</a>,
+                                                    se habilitara este campo para permitir la asignación de un valor a girar de la moneda de la proforma;
+                                                    recuerde que aquí se debe insertar un valor inferior al total de la proforma.
+                                                </p>
+                                                <p>
+                                                    <b>5 - Anticipo % </b>Una vez se haya ingresado un <a class="a_href_manual" href="#anticipoMoneda">Anticipo $</a>,
+                                                    se calculara automáticamente el porcentaje de anticipo a girar.
+                                                </p>
+                                                <p>
+                                                    <b>6 - Balance $ </b>Al seleccionar el tipo de giro <a class="a_href_manual" href="#balance">Balance</a>,
+                                                    se habilitara el campo que contendrá el total a girar.
+                                                </p>
+                                                <p>
+                                                    <b>7 - Total $ </b>Aquí se verá el total a girar, al seleccionar el tipo de giro <a class="a_href_manual" href="#balance">Balance</a>,
+                                                    se permitirá insertar un valor superior a lo que se debe; la diferencia será registrada como <b>Anticipo cuenta</b>.
+                                                </p>
+                                                <p>
+                                                    <b>8 - Comentario </b>Ingrese un comentario para justificar la transacción.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <p>
+                                                    Una vez todos los datos estén respectivamente diligenciados, el usuario debe dar clic en <b>Guardar</b> para que la transacción se genere,
+                                                    o de clic en <b>Cancelar</b> si no quiere que los datos queden almacenados. Es de recordar que si el usuario no ingresa la fecha,
+                                                    la transacción quedara en un estado pendiente hasta que esta sea asignada.
+                                                </p>
+                                                <p>
+                                                    Luego de que se guarde la transacción, se generara el documento en PDF y le permitirá al usuario la visualización de este y para que lo pueda imprimir,
+                                                    si es necesario.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="usar" class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <p id="usar_saldos" class="anchor">
+                                                    <b>Usar saldos </b>Para usar saldos de anticipos en cuenta mire el proceso de <b>Crear transacción</b> en específico el tipo de giro
+                                                    <a class="a_href_manual" href="#rollOn"> Roll on</a>.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="visualizar" class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <p id="visualizar_transaccion" class="anchor">
+                                                    <b>Visualizar transacción </b>Si se quiere visualizar una transacción realizada, de clic en el botón 
+                                                    <span class="glyphicon glyphicon-eye-open"></span>. Al dar clic se abrirá el mismo dialogo para crear,
+                                                    pero en este únicamente se podrá modificar la fecha de giro de la transacción, esto lo veremos en la siguiente imagen.
+                                                </p>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/dialogoTransaccionVisualizando.png"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="pdf" class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <p id="verPDF" class="anchor">
+                                                    <b>Ver PDF </b>El usuario puede ver el documento que genera el sistema para la transacción,
+                                                    <span class="glyphicon glyphicon-print"></span> al dar clic en el anterior botón se abrirá en otra ventana de su explorador el pdf,
+                                                    el cual contiene datos importantes sobre la transacción; como se podrá apreciar en las siguientes imágenes:
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/encabezadoPDFTransaccion.png"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <p>
+                                                    En la anterior imagen se puede apreciar el encabezado del documento que se compone de la información principal que identificara cada transacción.
+                                                    <p style="margin-left: 25px">
+                                                        <b>1 - Logo de la marca.</b>
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>2 - Información de la compañía.</b>
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>3 - Número de la transacción.</b>
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>4 - Fecha y número de la proforma.</b>
+                                                    </p>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/datosProveedorPDFTransaccion.png"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <p>
+                                                    En esta otra imagen se pueden ver los datos del proveedor.
+                                                    <p style="margin-left: 25px">
+                                                        <b>1 - Datos principales del proveedor.</b>
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>2 - Logo del proveedor </b>Si el proveedor no posee logo no se verá nada.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>3 - Espacios para firmas de aprobación.</b>
+                                                    </p>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/datosBancariosPDFTransaccion.png"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <p>
+                                                    La imagen anterior es la que contiene los datos del banco y la cuenta a la que se va a realizar el giro.
+                                                    <p style="margin-left: 25px">
+                                                        <b>1 - Datos del banco y la cuenta.</b>
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>2 - Espacios para firmas de aprobación.</b>
+                                                    </p>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/detalleGiroPDFTransaccion.png"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <p>
+                                                    En esta imagen el usuario encontrara los datos de la transacción para el pago.
+                                                    <p style="margin-left: 25px">
+                                                        <b>1 - Valores a girar dependiendo del tipo de giro.</b>
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>2 - Descripción para la transacción.</b>
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>3 - Espacios para firmas de aprobación.</b>
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>4 - Tipo de giro y valor total a girar.</b>
+                                                    </p>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/espaciosFirmaPDFTransaccion.png"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <p>
+                                                    La imagen anterior es el pie del documento y es donde se encontraran las firmas de autorización de todos los implicados en el proceso de pago.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="re_procesar" class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <p id="reGenerar_PDF" class="anchor">
+                                                    <b>Re-generar PDF </b>Si el sistema no fue capaz de generar el archivo PDF, el usuario puede dar clic en el siguiente botón 
+                                                    <span class="glyphicon glyphicon-refresh"></span>, para generar de nuevo el documento que corresponda a la transacción creada anteriormente.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Recuerde que por proforma el sistema mostrara cual es el saldo <b>Total</b>, <b>Pendiente</b>, <b>Transferido</b> y <b>Moneda</b>,
+                            que se están usando para esta. Lo anterior con el fin de facilitar al usuario los datos necesarios para realizar el control de pagos al proveedor por proforma.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3 id="anticipo_cuenta" class="h3_manual anchor">
+                            Anticipo Cuenta
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            El siguiente tag funciona de forma que al usuario le sea más cómodo controlar el flujo de los saldos en cuenta que se le han consignado al proveedor o usado en proformas.
+                            En este paso vamos a explicar como agregar y cómo usar este saldo:
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <ul>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                                <p id="agregar" class="anchor">
+                                                    <b>Agregar </b>Para poder agregar un saldo a cuenta para el proveedor, se debe dar clic en el siguiente botón
+                                                </p>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/btnCrearTransaccion.png"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10 justify-component">
+                                                <p>
+                                                    Una vez el usuario haya dado clic, se abrirá una ventana emergente en la que se podrá llevar a cabo el registro de la transacción por motivo de
+                                                    <b> Anticipo a cuenta</b>. Ahora se explicara de que se compone y como se crea un anticipo:
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/dialogoCrearAnticipoCuenta.png"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                                <p>
+                                                    <b>1 - Valor anticipo cuenta</b>: Aquí el usuario debe ingresar el valor que desea se agregue a anticipo en cuenta.
+                                                </p>
+                                                <p>
+                                                    <b>2 - Moneda</b>: Seleccione de la lista de monedas, que moneda es la que va a usar para la transacción.
+                                                </p>
+                                                <p>
+                                                    <b>3 - Cuenta bancaria</b>: Seleccione de la lista, la cuenta que se va a usar para efectuar la transacción.
+                                                </p>
+                                                <p>
+                                                    <b>4 - Comentario</b>: Ingrese un comentario que ayude a identificar porque motivo se realizó la transacción.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10 justify-component">
+                                                <p>
+                                                    Una vez tenga los datos respectivamente diligenciados de clic en el botón <b>Crear</b> para realizar la transacción,
+                                                    de lo contrario de clic en <b>Cancelar</b> para cerrar el proceso. Después de haber creado la transacción se verán los 
+                                                    movimientos en una tabla con los siguientes datos:
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10 justify-component">
+                                                <table class="table table-bordered table-striped">
+                                                    <tr>
+                                                        <th class="head-tabla">
+                                                            Campo
+                                                        </th>
+                                                        <th class="head-tabla">
+                                                            Descripción
+                                                        </th>
+                                                    </tr>
+                                                    <ui:repeat value="#{datosProveedorAyudaMBean.datosTablaAnticipos}" var="datoTablaAnticipo">
+                                                        <tr>
+                                                            <td class="center-component">
+                                                                #{datoTablaAnticipo[0]}
+                                                            </td>
+                                                            <td class="justify-component">
+                                                                #{datoTablaAnticipo[1]}
+                                                            </td>
+                                                        </tr>
+                                                    </ui:repeat>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10 justify-component">
+                                                <p>
+                                                    Además de los anteriores campos definidos, también se verán los siguientes iconos 
+                                                    <span class="glyphicon glyphicon-arrow-up" style="color: #78C700"></span>, que significa que el movimiento fue una entrada de anticipo a cuenta;
+                                                    <span class="glyphicon glyphicon-arrow-down" style="color: #BF0039"></span>, es cuando el tipo de movimiento fue un uso de anticipo a una proforma.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                                <p>
+                                                    Cuando se crea una entrada de anticipo a cuenta, esta quedara como pendiente hasta que el usuario le asigne una fecha de giro;
+                                                    una vez puesta esta fecha la transacción quedara como habilitada. Para asignar la fecha de clic en el botón <span class="glyphicon glyphicon-eye-open"></span>,
+                                                    el cual abrirá nuevamente la ventana emergente, con los campos bloqueados para evitar la modificación de este;
+                                                    pero únicamente estará habilitada el campo de asignación de fecha, una vez colocada de clic en el botón <b>Actualizar </b>
+                                                    lo que implicara que la transacción quede activa.
+                                                    Después de que el usuario ingrese la fecha, el botón para visualizar quedara deshabilitado para la transacción.
+                                                    Si el usuario no quiere asignarle la fecha a la transacción de clic en <b>Cancelar</b>.
+                                                </p>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/dialogoCrearAnticipoCuentaVisualizando.png"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                                <p id="quitar" class="anchor">
+                                                    <b>Quitar </b>Para poder quitar un saldo a cuenta para el proveedor, se debe dar clic en el siguiente botón
+                                                </p>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/btnQuitarTransaccion.png"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10 justify-component">
+                                                <p>
+                                                    Una vez el usuario haya dado clic, se abrirá una ventana emergente en la que se podrá llevar a cabo el descuento de la transacción por motivo de
+                                                    <b> Anticipo a cuenta</b>. Ahora se explicara de que se compone y como se quita un anticipo:
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/dialogoQuitarAnticipoCuenta.png"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                                <p>
+                                                    <b>1 - Valor anticipo cuenta</b>: Aquí el usuario debe ingresar el valor que desea se quite de anticipo en cuenta.
+                                                </p>
+                                                <p>
+                                                    <b>2 - Proforma</b>: Seleccione de la lista de proformas, la proforma que se va a usar para la transacción.
+                                                </p>
+                                                <p>
+                                                    <b>3 - Cuenta bancaria</b>: Seleccione de la lista, la cuenta a la que se le va a quitar el valor.
+                                                </p>
+                                                <p>
+                                                    <b>4 - Comentario</b>: Ingrese un comentario que ayude a identificar porque motivo se realizó la transacción.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10 justify-component">
+                                                <p>
+                                                    Después de que haya llenado los datos solicitados, de clic en el botón <b>Crear</b> para realizar la transacción;
+                                                    de lo contrario de clic en el botón <b>Cancelar</b> para cerrar el proceso.
+                                                    Se debe tener en cuenta que a diferencia del agregado de anticipo a cuenta, este ingresara la fecha de transacción automáticamente y,
+                                                    se creara el registro de pago en el proceso de <a class="a_href_manual" href="#transaccionesBancarias">Transacciones bancarias</a>.
+                                                </p>
+                                                <p>
+                                                    Cabe destacar que para poder usar saldo de anticipo en cuenta, debe disponer de él y para saber que saldo se tiene,
+                                                    aparecerá en la pantalla una sumatoria de los saldos por moneda; como se puede evidenciar en la siguiente imagen:
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/anticiposDisponibles.png"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3 id="crear_cuenta_bancaria" class="h3_manual anchor">
+                            Crear Cuenta Bancaria
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            Para crear una cuenta nueva o asignar una cuenta al proveedor actual de clic en el botón como el de la siguiente imagen.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/crearCuenta.png"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Al dar clic en el anterior botón, se abrirá una ventana emergente compuesta de 3 pasos para poder crear o asignar una cuenta bancaria.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <ul>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/paso1.png"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                                <p id="paso1" class="anchor">
+                                                    <b>Paso 1 - </b>Banco de la cuenta.
+                                                    <p style="margin-left: 25px">
+                                                        <b>1 - Razón social banco</b>: Nombre legal del banco.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>2 - Bancos</b>: Lista de bancos disponibles o cree un nuevo banco.
+                                                    </p>
+                                                </p>
+                                                <p>
+                                                    El usuario debe seleccionar uno de los bancos disponibles en la lista de bancos, para poder gestionarlo,
+                                                    selecciónelo para que la razón social se llene y pueda editar el nombre del banco,
+                                                    después de que lo cambie de clic en <b>Guardar</b>; o seleccione <b>Nuevo banco</b> e inserte el nombre del banco y de clic en guardar;
+                                                    una vez seleccione un banco se activara el botón de <b>Siguiente</b>, de clic en este para ir al próximo paso.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/paso2.png"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                                <p id="paso2" class="anchor">
+                                                    <b>Paso 2 - </b>Sucursal bancaria.
+                                                    <p style="margin-left: 25px">
+                                                        <b>1 - Dirección sucursal</b>: Lugar donde se encuentra ubicada la sucursal del banco.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>2 - Swift</b>: Confirmación de giro.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>3 - País</b>: País de la sucursal del banco.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>4 - Estado</b>: Estado del país de la sucursal.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>5 - Ciudad</b>: Ciudad del estado de la sucursal.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>6 - Sucursales</b>: Lista de sucursales asociadas al banco o cree una nueva sucursal.
+                                                    </p>
+                                                </p>
+                                                <p>
+                                                    Seleccione una sucursal existente para que se carguen todos los datos relacionados a la sucursal y si es la necesidad,
+                                                    cámbielos y de clic en <b>Guardar</b> para que se almacenen los cambios;
+                                                    o seleccione <b>Nueva sucursal</b> y llene todos los datos necesarios para crear la sucursal del banco,
+                                                    una vez llene los datos no olvide dar clic en <b>Guardar</b>; una vez seleccione una sucursal se activara nuevamente el botón de <b>Siguiente</b>,
+                                                    de clic en este para ir al próximo paso.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/paso3.png"/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                                <p id="paso3" class="anchor">
+                                                    <b>Paso 3 - </b>Cuenta bancaria.
+                                                    <p style="margin-left: 25px">
+                                                        <b>1 - Cuenta bancaria</b>: Número de la cuenta bancaria.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>2 - Iban</b>: Serie de caracteres alfanuméricos que identifican una cuenta determinada en una entidad financiera.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>3 - Aba</b>: Serie que identifican una cuenta determinada en una entidad financiera.
+                                                    </p>
+                                                    <p style="margin-left: 25px">
+                                                        <b>4 - Cuentas</b>: Lista de cuentas asociadas a la sucursal o cree una nueva cuenta.
+                                                    </p>
+                                                </p>
+                                                <p>
+                                                    Al seleccionar una cuenta existente se cargaran los datos correspondientes a esta y cambie los datos si es necesario,
+                                                    modifique y de clic en <b>Guardar</b> para almacenar cambios o seleccione
+                                                    <b> Nueva cuenta</b> y llene los datos que se necesitan y de clic en <b>Guardar</b>. Una vez realizado esto la cuenta quedara relacionada al proveedor.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            En los pasos 2 y 3 el usuario puede devolverse a los pasos anteriores dando clic en el botón <b>Anterior</b> y de clic en el botón <b>Cerrar</b>,
+                            para finalizar el proceso y usar la nueva cuenta.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="crear_proveedor" class="h2_manual anchor">
+                            Crear Proveedor
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3 id="campos" class="h3_manual anchor">
+                            Campos
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <th class="head-tabla">
+                                    Campo
+                                </th>
+                                <th class="head-tabla">
+                                    Definición
+                                </th>
+                            </tr>
+                            <ui:repeat value="#{datosProveedorAyudaMBean.camposProveedor}" var="campo">
+                                <tr>
+                                    <td class="center-component">
+                                        #{campo[0]}
+                                    </td>
+                                    <td class="justify-component">
+                                        #{campo[1]}
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            El usuario debe llenar los datos y dar clic en <b>Guardar</b>, para crear el nuevo proveedor o de clic <b>Cancelar</b> para no realizar nada.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="exportar_informe" class="h2_manual anchor">
+                            Exportar Informe
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Para exportar el informe sobre las proformas en producción, aquí se muestra el tipo de contenedor, fechas de embarque y pagos.
+                            Para realizar la exportación de clic en el botón con el siguiente icono <span class="glyphicon glyphicon-download-alt"></span>,
+                            una vez de clic se abrirá una ventana emergente en la que se pedirán los parámetros de exportación;
+                            estos parámetros los veremos a continuación:
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/descargarTipoExportacion.png"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            El primero de todos los parámetros es el tipo de exportación en el que se verán dos opciones:
+                            <p style="margin-left: 25px">
+                                <b>1 - General</b>: Es cuando el usuario quiere que el informe se descargue de todos los proveedores y de todas las proformas.
+                            </p>
+                            <p style="margin-left: 25px">
+                                <b>2 - Proveedor</b>: Se usa cuando se quiere ver el informe del proveedor en el que se está trabajando en específico;
+                                <b>para poder seleccionar esta opción debe ingresar un proveedor como se explica en <a class="a_href_manual" href="#administrarProveedor">Administrar Proveedor</a></b>.
+                            </p>
+                        </p>
+                        <p>
+                            Si el usuario selecciona general, se habilitara otro parámetro.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/descargarFiltros.png"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            En este caso se tendrán tres opciones a seleccionar:
+                            <p style="margin-left: 25px">
+                                <b>1 - Seleccione</b>: Si el usuario quiere que se muestren todos los datos, este debe dejar el filtro en el valor por defecto.
+                            </p>
+                            <p style="margin-left: 25px">
+                                <b>2 - Fecha</b>: Cuando se quiere ver únicamente los registros que hay para la fecha seleccionada,
+                                esta opción habilitara un campo con un calendario para seleccionar la fecha.
+                            </p>
+                            <p style="margin-left: 25px">
+                                <b>3 - Vencidas</b>: Se mostraran todas las proformas que se encuentran vencidas en <b>General</b> para todos los proveedores,
+                                o en <b>Proveedor</b> para las de ese en específico.
+                            </p>
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/descargarTipoDato.png"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            Al seleccionar en el primer filtro, la opción de <b>Proveedor</b>; se habilitara el filtro de <b>Tipo dato</b> como se muestra en la anterior imagen.
+                            Esta imagen al igual que las demás nos muestra opciones para exportar, en este caso 2:
+                            <p style="margin-left: 25px">
+                                <b>1 - General</b>: El informe se generara con todas las proformas del proveedor.
+                            </p>
+                            <p style="margin-left: 25px">
+                                <b>2 - Proforma</b>: Se usa cuando el usuario quiere el informe de una proforma específica.
+                            </p>
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/proveedor/descargarProforma.png"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            Una vez seleccionado el tipo de datos <b>Proforma</b>, se habilitara nuevamente otro filtro;
+                            en este caso el de las proformas donde se listaran todas las disponibles para el proveedor.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Después de que el usuario haya seleccionado los filtros correspondientes, se habilitara el botón de <b>Exportar</b>,
+                            de clic en este y comenzara la descarga del archivo en un libro de excel, en cualquier momento puede dar clic en <b>Cancelar</b>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="mensajes_recibidos" class="h2_manual anchor">
+                            Mensajes Recibidos
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        Si en algún momento usted recibe alguno de estos mensajes por parte del sistema, esto le ayudara a identificar cual es la gravedad 
+                        y el significado de este: 
+                        <br/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <th class="head-tabla">
+                                    Tipo
+                                </th>
+                                <th class="head-tabla">
+                                    Msj
+                                </th>
+                                <th class="head-tabla">
+                                    Causa / Solución
+                                </th>
+                            </tr>
+                            <ui:repeat value="#{datosProveedorAyudaMBean.mensajes}" var="mensaje">
+                                <tr>
+                                    <td>
+                                        <span class="#{mensaje[0] eq 'E' ? 'glyphicon glyphicon-remove-sign' : mensaje[0] eq 'I' ? 'glyphicon glyphicon-info-sign'
+                                                       : mensaje[0] eq 'A' ? 'glyphicon glyphicon-question-sign': ''}"
+                                              title="#{mensaje[0] eq 'E' ? 'Error' : mensaje[0] eq 'I' ? 'Información' : mensaje[0] eq 'A' ? 'Advertencia': ''}"
+                                              style="font-size: 30px; #{mensaje[0] eq 'E' ? 'color: #DD5555;' : mensaje[0] eq 'I' ? 'color: #46B8DA;'
+                                                                        : mensaje[0] eq 'A' ? 'color: #FFBF00;': ''}"></span>
+                                    </td>
+                                    <td>
+                                        #{mensaje[1]}
+                                    </td>
+                                    <td>
+                                        <p>
+                                            #{mensaje[2]}
+                                        </p>
+                                        <ui:fragment rendered="#{not empty mensaje[3]}">
+                                            <hr/>
+                                            <p>
+                                                #{mensaje[3]}
+                                            </p>
+                                        </ui:fragment>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </table>
+                    </div>
+                </div>
+                <br/>
+            </div>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

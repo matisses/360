@@ -1,0 +1,697 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <script type="text/javascript">
+            function abrirModalAdvertencia() {
+                $('#modalAdvertencia').modal('show');
+            }
+
+            function cerrarModalAdvertencia() {
+                $('#modalAdvertencia').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalEliminar() {
+                $('#modalEliminar').modal('show');
+            }
+        </script>
+        <title>360 - Configuración proforma</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <h:panelGroup id="panelAdvertencia">
+                <h:panelGroup rendered="#{configuracionProformaMBean.dlgAdvertencia}">
+                    <h:form id="formAdvertencia">
+                        <div class="modal fade" id="modalAdvertencia">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header-advertencia">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                            &times;
+                                        </button>
+                                        <h4 class="modal-title">
+                                            Advertencia
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-xs-12 justify-component">
+                                                <p>
+                                                    <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                    La columna que desea agregar es una columna calculada; lo que implica que las columnas que se necesiten para el cálculo,
+                                                    deberán incluirse también.
+                                                </p>
+                                                <br/>
+                                                <p style="text-align: center !important">
+                                                    ¿Desea incluir las siguientes columnas?
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                #{configuracionProformaMBean.mensajeAdvertencia}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <p:remoteCommand name="agregar" actionListener="#{configuracionProformaMBean.agregarColumna}" update=":formConfiguracionProforma"
+                                                         oncomplete="cerrarModalEspera();"/>
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                            Cancelar
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="cerrarModalAdvertencia(); abrirModalEspera(); agregar();">
+                                            Aceptar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="dlgAdvertenciaEliminar">
+                <h:panelGroup rendered="#{configuracionProformaMBean.dlgAdvertencia}">
+                    <div class="modal fade" id="modalEliminar">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header-advertencia">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Advertencia
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 justify-component">
+                                            <p>
+                                                <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                La columna que esta intentando eliminar es necesaria para generar calculos en las siguientes columnas:
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            #{configuracionProformaMBean.mensajeAdvertencia}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:form id="formConfiguracionProforma">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Configurar columnas compras</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-offset-3 col-sm-6">
+                        <p:remoteCommand name="seleccionarProveedor" actionListener="#{configuracionProformaMBean.seleccionarProveedor}"
+                                         update=":formConfiguracionProforma" oncomplete="cerrarModalEspera();"/>
+                        <h:panelGroup id="proveedores">
+                            <div class="input-group">
+                                <span class="input-group-addon input-group-matisses noround">
+                                    Proveedor
+                                </span>
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                            id="selProveedor" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        #{configuracionProformaMBean.proveedorSeleccionado}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="selProveedor" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                        <ui:repeat value="#{configuracionProformaMBean.proveedores}" var="proveedor">
+                                            <li>
+                                                <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarProveedor([{name: 'codProveedor', value: '#{proveedor.codProveedor}'}]);">
+                                                    #{proveedor.nombreMostrar}
+                                                </a>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </div>
+                <br/>
+                <div class="row" style="visibility: #{configuracionProformaMBean.proveedor eq null ? 'hidden' : 'visible'}">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <p:remoteCommand name="actualizarListaSeleccionadas" update=":formConfiguracionProforma:listaSeleccionadas"/>
+                                <p:remoteCommand name="actualizarListaDisponibles" update=":formConfiguracionProforma:listaDisponibles"/>
+                                <ul class="nav nav-pills">
+                                    <li class="active noround">
+                                        <a href="#tab_disponibles" data-toggle="pill" class="input-lg noround" onclick="actualizarListaDisponibles()">
+                                            Disponibles
+                                        </a>
+                                    </li>
+                                    <li class="noround">
+                                        <a href="#tab_seleccionadas" data-toggle="pill" class="input-lg noround" onclick="actualizarListaSeleccionadas()">
+                                            Seleccionadas
+                                        </a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="tab_disponibles">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-md-6 col-md-offset-6">
+                                                <div class="form-group has-feedback">
+                                                    <p:remoteCommand name="buscarDisponible" actionListener="#{configuracionProformaMBean.filtrarListaDisponibles}"
+                                                                     update=":formConfiguracionProforma:listaDisponibles" oncomplete="cerrarModalEspera();"/>
+                                                    <h:inputText pt:placeholder="Escribe para filtrar" value="#{configuracionProformaMBean.parametroBusquedaDisponibles}"
+                                                                 class="form-control input-lg noround" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                             abrirModalEspera();
+                                                                             buscarDisponible();
+                                                                             return false;
+                                                                         }"/>
+                                                    <span class="form-control-feedback glyphicon glyphicon-search inline-search" aria-hidden="true"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="row">
+                                            <h:panelGroup id="listaDisponibles">
+                                                <p:remoteCommand name="agregarColumna" actionListener="#{configuracionProformaMBean.validarColumnaAgregada}"
+                                                                 update=":formConfiguracionProforma:listaDisponibles :panelAdvertencia" oncomplete="abrirModalAdvertencia();"/>
+                                                <ui:fragment rendered="#{empty configuracionProformaMBean.columnasDisponiblesFiltradas}">
+                                                    <h4>
+                                                        <p>
+                                                            No se encontraron datos
+                                                        </p>
+                                                    </h4>
+                                                </ui:fragment>
+                                                <ui:repeat value="#{configuracionProformaMBean.columnasDisponiblesFiltradas}" var="columna">
+                                                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+                                                        <div class="columnas-proforma" onclick="agregarColumna([{name: 'idColumna', value: '#{columna.idColumna}'}])">
+                                                            <div class="row">
+                                                                <div class="col-xs-12 center-component">
+                                                                    <h:outputLabel class="input-lg" value="Columna"/>
+                                                                </div>
+                                                                <div class="col-xs-12 center-component #{empty columna.nombre1 ? 'columnas-proforma-input-sinAsignar' : null}">
+                                                                    <h:outputText class="input-lg" value="#{empty columna.nombre1 ? '[Sin Asignar]' : columna.nombre1}"/>
+                                                                </div>
+                                                                <div class="col-xs-12 center-component">
+                                                                    <h:outputLabel class="input-lg" value="SubColumna"/>
+                                                                </div>
+                                                                <div class="col-xs-12 center-component #{empty columna.nombre2 ? 'columnas-proforma-input-sinAsignar' : null}">
+                                                                    <h:outputText class="input-lg" value="#{empty columna.nombre2 ? '[Sin Asignar]' : columna.nombre2}"/>
+                                                                </div>
+                                                            </div>
+                                                            <div class="pointColumnas">
+                                                                <h:graphicImage value="#{baruApplicationBean.obtenerValorPropiedad('url.local.pointColumnas')}"/>
+                                                            </div>
+                                                            <h:panelGroup class="showOverlayColumnas">
+                                                                <div class="row" style="color: #000000 !important">
+                                                                    <div class="col-xs-12">
+                                                                        <ui:fragment rendered="#{not empty columna.nombre1Ingles}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12">
+                                                                                    <b>
+                                                                                        Columna Ingles: 
+                                                                                    </b>
+                                                                                    <span>
+                                                                                        #{columna.nombre1Ingles}
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{not empty columna.nombre2Ingles}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <b>
+                                                                                        SubColumna Ingles: 
+                                                                                    </b>
+                                                                                    <span>
+                                                                                        #{columna.nombre2Ingles}
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.permitirCrearItem}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Crear Item
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoItem}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo Item
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoIdentificador}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo Identificador
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoImagen}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo Imagen
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoCantidad}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo Cantidad
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoValorTotal}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo Valor Total
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoCBM}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo CBM
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoValorUnitario}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo Valor Unitario
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoDescuento}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo Descuento
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoDescripcionItem}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo Descripcion Ítem
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.obligatoria}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Obligatoria
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.incluirProforma}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Incluir Proforma
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.modificable}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Modificable
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.modificableSiNuevo}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Modificar Nuevo
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.requiereOperacion}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Columna Calculada
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                    </div>
+                                                                </div>
+                                                            </h:panelGroup>
+                                                        </div>
+                                                    </div>
+                                                </ui:repeat>
+                                            </h:panelGroup>
+                                        </div>
+                                        <br/>
+                                    </div>
+                                    <div class="tab-pane" id="tab_seleccionadas">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-md-8">
+                                                <div class="form-group has-feedback">
+                                                    <p:remoteCommand name="buscarSeleccionados" actionListener="#{configuracionProformaMBean.filtrarListaSeleccionadas}"
+                                                                     update=":formConfiguracionProforma:listaSeleccionadas :formConfiguracionProforma:botonesOrden"/>
+                                                    <h:inputText pt:placeholder="Escribe para filtrar" value="#{configuracionProformaMBean.parametroBusquedaSeleccionados}"
+                                                                 class="form-control input-lg noround" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                             buscarSeleccionados();
+                                                                             return false;
+                                                                         }"/>
+                                                    <span class="form-control-feedback glyphicon glyphicon-search inline-search" aria-hidden="true"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-12 col-md-4 right-component">
+                                                <h:panelGroup id="botonesOrden">
+                                                    <p:remoteCommand name="moverSeleccionIzquierda" actionListener="#{configuracionProformaMBean.moverSeleccionIzquierda}" 
+                                                                     update=":formConfiguracionProforma:listaSeleccionadas"/>
+                                                    <p:remoteCommand name="moverSeleccionDerecha" actionListener="#{configuracionProformaMBean.moverSeleccionDerecha}" 
+                                                                     update=":formConfiguracionProforma:listaSeleccionadas"/>
+                                                    <p:remoteCommand name="eliminarSeleccion" actionListener="#{configuracionProformaMBean.validarColumnaEliminada}" 
+                                                                     update=":formConfiguracionProforma:listaSeleccionadas :formConfiguracionProforma:botonesOrden :dlgAdvertenciaEliminar"
+                                                                     oncomplete="abrirModalEliminar();"/>
+                                                    <div class="btn #{configuracionProformaMBean.botonesOrdenarDeshabilitados ? 'btn-primary-disabled' : 'btn-primary'} btn-lg noround"
+                                                         onclick="moverSeleccionIzquierda()">
+                                                        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                                                    </div>
+                                                    <div class="btn #{configuracionProformaMBean.botonesOrdenarDeshabilitados ? 'btn-primary-disabled' : 'btn-primary'} btn-lg noround"
+                                                         onclick="eliminarSeleccion()">
+                                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                                    </div>
+                                                    <div class="btn #{configuracionProformaMBean.botonesOrdenarDeshabilitados ? 'btn-primary-disabled' : 'btn-primary'} btn-lg noround"
+                                                         onclick="moverSeleccionDerecha()">
+                                                        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                                    </div>
+                                                    <h:commandButton class="btn btn-default btn-lg noround" value="Exportar" style="margin-left: 4px">
+                                                        <p:fileDownload value="#{configuracionProformaMBean.excelDownload}"/>
+                                                    </h:commandButton>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="row">
+                                            <h:panelGroup id="listaSeleccionadas">
+                                                <p:remoteCommand actionListener="#{configuracionProformaMBean.seleccionarColumna}" name="seleccionarColumna"
+                                                                 update=":formConfiguracionProforma:botonesOrden :formConfiguracionProforma:listaSeleccionadas"/>
+                                                <p:remoteCommand actionListener="#{configuracionProformaMBean.eliminarColumna}" name="eliminarColumna" update=":formConfiguracionProforma:listaSeleccionadas"/>
+                                                <ui:fragment rendered="#{empty configuracionProformaMBean.columnasSeleccionadasFiltradas}">
+                                                    <h4>
+                                                        <p>
+                                                            No se encontraron datos
+                                                        </p>
+                                                    </h4>
+                                                </ui:fragment>
+                                                <ui:repeat value="#{configuracionProformaMBean.columnasSeleccionadasFiltradas}" var="columna">
+                                                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+                                                        <div class="columnas-proforma #{configuracionProformaMBean.idColumnaSeleccionada eq columna.idColumna ? 'columnas-proforma-activo' : ''}"
+                                                             onclick="seleccionarColumna([{name: 'idColumna', value: '#{columna.idColumna}'}])">
+                                                            <div class="row">
+                                                                <div class="col-xs-12 center-component">
+                                                                    <h:outputLabel class="input-lg" value="Columna"/>
+                                                                </div>
+                                                                <div class="col-xs-12 center-component #{empty columna.nombre1 ? 'columnas-proforma-input-sinAsignar' : null}">
+                                                                    <h:outputText class="input-lg" value="#{empty columna.nombre1 ? '[Sin Asignar]' : columna.nombre1}"/>
+                                                                </div>
+                                                                <div class="col-xs-12 center-component">
+                                                                    <h:outputLabel class="input-lg" value="SubColumna"/>
+                                                                </div>
+                                                                <div class="col-xs-12 center-component #{empty columna.nombre2 ? 'columnas-proforma-input-sinAsignar' : null}">
+                                                                    <h:outputText class="input-lg" value="#{empty columna.nombre2 ? '[Sin Asignar]' : columna.nombre2}"/>
+                                                                </div>
+                                                            </div>
+                                                            <div class="pointColumnas">
+                                                                <h:graphicImage value="#{baruApplicationBean.obtenerValorPropiedad('url.local.pointColumnas')}"/>
+                                                            </div>
+                                                            <h:panelGroup class="showOverlayColumnas">
+                                                                <div class="row" style="color: #000000 !important">
+                                                                    <div class="col-xs-12">
+                                                                        <ui:fragment rendered="#{not empty columna.nombre1Ingles}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <b>
+                                                                                        Columna Ingles: 
+                                                                                    </b>
+                                                                                    <span>
+                                                                                        #{columna.nombre1Ingles}
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{not empty columna.nombre2Ingles}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <b>
+                                                                                        SubColumna Ingles: 
+                                                                                    </b>
+                                                                                    <span>
+                                                                                        #{columna.nombre2Ingles}
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.permitirCrearItem}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Crear Item
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoItem}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo Item
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoIdentificador}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo Identificador
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoImagen}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo Imagen
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoCantidad}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo Cantidad
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoValorTotal}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo Valor Total
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoCBM}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo CBM
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoValorUnitario}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo Valor Unitario
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoDescuento}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo Descuento
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.tipoDescripcionItem}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Tipo Descripcion Ítem
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.obligatoria}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Obligatoria
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.incluirProforma}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Incluir Proforma
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.modificable}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Modificable
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.modificableSiNuevo}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Modificar Nuevo
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{columna.requiereOperacion}">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 center-component">
+                                                                                    <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                                                    <span style="color: #000000">
+                                                                                        Columna Calculada
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </ui:fragment>
+                                                                    </div>
+                                                                </div>
+                                                            </h:panelGroup>
+                                                        </div>
+                                                    </div>
+                                                </ui:repeat>
+                                            </h:panelGroup>
+                                        </div>
+                                        <br/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

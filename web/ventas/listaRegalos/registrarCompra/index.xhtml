@@ -1,0 +1,278 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script type="text/javascript">
+            function abrirModalListas() {
+                $('#modalListas').modal('show');
+            }
+
+            function cerrarModalListas() {
+                $('modalListas').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalComentario() {
+                $('#modalComentario').modal('show');
+            }
+
+            function cerrarModalComentario() {
+                $('modalComentario').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Registrar Compra Lista</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        <div class="container">
+
+            <h:panelGroup id="panelListas">
+                <h:panelGroup rendered="#{registrarCompraListaRegaloMBean.dlgListas}">
+                    <h:form id="formListas">
+                        <div class="modal fade" id="modalListas">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">
+                                            Listas encontradas
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p:remoteCommand name="seleccionarLista" actionListener="#{registrarCompraListaRegaloMBean.seleccionarLista}" oncomplete="cerrarModalEspera();"
+                                                         update=":formRegalos :panelListas"/>
+                                        <div class="row">
+                                            <ui:repeat value="#{registrarCompraListaRegaloMBean.listasRegalos}" var="lista">
+                                                <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10 center-component">
+                                                    <div class="contenedor-lista-regalo margin-bottom-10 pointer-cursor"
+                                                         onclick="seleccionarLista([{name: 'idLista', value: '#{lista.idLista}'}]);">
+                                                        <div class="row">
+                                                            <div class="col-xs-12 center-component" style="font-size: 18px; background-color: #DDDDDD; height: 78px">
+                                                                <b>#{lista.nombre}</b>
+                                                            </div>
+                                                        </div>
+                                                        <hr style="border-bottom: 1px solid #BF0039; margin: 10px 2px"/>
+                                                        <div class="row">
+                                                            <div class="col-xs-12 left-component">
+                                                                <b style="font-size: 12px">Creador:</b>
+                                                            </div>
+                                                            <div class="col-xs-12 center-component">
+                                                                #{lista.nombreCreador} #{lista.apellidoCreador}
+                                                            </div>
+                                                        </div>
+                                                        <ui:fragment rendered="#{lista.nombreCocreador ne null and not empty lista.nombreCocreador}">
+                                                            <div class="row">
+                                                                <div class="col-xs-12 left-component">
+                                                                    <b style="font-size: 12px">Co-creador:</b>
+                                                                </div>
+                                                                <div class="col-xs-12 center-component">
+                                                                    #{lista.nombreCocreador} #{lista.apellidoCocreador}
+                                                                </div>
+                                                            </div>
+                                                        </ui:fragment>
+                                                    </div>
+                                                </div>
+                                            </ui:repeat>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                    Cancelar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelComentario">
+                <h:form id="formComentario">
+                    <div class="modal fade" id="modalComentario">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <h4 class="modal-title">
+                                        Comentario
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="form-group">
+                                                <h:outputLabel value="Dejale un comentario al dueño de la lista..."/>
+                                                <h:inputTextarea class="form-control input-lg noround" pt:placeholder="Comentario" value="#{registrarCompraListaRegaloMBean.comentario}" style="resize: none"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <div class="row">
+                                        <div class="col-xs-12 right-component">
+                                            <p:remoteCommand name="guardarDatosWS" actionListener="#{registrarCompraListaRegaloMBean.guardarDatosWS}" update=":panelComentario :formRegalos :panelListas"
+                                                             oncomplete="cerrarModalComentario();"/>
+
+                                            <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                Cancelar
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-lg noround" onclick="guardarDatosWS();">
+                                                Terminar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:form id="formRegalos">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>
+                                    Registrar compra lista regalos
+                                </a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-4 col-md-offset-2">
+                        <div class="form-group">
+                            <p:focus context="formRegalos" for="txt_factura"/>
+
+                            <h:outputLabel class="label-360" value="Factura venta:"/>
+                            <h:inputText id="txt_factura" class="input-360 input-lg noround" value="#{registrarCompraListaRegaloMBean.factura}" autocomplete="off"
+                                         onkeypress="if (event.keyCode === 13) {
+                                                     return false;
+                                                 }">
+                                <f:ajax event="change" render=":formRegalos:parametroLista"/>
+                            </h:inputText>
+                        </div>
+                    </div>
+                    <h:panelGroup id="parametroLista">
+                        <h:panelGroup rendered="#{registrarCompraListaRegaloMBean.factura ne null and not empty registrarCompraListaRegaloMBean.factura}">
+                            <p:remoteCommand name="obtenerDatosLista" actionListener="#{registrarCompraListaRegaloMBean.obtenerDatosLista}" oncomplete="cerrarModalEspera(); abrirModalListas();"
+                                             update=":panelListas :formRegalos:msg :formRegalos:parametroLista :formRegalos:productos"/>
+
+                            <p:focus context="formRegalos" for="txt_lista"/>
+                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10" style="height: 66px">
+                                <div class="form-group">
+                                    <h:outputLabel class="label-360" value="Parámetro búsqueda lista:"/>
+                                    <h:inputText id="txt_lista" class="input-360 input-lg noround" value="#{registrarCompraListaRegaloMBean.parametroBusquedaLista}" style="padding-right: 26px"
+                                                 autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                             abrirModalEspera();
+                                                             obtenerDatosLista();
+                                                             return false;
+                                                         }"/>
+                                    <span class="glyphicon glyphicon-search glyphicon-search-360 pointer-cursor" onclick="abrirModalEspera(); obtenerDatosLista();"></span>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                <hr/>
+
+                <h:panelGroup id="productos">
+                    <h:panelGroup rendered="#{registrarCompraListaRegaloMBean.productos ne null and not empty registrarCompraListaRegaloMBean.productos}">
+                        <div class="row">
+                            <div class="col-xs-12 right-component margin-bottom-10">
+                                <p:remoteCommand name="cambiarAccion" actionListener="#{registrarCompraListaRegaloMBean.cambiarAccion}" update=":formRegalos:productos" oncomplete="cerrarModalEspera();"/>
+
+                                <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); cambiarAccion();">
+                                    <ui:fragment rendered="#{registrarCompraListaRegaloMBean.agregando}">
+                                        <span class="glyphicon glyphicon-minus"></span>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{registrarCompraListaRegaloMBean.agregando == false}">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </ui:fragment>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <p:remoteCommand name="realizarAccion" actionListener="#{registrarCompraListaRegaloMBean.realizarAccion}" update="formRegalos:productos" oncomplete="cerrarModalEspera();"/>
+                            <ui:repeat value="#{registrarCompraListaRegaloMBean.productos}" var="producto">
+                                <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                    <div class="contenedor-producto-lista-regalo pointer-cursor"
+                                         onclick="abrirModalEspera(); realizarAccion([{name: 'item', value: '#{producto.referencia}'}]);">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <img src="#{imagenProductoMBean.obtenerUrlProducto(producto.referencia, false)}" class="img-responsive"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <b style="font-size: 24px">#{baruGenericMBean.convertirARefCorta(producto.referencia)}</b>
+                                            </div>
+                                            <ui:fragment rendered="#{producto.cantidadSeleccionadaFactura gt 0}">
+                                                <div class="col-xs-6 right-component">
+                                                    <span class="badge badge-matisses-red" style="font-size: 24px">
+                                                        #{producto.cantidadSeleccionadaFactura}
+                                                    </span>
+                                                </div>
+                                            </ui:fragment>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 justify-component" style="height: 40px">
+                                                #{baruGenericMBean.obtenerNombreReferencia(producto.referencia)}
+                                            </div>
+                                        </div>
+                                        <hr style="border-bottom: 1px solid #BF0039; margin: 10px 2px"/>
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <b>Falta por regalar: </b><h:outputText value="#{producto.cantidadElegida}" style="color: #BF0039"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12 right-component margin-bottom-10">
+                                <p:remoteCommand name="cancelarListaRegalo" actionListener="#{registrarCompraListaRegaloMBean.cancelarListaRegalo}" update=":formRegalos" oncomplete="cerrarModalEspera();"/>
+                                <button type="button" class="btn btn-default btn-lg noround" onclick="cancelarListaRegalo();">
+                                    Cancelar
+                                </button>
+                                <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalComentario();">
+                                    Guardar
+                                </button>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

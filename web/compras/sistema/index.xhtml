@@ -1,0 +1,220 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Encabezado excel</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <h:form id="formEncabezado" pt:role="form" enctype="multipart/form-data">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3>
+                            ADMINISTRAR EXCEL
+                        </h3>
+                    </div>
+                </div>
+                <br/>
+                <div class="row">
+                    <h:panelGroup id="campos">
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <h:inputText pt:type="number" class="form-control input-lg margin-bottom-10 noround" value="#{encabezadoExcelMBean.primeraColumna}"
+                                         pt:placeholder="Primera Columna"/>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <h:inputText pt:type="number" class="form-control input-lg margin-bottom-10 noround" value="#{encabezadoExcelMBean.ultimaColumna}"
+                                         pt:placeholder="Ultima Columna"/>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <h:inputText pt:type="number" class="form-control input-lg margin-bottom-10 noround" value="#{encabezadoExcelMBean.primeraFila}"
+                                         pt:placeholder="Primera Fila"/>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <h:inputText pt:type="number" class="form-control input-lg margin-bottom-10 noround" value="#{encabezadoExcelMBean.ultimaFila}"
+                                         pt:placeholder="Ultima Fila"/>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <h:inputText class="form-control input-lg margin-bottom-10 noround" value="#{encabezadoExcelMBean.valor}"
+                                         pt:placeholder="Valor"/>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                            <div class="row">
+                                <h:panelGroup id="alineacion">
+                                    <div class="col-xs-4 center-component">
+                                        <p:remoteCommand name="alinearIzquierda" actionListener="#{encabezadoExcelMBean.validarAlineacionIzquierda}"
+                                                         update=":formEncabezado:alineacion"/>
+                                        <span class="glyphicon glyphicon-align-left margin-bottom-10 glyphicon-align-encabezado-excel"
+                                              onclick="alinearIzquierda();" style="#{encabezadoExcelMBean.alineadoIzquierda ? 'color: #BF0039 !important' : ''}"></span>
+                                    </div>
+                                    <div class="col-xs-4 center-component">
+                                        <p:remoteCommand name="alinearCentro" actionListener="#{encabezadoExcelMBean.validarAlineacionCentro}"
+                                                         update=":formEncabezado:alineacion"/>
+                                        <span class="glyphicon glyphicon-align-center margin-bottom-10 glyphicon-align-encabezado-excel"
+                                              onclick="alinearCentro();" style="#{encabezadoExcelMBean.alineadoCentro ? 'color: #BF0039 !important' : ''}"></span>
+                                    </div>
+                                    <div class="col-xs-4 center-component">
+                                        <p:remoteCommand name="alinearDerecha" actionListener="#{encabezadoExcelMBean.validarAlineacionDerecha}"
+                                                         update=":formEncabezado:alineacion"/>
+                                        <span class="glyphicon glyphicon-align-right margin-bottom-10 glyphicon-align-encabezado-excel"
+                                              onclick="alinearDerecha();" style="#{encabezadoExcelMBean.alineadoDerecha ? 'color: #BF0039 !important' : ''}"></span>
+                                    </div>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 right-component">
+                        <p:remoteCommand name="guardar" actionListener="#{encabezadoExcelMBean.guardarConfiguracion}"
+                                         update=":formEncabezado:msg :formEncabezado:campos :formEncabezado:datos"/>
+                        <p:remoteCommand name="cancelar" actionListener="#{encabezadoExcelMBean.limpiar}"
+                                         update=":formEncabezado:msg :formEncabezado:campos :formEncabezado:datos"/>
+                        <button type="button" class="btn btn-lg btn-default noround" onclick="cancelar();">
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn btn-lg btn-primary noround" onclick="guardar();">
+                            Guardar
+                        </button>
+                    </div>
+                </div>
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                <br/>
+                <h:panelGroup id="datos">
+                    <h:panelGroup rendered="#{not empty encabezadoExcelMBean.datos}">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h3>
+                                    DATOS
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="row table-row">
+                                    <div class="col-sm-2 hidden-xs center-component">
+                                        <span class="table-ayuda">
+                                            Columna Inicial
+                                        </span>
+                                    </div>
+                                    <div class="col-sm-2 hidden-xs center-component">
+                                        <span class="table-ayuda">
+                                            Columna Final
+                                        </span>
+                                    </div>
+                                    <div class="col-sm-2 hidden-xs center-component">
+                                        <span class="table-ayuda">
+                                            Fila Inicial
+                                        </span>
+                                    </div>
+                                    <div class="col-sm-2 hidden-xs center-component">
+                                        <span class="table-ayuda">
+                                            Fila Final
+                                        </span>
+                                    </div>
+                                    <div class="col-sm-2 hidden-xs center-component">
+                                        <span class="table-ayuda">
+                                            Valor
+                                        </span>
+                                    </div>
+                                    <div class="col-sm-2 hidden-xs center-component">
+                                        <span class="table-ayuda">
+                                            Alineación
+                                        </span>
+                                    </div>
+                                </div>
+                                <ui:repeat value="#{encabezadoExcelMBean.datos}" var="dato">
+                                    <div class="row table-row">
+                                        <div class="col-xs-12 hidden-sm hidden-md hidden-lg">
+                                            <span class="table-ayuda col-xs-12 center-component">
+                                                Columna Inicial
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-2">
+                                            <span class="col-xs-12 center-component">
+                                                #{dato.columnaInicial}
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 hidden-sm hidden-md hidden-lg">
+                                            <span class="table-ayuda col-xs-12 center-component">
+                                                Columna Final
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-2">
+                                            <span class="col-xs-12 center-component">
+                                                #{dato.columnaFinal}
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 hidden-sm hidden-md hidden-lg">
+                                            <span class="table-ayuda col-xs-12 center-component">
+                                                Fila Inicial
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-2">
+                                            <span class="col-xs-12 center-component">
+                                                #{dato.filaInicial}
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 hidden-sm hidden-md hidden-lg">
+                                            <span class="table-ayuda col-xs-12 center-component">
+                                                Fila Final
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-2">
+                                            <span class="col-xs-12 center-component">
+                                                #{dato.filaFinal}
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 hidden-sm hidden-md hidden-lg">
+                                            <span class="table-ayuda col-xs-12 center-component">
+                                                Valor
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-2">
+                                            <span class="col-xs-12 center-component">
+                                                #{dato.valor}
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 hidden-sm hidden-md hidden-lg">
+                                            <span class="table-ayuda col-xs-12 center-component">
+                                                Alineación
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-2">
+                                            <span class="col-xs-12 center-component">
+                                                <ui:fragment rendered="#{dato.alineadoIzquierda}">
+                                                    <span class="glyphicon glyphicon-align-left"></span>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{dato.alineadoCentro}">
+                                                    <span class="glyphicon glyphicon-align-center"></span>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{dato.alineadoDerecha}">
+                                                    <span class="glyphicon glyphicon-align-right"></span>
+                                                </ui:fragment>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <br/>
+            </div>
+        </h:form>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

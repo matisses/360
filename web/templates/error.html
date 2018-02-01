@@ -1,0 +1,33 @@
+<style type="text/css">
+    body, html, .body {
+        /*background: #f3f3f3 !important; */
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+        color: #444;
+    }
+</style>
+<container>
+    <spacer size="16"></spacer>
+    <row>
+        <columns>
+            <center>
+                <img src="https://www.matisses.co/360/360_150h.png" alt="logo">
+            </center>
+        </columns>
+    </row>
+    <row>
+        <columns large="8">
+            <table style="width: 100%"><tr><td style="width: 100%; text-align: center;"><h1 style="margin-top: 5px; margin-bottom: 0px;">Reporte de error</h1></td></tr></table>
+        </columns>
+        <columns large="8">
+            <table style="width: 100%">
+                <tr>
+                    <td style="width: 100%; text-align: center;">
+                        Ocurri&oacute; un error al ejecutar el proceso <b>${processName}</b> <br/>
+                        <samp>${errorMessage}</samp> <br/>
+                        El proceso fue ejecutado por el usuario <code>${username}</code>
+                    </td>
+                </tr>
+            </table>
+        </columns>
+    </row>
+</container>

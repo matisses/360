@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Ciudades restringidas y áreas metropolitanas</title>
+    </h:head>
+    <h:body>
+        <div id="wrap">
+            <m:navbar/>
+            <div class="container">
+
+                <h:form id="formAreasMetro">
+                    <h2>Áreas Metropolitanas</h2>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-4">
+                            <div class="form-group">
+                                <h:outputLabel for="selCiudadPpal" value="Ciudad Principal"/>
+                                <h:selectOneMenu styleClass="form-control input-lg noround" id="selCiudadPpal" 
+                                                 value="#{ciudadesPpalesMBean.codCiudadPpal}">
+                                    <f:selectItem itemLabel="Seleccione una..." noSelectionOption="true" />
+                                    <f:selectItems value="#{ciudadesPpalesMBean.municipios}" var="mpio" itemLabel="#{mpio.nombre}" itemValue="#{mpio.codigo}" />
+                                    <f:ajax listener="#{ciudadesPpalesMBean.cargarAreaMetropolitana}" render=":formAreasMetro:panelMpios"/>
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-4">
+                            <div class="form-group">
+                                <h:outputLabel for="selCiudadSec" value="Ciudad Secundaria"/>
+                                <h:selectOneMenu styleClass="form-control input-lg noround" id="selCiudadSec" 
+                                                 value="#{ciudadesPpalesMBean.codCiudadSec}">
+                                    <f:selectItem itemLabel="Seleccione una..." noSelectionOption="true" />
+                                    <f:selectItems value="#{ciudadesPpalesMBean.municipios}" var="mpio" itemLabel="#{mpio.nombre}" itemValue="#{mpio.codigo}" />
+                                    <f:ajax listener="#{ciudadesPpalesMBean.valorCambio}"/>
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-4">
+                            <p:remoteCommand name="agregarMpio" actionListener="#{ciudadesPpalesMBean.agregarMpio}" update=":formAreasMetro"/>
+                            <button class="btn btn-lg btn-primary noround" onclick="agregarMpio()" type="button">Agregar</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h:panelGroup id="panelMpios">
+                            <p:remoteCommand name="eliminarMpio" actionListener="#{ciudadesPpalesMBean.eliminarMpio}" update=":formAreasMetro:panelMpios"/>
+                            <ui:repeat value="#{ciudadesPpalesMBean.municipiosCercanos}" var="mpio">
+                                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
+                                    <div class="municipio-cercano">
+                                        #{mpio.nombre} <span class="glyphicon glyphicon-trash pull-right" 
+                                              onclick="eliminarMpio([{name: 'codMpio', value: '#{mpio.codigo}'}])"></span>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </h:panelGroup>
+                    </div>
+                </h:form>
+                <hr/>
+                <h2>Municipios Restringidos</h2>
+                <h:form id="formRestricciones">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <h:outputLabel for="selCiudadRestringir" value="Ciudad a Restringir"/>
+                                <h:selectOneMenu styleClass="form-control input-lg noround" id="selCiudadRestringir" 
+                                                 value="#{ciudadesPpalesMBean.codCiudadRestringir}">
+                                    <f:selectItem itemLabel="Seleccione una..." noSelectionOption="true" />
+                                    <f:selectItems value="#{ciudadesPpalesMBean.municipios}" var="mpio" itemLabel="#{mpio.nombre}" itemValue="#{mpio.codigo}" />
+                                    <f:ajax listener="#{ciudadesPpalesMBean.valorCambio}"/>
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h:panelGroup id="panelMpiosRestringidos">
+                            <ui:repeat value="#{ciudadesPpalesMBean.municipiosRestringidos}" var="mpio">
+                                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
+                                    #{mpio.nombre}<span class="glyphicon glyphicon-trash pull-right" 
+                                          onclick="eliminarMpioRestringidos([{name: 'codMpio', value: '#{mpio.codigo}'}])"></span>
+                                </div>
+                            </ui:repeat>
+                        </h:panelGroup>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

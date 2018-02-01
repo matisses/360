@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:composite="http://java.sun.com/jsf/composite" 
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <composite:interface>
+
+    </composite:interface>
+    <composite:implementation>
+        <script type="text/javascript" src="/360/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="/360/js/jquery.cycle.all.js"></script>
+        <script>
+            $(document).ready(function () {
+                $('#slideshow').cycle({
+                    fx: 'fade',
+                    pager: '#smallnav',
+                    pause: 1,
+                    speed: 1800,
+                    timeout: 1800000
+                });
+            });
+        </script>
+        <div id="slideshow">
+            <ui:repeat value="#{baruApplicationBean.fondos}" var="fondo">
+                <img src="/shared/fondos/#{fondo}" class="bgM"/>
+            </ui:repeat>
+        </div>
+    </composite:implementation>
+</html>
+

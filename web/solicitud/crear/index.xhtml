@@ -1,0 +1,509 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <script src="/360/js/arriba.js"></script>
+        <script type="text/javascript">
+            function focusReferencia() {
+                document.getElementById('formSolicitud:txt_referencia').focus();
+            }
+
+            function abrirModalEliminar() {
+                $('#modalEliminar').modal('show');
+            }
+
+            function cerrarModalEliminar() {
+                $('#modalEliminar').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalItems() {
+                $('#modalItems').modal('show');
+            }
+
+            function cerrarModalItems() {
+                $('#modalItems').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Pedido tienda</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <span class="ir-arriba hidden-sm hidden-xs">
+                <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+            </span>
+
+            <h:panelGroup id="panelEliminar">
+                <h:form id="formEliminar">
+                    <div class="modal fade" id="modalEliminar" data-keyboard="false" data-backdrop="static">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header-alerta">
+                                    <h4 class="modal-title">
+                                        Eliminar ítem
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            <p>
+                                                ¿Está seguro(a) que desea eliminar esta referencia del pedido?
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-4 center-component">
+                                            <img class="img-responsive" src="#{imagenProductoMBean.obtenerUrlProducto(solicitudTrasladoMBean.referencia, false)}"/>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-8">
+                                            <div class="row">
+                                                <div class="col-xs-5 right-component">
+                                                    <b>Referencia: </b>
+                                                </div>
+                                                <div class="col-xs-7">
+                                                    #{solicitudTrasladoMBean.referencia}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-5 right-component">
+                                                    <b>Cantidad: </b>
+                                                </div>
+                                                <div class="col-xs-7">
+                                                    1
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-5 right-component">
+                                                    <b>Comentario: </b>
+                                                </div>
+                                                <div class="col-xs-7">
+                                                    #{solicitudTrasladoMBean.comentario}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <div class="row">
+                                        <div class="col-xs-12 right-component">
+                                            <p:remoteCommand name="limpiarBasico" actionListener="#{solicitudTrasladoMBean.limpiarBasico}" update=":panelEliminar"/>
+                                            <p:remoteCommand name="modal" update=":panelEliminar" oncomplete="cerrarModalEliminar(); abrirModalEspera(); eliminarItem();"/>
+                                            <p:remoteCommand name="eliminarItem" actionListener="#{solicitudTrasladoMBean.eliminarItem}" update=":formSolicitud"
+                                                             oncomplete="cerrarModalEspera(); focusReferencia();"/>
+
+                                            <button type="button" class="btn btn-default btn-lg noround" onclick="limpiarBasico();">
+                                                Cancelar
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-lg noround" style="margin-left: 0px" onclick="modal();">
+                                                Eliminar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelItems">
+                <h:panelGroup rendered="#{solicitudTrasladoMBean.dlgItems}">
+                    <h:form id="formItems">
+                        <div class="modal fade" id="modalItems">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">
+                                            Ítems
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body" style="max-height: 450px;overflow: auto;">
+                                        <h:panelGroup id="content">
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-6 center-component margin-bottom-10" style="font-size: 18px">
+                                                    #{baruGenericMBean.convertirARefCorta(solicitudTrasladoMBean.detalleDto.referencia)}
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 center-component margin-bottom-10" style="font-size: 18px">
+                                                    #{baruGenericMBean.obtenerNombreWebAlmacen(solicitudTrasladoMBean.solicitud.sucursal)}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-md-5">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 justify-component">
+                                                            <p class="alert alert-warning">
+                                                                <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                                Seleccione a que ubicación quiere que le llegue el ítem, si no desea informar este dato continue con el proceso.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <div id="images" class="carousel slide">
+                                                                <ol class="carousel-indicators">
+                                                                    <ui:repeat value="#{solicitudTrasladoMBean.imagenes}" var="imageIndicator">
+                                                                        <li data-target="#images" data-slide-to="#{imageIndicator[1]}" class="#{imageIndicator[1] eq '0' ? 'active' : ''}"></li>
+                                                                    </ui:repeat>
+                                                                </ol>
+
+                                                                <div class="carousel-inner">
+                                                                    <ui:repeat value="#{solicitudTrasladoMBean.imagenes}" var="image">
+                                                                        <div class="item #{image[1] eq '0' ? 'active' : ''}">
+                                                                            <img src="#{image[0]}" class="img-responsive"/>
+                                                                        </div>
+                                                                    </ui:repeat>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-md-7 margin-bottom-10">
+                                                    <div class="row">
+                                                        <h:panelGroup id="cantidades">
+                                                            <div style="background-color: #DDDDDD; height: 37px; padding: 8px; margin: 0px 15px 5px 15px">
+                                                                <div class="col-xs-4 center-component">
+                                                                    <span>
+                                                                        <b>Cant: </b>#{solicitudTrasladoMBean.detalleDto.cantidad}
+                                                                    </span>
+                                                                </div>
+                                                                <div class="col-xs-4 center-component">
+                                                                    <span>
+                                                                        <b>Asig: </b>#{solicitudTrasladoMBean.detalleDto.cantidadUsada}
+                                                                    </span>
+                                                                </div>
+                                                                <div class="col-xs-4 center-component">
+                                                                    <span>
+                                                                        <b>Rest: </b>#{solicitudTrasladoMBean.detalleDto.cantidad - solicitudTrasladoMBean.detalleDto.cantidadUsada}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </h:panelGroup>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <p:remoteCommand name="asignarUbicacion" actionListener="#{solicitudTrasladoMBean.asignarUbicacion}"
+                                                                             update=":formItems:ubicaciones :formItems:cantidades :formItems:msg"/>
+                                                            <p:remoteCommand name="quitarUbicacion" actionListener="#{solicitudTrasladoMBean.quitarUbicacion}"
+                                                                             update=":formItems:ubicaciones :formItems:cantidades :formItems:msg"/>
+
+                                                            <h:panelGroup id="ubicaciones">
+                                                                <table class="table table-striped">
+                                                                    <tr>
+                                                                        <th class="head-tabla">
+                                                                            Ubicación
+                                                                        </th>
+                                                                        <th class="head-tabla">
+                                                                            Usado
+                                                                        </th>
+                                                                        <th class="head-tabla"></th>
+                                                                    </tr>
+                                                                    <ui:repeat value="#{solicitudTrasladoMBean.detalleDto.saldoUbicaciones}" var="ubicacion">
+                                                                        <tr>
+                                                                            <td>
+                                                                                <div class="row">
+                                                                                    <div>
+                                                                                        <div class="col-xs-12 center-component">
+                                                                                            #{ubicacion.binCode}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="row">
+                                                                                    <div>
+                                                                                        <div class="col-xs-12 center-component">
+                                                                                            #{ubicacion.onHandQtyUsado}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="row">
+                                                                                    <div>
+                                                                                        <div class="col-xs-6 center-component pointer-cursor">
+                                                                                            <span class="glyphicon glyphicon-chevron-down"
+                                                                                                  onclick="quitarUbicacion([{name: 'ubicacion', value: '#{ubicacion.ubicacion}'}]);"></span>
+                                                                                        </div>
+                                                                                        <div class="col-xs-6 center-component pointer-cursor">
+                                                                                            <span class="glyphicon glyphicon-chevron-up"
+                                                                                                  onclick="asignarUbicacion([{name: 'ubicacion', value: '#{ubicacion.ubicacion}'}]);"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </ui:repeat>
+                                                                </table>
+                                                            </h:panelGroup>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                        </h:panelGroup>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <h:panelGroup id="check">
+                                                    <p:remoteCommand name="checkearImprimir" actionListener="#{solicitudTrasladoMBean.imprimirSolicitud}" update=":formItems:check"/>
+
+                                                    <span class="glyphicon #{solicitudTrasladoMBean.imprimir ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                          onclick="checkearImprimir();"></span>
+                                                    <h:outputLabel value="Imprimir Solicitud" class="label-normal" onclick="checkearImprimir();"/>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <p:remoteCommand name="obtenerSiguienteItem" actionListener="#{solicitudTrasladoMBean.obtenerSiguienteItem}" update=":formItems:content :formItems:btns"/>
+                                                <p:remoteCommand name="obtenerAnteriorItem" actionListener="#{solicitudTrasladoMBean.obtenerAnteriorItem}" update=":formItems:content :formItems:btns"/>
+                                                <p:remoteCommand name="modal" update=":panelItems" oncomplete="cerrarModalItems(); abrirModalEspera(); solicitar();"/>
+                                                <p:remoteCommand name="solicitar" actionListener="#{solicitudTrasladoMBean.solicitar}" update=":formSolicitud :panelItems"
+                                                                 oncomplete="cerrarModalEspera(); abrirModalItems();"/>
+
+                                                <h:panelGroup id="btns">
+                                                    <button type="button" class="btn btn-default btn-lg noround">
+                                                        Cancelar
+                                                    </button>
+                                                    <ui:fragment rendered="#{solicitudTrasladoMBean.item gt 1 and solicitudTrasladoMBean.item le solicitudTrasladoMBean.detalle.size()}">
+                                                        <button type="button" class="btn btn-default btn-lg noround" style="margin-left: 0px" onclick="obtenerAnteriorItem();">
+                                                            Atrás
+                                                        </button>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{solicitudTrasladoMBean.item lt solicitudTrasladoMBean.detalle.size()}">
+                                                        <button type="button" class="btn btn-default btn-lg noround" style="margin-left: 0px" onclick="obtenerSiguienteItem();">
+                                                            Siguiente
+                                                        </button>
+                                                    </ui:fragment>
+                                                    <button type="button" class="btn btn-primary btn-lg noround" style="margin-left: 0px" onclick="modal();">
+                                                        Terminar
+                                                    </button>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:form id="formSolicitud">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Pedido tienda</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <h:panelGroup id="contenedor">
+                    <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                    <ui:fragment rendered="#{solicitudTrasladoMBean.paso eq 1}">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-4 col-sm-offset-2">
+                                <div class="form-group">
+                                    <p:focus context="formSolicitud" for="txt_referencia"/>
+                                    <h:outputLabel value="Referencia:"/>
+                                    <h:inputText id="txt_referencia" class="form-control input-lg noround" value="#{solicitudTrasladoMBean.referencia}" autocomplete="off"
+                                                 onkeypress="if (event.keyCode === 13) {
+                                                             return false;
+                                                         }"/>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-4">
+                                <div class="form-group">
+                                    <h:outputLabel value="Cantidad:"/>
+                                    <h:inputText id="txt_cantidad" class="form-control input-lg noround" value="#{solicitudTrasladoMBean.cantidad}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                return false;
+                                            }"/>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+                                <div class="form-group">
+                                    <h:outputLabel value="Comentario:"/>
+                                    <h:inputTextarea id="txa_comentario" class="form-control input-lg noround" value="#{solicitudTrasladoMBean.comentario}" style="height: 95px; resize: none"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-8 col-sm-offset-2 right-component">
+                                <p:remoteCommand name="agregarReferencia" actionListener="#{solicitudTrasladoMBean.agregarReferencia}" oncomplete="cerrarModalEspera(); focusReferencia();"
+                                                 update=":formSolicitud:msg :formSolicitud:detalle :formSolicitud:txt_referencia :formSolicitud:txt_cantidad :formSolicitud:txa_comentario :formSolicitud:btn-informe"/>
+
+                                <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); agregarReferencia();">
+                                    Agregar
+                                </button>
+                            </div>
+                        </div>
+                        <hr/>
+
+                        <h:panelGroup id="detalle">
+                            <p:remoteCommand name="seleccionarItemEliminar" actionListener="#{solicitudTrasladoMBean.seleccionarItemEliminar}" update=":panelEliminar"
+                                             oncomplete="cerrarModalEspera(); abrirModalEliminar();"/>
+
+                            <div class="row">
+                                <ui:repeat value="#{solicitudTrasladoMBean.detalle}" var="detalle">
+                                    <div class="col-xs-12 col-sm-6 col-sm-4 margin-bottom-10">
+                                        <div class="pointer-cursor contenedor-pedido" onclick="abrirModalEspera(); seleccionarItemEliminar([{name: 'idDetalle', value: '#{detalle.idSolicitudDetalle}'}]);">
+                                            <div class="row">
+                                                <div class="col-xs-5">
+                                                    <img class="img-mini" src="#{imagenProductoMBean.obtenerUrlProducto(detalle.referencia, true)}"/>
+                                                </div>
+                                                <div class="col-xs-7 center-component">
+                                                    <div class="row">
+                                                        <div class="col-xs-12" style="font-size: 27px">
+                                                            <b>#{baruGenericMBean.convertirARefCorta(detalle.referencia)}</b>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <span class="badge badge-gray">
+                                                                #{detalle.cantidad}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 justify-component" style="font-size: 12px; height: 52px">
+                                                    #{detalle.comentario}
+                                                </div>
+                                            </div>
+                                            <hr style="border-bottom: 1px solid #BF0039; margin-top: 3px; margin-bottom: 3px"/>
+                                            <div class="row">
+                                                <div class="col-xs-12 justify-component">
+                                                    #{baruGenericMBean.obtenerNombreReferencia(detalle.referencia)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </h:panelGroup>
+
+                        <h:panelGroup id="btn-informe">
+                            <ui:fragment rendered="#{solicitudTrasladoMBean.detalle ne null and not empty solicitudTrasladoMBean.detalle}">
+                                <div class="row">
+                                    <div class="col-xs-12 right-component">
+                                        <p:remoteCommand name="cancelarSolicitud" actionListener="#{solicitudTrasladoMBean.cancelarSolicitud}" update=":formSolicitud" oncomplete="cerrarModalEspera();"/>
+                                        <p:remoteCommand name="generarInformeSolicitud" actionListener="#{solicitudTrasladoMBean.generarInformeSolicitud}" update=":formSolicitud:contenedor"
+                                                         oncomplete="cerrarModalEspera();"/>
+
+                                        <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); cancelarSolicitud();">
+                                            Cancelar
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); generarInformeSolicitud();">
+                                            Informe
+                                        </button>
+                                    </div>
+                                </div>
+                            </ui:fragment>
+                        </h:panelGroup>                        
+                    </ui:fragment>
+
+                    <ui:fragment rendered="#{solicitudTrasladoMBean.paso eq 2}">
+                        <div class="row">
+                            <ui:repeat value="#{solicitudTrasladoMBean.informe.entrySet().toArray()}" var="informe">
+                                <div class="col-xs-12 center-component">
+                                    <div>
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <b style="font-size: 20px">#{informe.key} #{baruGenericMBean.obtenerNombreWebAlmacen(informe.key)}</b>
+                                            </div>
+                                        </div>
+                                        <hr style="border-bottom: 1px solid #BF0039"/>
+                                        <div class="row">
+                                            <ui:repeat value="#{informe.value}" var="value">
+                                                <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                                    <div style="border: 1px solid #DDDDDD; margin: 0 10px; padding: 10px; height: 200px">
+                                                        <div class="row">
+                                                            <div class="col-xs-5">
+                                                                <img class="img-mini" src="#{imagenProductoMBean.obtenerUrlProducto(value.referencia, true)}"/>
+                                                            </div>
+                                                            <div class="col-xs-7 center-component">
+                                                                <div class="row">
+                                                                    <div class="col-xs-12" style="font-size: 27px">
+                                                                        <b>#{baruGenericMBean.convertirARefCorta(value.referencia)}</b>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-xs-12">
+                                                                        <span class="badge badge-gray">
+                                                                            #{value.cantidad}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-xs-12 justify-component" style="font-size: 12px; height: 52px">
+                                                                #{value.comentario}
+                                                            </div>
+                                                        </div>
+                                                        <hr style="border-bottom: 1px solid #BF0039; margin-top: 3px; margin-bottom: 3px"/>
+                                                        <div class="row">
+                                                            <div class="col-xs-12 justify-component">
+                                                                #{baruGenericMBean.obtenerNombreReferencia(value.referencia)}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ui:repeat>
+                                        </div>
+                                        <hr/>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12 right-component">
+                                <p:remoteCommand name="verPedido" actionListener="#{solicitudTrasladoMBean.verPedido}" update=":formSolicitud" oncomplete="cerrarModalEspera();"/>
+                                <p:remoteCommand name="abrirDlgItems" actionListener="#{solicitudTrasladoMBean.abrirDlgItems}" update=":panelItems" oncomplete="cerrarModalEspera(); abrirModalItems();"/>
+
+                                <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); verPedido();">
+                                    Atrás
+                                </button>
+                                <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); abrirDlgItems();">
+                                    Crear
+                                </button>
+                            </div>
+                        </div>
+                    </ui:fragment>
+                </h:panelGroup>
+                <br/>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

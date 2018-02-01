@@ -1,0 +1,436 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script src="/360/js/arriba.js"></script>
+        <script type="text/javascript">
+            function abrirModalMaterial() {
+                $('#modalMaterial').modal('show');
+            }
+
+            function cerrarModalMaterial() {
+                $('modalMaterial').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalColor() {
+                $('#modalColor').modal('show');
+            }
+
+            function cerrarModalColor() {
+                $('modalColor').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Articulos</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <span class="ir-arriba hidden-sm hidden-xs">
+                <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+            </span>
+
+            <h:panelGroup id="panelMaterial">
+                <h:panelGroup rendered="#{materialesColoresMBean.dlgMateriales}">
+                    <h:form id="formMaterial">
+                        <div id="modalMaterial" class="modal fade" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content dialog-content">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">Crear material</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p:focus context="formMaterial" for="txt_nombre"/>
+
+                                        <div class="row">
+                                            <div class="col-xs-12 col-md-8 col-md-offset-2 margin-bottom-10">
+                                                <label>Nombre:</label>
+                                                <h:inputText id="txt_nombre" class="form-control input-lg noround" value="#{materialesColoresMBean.nombreMaterial}" autocomplete="off"
+                                                             onkeypress="if (event.keyCode === 13) {
+                                                                         return false;
+                                                                     }"/>
+                                            </div>
+                                            <div class="col-xs-12 col-md-8 col-md-offset-2 margin-bottom-10">
+                                                <label>Cuidados:</label>
+                                                <h:inputTextarea class="form-control input-lg noround" style="height: 190px; resize: none" value="#{materialesColoresMBean.cuidadosMaterial}"/>
+                                            </div>
+                                        </div>
+                                        <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <p:remoteCommand name="modal" update=":panelMaterial" oncomplete="crearMaterial(); abrirModalEspera();"/>
+                                        <p:remoteCommand name="crearMaterial" actionListener="#{materialesColoresMBean.crearMaterial}" update=":formMaterial:msg :panelMaterial :formArticulos:materialesConf"
+                                                         oncomplete="cerrarModalEspera(); abrirModalMaterial();"/>
+
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="modal();">Guardar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelColor">
+                <h:panelGroup rendered="#{materialesColoresMBean.dlgColores}">
+                    <h:form id="formColor">
+                        <div id="modalColor" class="modal fade" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content dialog-content">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">Crear color</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p:focus context="formMaterial" for="txt_nombre"/>
+
+                                        <div class="row">
+                                            <div class="col-xs-12 col-md-8 col-md-offset-2 margin-bottom-10">
+                                                <label>Color genérico:</label>
+                                                <h:selectOneMenu class="form-control input-lg noround" value="#{materialesColoresMBean.colorGenerico}">
+                                                    <f:selectItem itemLabel="Seleccione color" itemValue=""/>
+                                                    <f:selectItems value="#{materialesColoresMBean.coloresGenericos}" var="colorGenerico" itemLabel="#{colorGenerico.name}" itemValue="#{colorGenerico.code}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 col-md-8 col-md-offset-2 margin-bottom-10">
+                                                <label>Nombre:</label>
+                                                <h:inputText id="txt_nombre" class="form-control input-lg noround" value="#{materialesColoresMBean.nombreColor}" autocomplete="off"
+                                                             onkeypress="if (event.keyCode === 13) {
+                                                                         return false;
+                                                                     }"/>
+                                            </div>
+                                            <div class="col-xs-12 col-md-8 col-md-offset-2 margin-bottom-10">
+                                                <p:colorPicker mode="inline" value="#{materialesColoresMBean.hexaColor}"/>
+                                            </div>
+                                        </div>
+                                        <p:messages id="msg" showDetail="true" showSummary="true"/>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <p:remoteCommand name="modal" update=":panelColor" oncomplete="crearColor(); abrirModalEspera();"/>
+                                        <p:remoteCommand name="crearColor" actionListener="#{materialesColoresMBean.crearColor}" update=":formColor:msg :panelColor :formArticulos:coloresConf"
+                                                         oncomplete="cerrarModalEspera(); abrirModalColor();"/>
+
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="modal();">Guardar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:form id="formAdjunto" enctype="multipart/form-data">
+                <div id="modalAdjunto" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content dialog-content">
+                            <div class="modal-header dialog-header">
+                                <h4 class="modal-title">Subir archivo</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="form-group">
+                                            <div class="input-group file-caption-main">
+                                                <div class="form-control noround" tabindex="500">
+                                                    <div class="file-caption-name">
+                                                        <ui:fragment rendered="#{materialesColoresMBean.fileName(materialesColoresMBean.file)}">
+                                                            <i class="glyphicon glyphicon-file"></i>
+                                                            #{materialesColoresMBean.fileName(materialesColoresMBean.file)}
+                                                        </ui:fragment>
+                                                    </div>
+                                                </div>
+                                                <div class="input-group-btn">
+                                                    <div class="btn btn-primary btn-file noround" tabindex="500">
+                                                        <i class="glyphicon glyphicon-folder-open"></i>
+                                                        &nbsp;
+                                                        <span>Navegar</span>
+                                                        <h:inputFile class="file" value="#{materialesColoresMBean.file}">
+                                                            <f:ajax event="change" render=":formArticulos" listener="#{materialesColoresMBean.validarDocumentoCargado}"/>
+                                                        </h:inputFile>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+
+            <h:form id="formArticulos">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Materiales y colores</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 right-component">
+                        <p:remoteCommand name="abrirDlgMaterial" actionListener="#{materialesColoresMBean.abrirDlgMaterial}" oncomplete="cerrarModalEspera(); abrirModalMaterial();" update=":panelMaterial"/>
+                        <p:remoteCommand name="abrirDlgColor" actionListener="#{materialesColoresMBean.abrirDlgColor}" oncomplete="cerrarModalEspera(); abrirModalColor();" update=":panelColor"/>
+                        <p:remoteCommand name="limpiar" actionListener="#{materialesColoresMBean.limpiar}" oncomplete="cerrarModalEspera();" update=":formArticulos"/>
+
+                        <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); abrirDlgMaterial();">
+                            <span class="glyphicon glyphicon-plus"></span> Material
+                        </button>
+                        <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); abrirDlgColor();">
+                            <span class="glyphicon glyphicon-plus"></span> Color
+                        </button>
+                        <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); limpiar();">
+                            <span class="glyphicon glyphicon-trash"></span> Cancelar
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-md-4 margin-bottom-10">
+                        <div class="row">
+                            <div class="col-xs-12 margin-bottom-10">
+                                <p:remoteCommand name="buscarItems" actionListener="#{materialesColoresMBean.buscarItems}" update=":formArticulos:msg :formArticulos:tabla :formArticulos:configuracion"
+                                                 oncomplete="cerrarModalEspera();"/>
+
+                                <label>Parámetro búsqueda:</label>
+                                <div class="input-group">
+                                    <h:inputText class="form-control input-lg noround" autocomplete="off" value="#{materialesColoresMBean.parametroBusqueda}" onkeypress="if (event.keyCode === 13) {
+                                                abrirModalEspera();
+                                                buscarItems();
+                                                return false;
+                                            }"/>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary btn-lg noround" type="button" style="font-size: 23px; padding: 8.5px 10px 4.5px 10px" onclick="abrirModalEspera(); buscarItems();">
+                                            <span class="glyphicon glyphicon-search"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 right-component">
+                                <button type="button" class="btn btn-default btn-lg noround" data-toggle="modal" data-target="#modalAdjunto">
+                                    Subir archivo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-8" style="padding-top: 24px">
+                        <p:remoteCommand name="seleccionarItem" actionListener="#{materialesColoresMBean.seleccionarItem}" update=":formArticulos:tabla :formArticulos:msg :formArticulos:configuracion"
+                                         oncomplete="cerrarModalEspera();"/>
+
+                        <h:panelGroup id="tabla">
+                            <div style="height: 200px; overflow-y: auto">
+                                <table class="table table-bordered table-striped table-responsive">
+                                    <tr>
+                                        <th class="head-tabla">Referencia</th>
+                                        <th class="head-tabla">Ref. prov.</th>
+                                        <th class="head-tabla">Nombre</th>
+                                    </tr>
+                                    <ui:repeat value="#{materialesColoresMBean.items}" var="item">
+                                        <tr class="#{item.seleccionado ? 'tr-tabla-active' : 'tr-tabla'} pointer-cursor" onclick="abrirModalEspera(); seleccionarItem([{name: 'itemCode', value: '#{item.itemCode}'}]);">
+                                            <td class="center-component">#{baruGenericMBean.convertirARefCorta(item.itemCode)}</td>
+                                            <td class="center-component">#{item.uURefPro}</td>
+                                            <td>#{item.itemName}</td>
+                                        </tr>
+                                    </ui:repeat>
+                                </table>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </div>
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                <hr/>
+                <div class="row">
+                    <h:panelGroup id="configuracion">
+                        <h:panelGroup rendered="#{materialesColoresMBean.verConfiguracion}">
+                            <div class="col-xs-12 col-md-9 margin-bottom-10">
+                                <ul class="nav nav-tabs margin-bottom-10">
+                                    <li class="active"><a data-toggle="tab" href="#materiales">Materiales</a></li>
+                                    <li><a data-toggle="tab" href="#colores">Colores</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div id="materiales" class="tab-pane fade in active">
+                                        <div class="row">
+                                            <h:panelGroup id="materialesConf">
+                                                <div class="col-xs-12 col-sm-6">
+                                                    <p:remoteCommand name="seleccionarMaterialDisponible" actionListener="#{materialesColoresMBean.seleccionarMaterialDisponible}" oncomplete="cerrarModalEspera();"
+                                                                     update=":formArticulos:msg :formArticulos:materialesConf"/>
+
+                                                    <h3 class="center-component">Disponibles</h3>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <div style="height: 492px; overflow: auto">
+                                                                <table class="table table-bordered table-striped table-responsive">
+                                                                    <ui:repeat value="#{materialesColoresMBean.materiales}" var="material">
+                                                                        <ui:fragment rendered="#{material.seleccionado == false}">
+                                                                            <tr class="tr-tabla pointer-cursor" onclick="abrirModalEspera(); seleccionarMaterialDisponible([{name: 'code', value: '#{material.code}'}]);">
+                                                                                <td>#{material.name}</td>
+                                                                            </tr>
+                                                                        </ui:fragment>
+                                                                    </ui:repeat>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6">
+                                                    <p:remoteCommand name="seleccionarMaterialSeleccionado" actionListener="#{materialesColoresMBean.seleccionarMaterialSeleccionado}" oncomplete="cerrarModalEspera();"
+                                                                     update=":formArticulos:msg :formArticulos:materialesConf"/>
+
+                                                    <h3 class="center-component">Seleccionados</h3>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <div style="height: 492px; overflow: auto">
+                                                                <table class="table table-bordered table-striped table-responsive">
+                                                                    <ui:repeat value="#{materialesColoresMBean.materiales}" var="materialS">
+                                                                        <ui:fragment rendered="#{materialS.seleccionado}">
+                                                                            <tr class="tr-tabla pointer-cursor" onclick="abrirModalEspera(); seleccionarMaterialSeleccionado([{name: 'code', value: '#{materialS.code}'}]);">
+                                                                                <td>#{materialS.name}</td>
+                                                                            </tr>
+                                                                        </ui:fragment>
+                                                                    </ui:repeat>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                    <div id="colores" class="tab-pane fade">
+                                        <div class="row">
+                                            <h:panelGroup id="coloresConf">
+                                                <div class="col-xs-12 col-sm-6">
+                                                    <p:remoteCommand name="seleccionarColorDisponible" actionListener="#{materialesColoresMBean.seleccionarColorDisponible}" oncomplete="cerrarModalEspera();"
+                                                                     update=":formArticulos:msg :formArticulos:coloresConf"/>
+
+                                                    <h3 class="center-component">Disponibles</h3>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <div style="height: 492px; overflow: auto">
+                                                                <table class="table table-bordered table-striped table-responsive">
+                                                                    <ui:repeat value="#{materialesColoresMBean.colores}" var="color">
+                                                                        <ui:fragment rendered="#{color.seleccionado == false}">
+                                                                            <tr class="tr-tabla pointer-cursor" onclick="abrirModalEspera(); seleccionarColorDisponible([{name: 'code', value: '#{color.code}'}]);">
+                                                                                <td style="width: 35px"><span class="glyphicon glyphicon-stop" style="font-size: 16px; color: #{color.codigoHexa}"></span></td>
+                                                                                <td>#{color.name}</td>
+                                                                            </tr>
+                                                                        </ui:fragment>
+                                                                    </ui:repeat>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6">
+                                                    <p:remoteCommand name="seleccionarColorSeleccionado" actionListener="#{materialesColoresMBean.seleccionarColorSeleccionado}" oncomplete="cerrarModalEspera();"
+                                                                     update=":formArticulos:msg :formArticulos:coloresConf"/>
+                                                    <p:remoteCommand name="seleccionarColorPrincipal" actionListener="#{materialesColoresMBean.seleccionarColorPrincipal}" oncomplete="cerrarModalEspera();"
+                                                                     update=":formArticulos:msg :formArticulos:coloresConf"/>
+
+                                                    <h3 class="center-component">Seleccionados</h3>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <div style="height: 492px; overflow: auto">
+                                                                <table class="table table-bordered table-striped table-responsive">
+                                                                    <ui:repeat value="#{materialesColoresMBean.colores}" var="colorS">
+                                                                        <ui:fragment rendered="#{colorS.seleccionado}">
+                                                                            <tr class="tr-tabla pointer-cursor">
+                                                                                <td style="width: 35px" onclick="abrirModalEspera(); seleccionarColorSeleccionado([{name: 'code', value: '#{colorS.code}'}]);">
+                                                                                    <span class="glyphicon glyphicon-stop" style="font-size: 16px; color: #{colorS.codigoHexa}"></span>
+                                                                                </td>
+                                                                                <td onclick="abrirModalEspera();
+                                                                                        seleccionarColorSeleccionado([{name: 'code', value: '#{colorS.code}'}]);">#{colorS.name}</td>
+                                                                                <td class="center-component" style="width: 32px">
+                                                                                    <h:panelGroup id="activo">
+                                                                                        <span class="glyphicon #{colorS.principal ? 'glyphicon-check' : 'glyphicon-unchecked'} checkbox-proforma"
+                                                                                              onclick="abrirModalEspera();
+                                                                                                      seleccionarColorPrincipal([{name: 'code', value: '#{colorS.code}'}]);"></span>
+                                                                                    </h:panelGroup>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </ui:fragment>
+                                                                    </ui:repeat>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-3 margin-bottom-10">
+                                <div id="item" class="carousel slide" data-ride="carousel">
+                                    <div class="carousel-inner" role="listbox">
+                                        <ui:repeat value="#{materialesColoresMBean.items}" var="item">
+                                            <ui:fragment rendered="#{item.seleccionado}">
+                                                <div class="item #{item.posicion eq 0 ? 'active' : ''}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <img class="img-responsive" src="#{imagenProductoMBean.obtenerParrilla(item.itemCode)}"/>
+
+                                                            <a class="left carousel-control" href="#item" role="button" data-slide="prev" style="left: 12px !important; color: #FFFFFF !important">
+                                                                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                                                                <span class="sr-only">Previous</span>
+                                                            </a>
+                                                            <a class="right carousel-control" href="#item" role="button" data-slide="next" style="right: 12px !important; color: #FFFFFF !important">
+                                                                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                                                <span class="sr-only">Next</span>
+                                                            </a>
+                                                        </div>
+                                                        <div class="col-xs-12 center-component">
+                                                            <b style="font-size: 20px">#{item.itemName}</b>
+                                                        </div>
+                                                        <div class="col-xs-12 center-component">
+                                                            #{item.uURefPro}
+                                                        </div>
+                                                        <div class="col-xs-12 center-component">
+                                                            #{item.umodelo}
+                                                        </div>
+                                                        <div class="col-xs-12">
+                                                            <p style="border-bottom: 1px solid #DDD; padding-left: 10px; padding-bottom: 5px"><b>Descripción</b></p>
+                                                            <p class="justify-component" style="padding-left: 10px; padding-right: 10px">
+                                                                #{item.udescripciona}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ui:fragment>
+                                        </ui:repeat>
+                                    </div>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </div>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

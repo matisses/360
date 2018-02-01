@@ -1,0 +1,795 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" http-equiv="Content-Type"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <script type="text/javascript">
+            function validarModal() {
+                $('#modalOperacion').modal('show');
+            }
+        </script>
+        <title>360 - Columnas Proforma</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <h:panelGroup id="dlgOperacion">
+                <h:panelGroup rendered="#{columnasProformaMBean.dlgOperacion}">
+                    <h:form id="formDlgOperacion">
+                        <div class="modal fade" id="modalOperacion">
+                            <div class="modal-dialog">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                            &times;
+                                        </button>
+                                        <h4 class="modal-title">
+                                            Operación Columna
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <p:remoteCommand name="seleccionarPrimerOperando" actionListener="#{columnasProformaMBean.seleccionarPrimerOperando}"
+                                                                 update=":formDlgOperacion:primerOperando"/>
+                                                <h:panelGroup id="primerOperando">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon input-group-matisses noround">
+                                                            Operando 1
+                                                        </span>
+                                                        <div class="dropdown">
+                                                            <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                    id="selPrimerOperando" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                #{columnasProformaMBean.primerOperandoSeleccionado}
+                                                                <span class="caret"></span>
+                                                            </button>
+                                                            <ul class="dropdown-menu" aria-labelledby="selPrimerOperando" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                                <ui:repeat value="#{columnasProformaMBean.columnas}" var="primerOperando">
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="seleccionarPrimerOperando([{name: 'idPrimerOperando', value: '#{primerOperando.idColumna}'}]);">
+                                                                            <ui:fragment rendered="#{primerOperando.nombre2 == null or empty primerOperando.nombre2}">
+                                                                                #{primerOperando.nombre1}
+                                                                            </ui:fragment>
+                                                                            <ui:fragment rendered="#{primerOperando.nombre2 != null and not empty primerOperando.nombre2}">
+                                                                                #{primerOperando.nombre1} - #{primerOperando.nombre2}
+                                                                            </ui:fragment>
+                                                                        </a>
+                                                                    </li>
+                                                                </ui:repeat>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-7 margin-bottom-10">
+                                                <p:remoteCommand name="seleccionarTipoOperando" actionListener="#{columnasProformaMBean.seleccionarTipoOperando}"
+                                                                 update=":formDlgOperacion:tipoOperando :formDlgOperacion:segundoOperando"/>
+                                                <h:panelGroup id="tipoOperando">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon input-group-matisses noround">
+                                                            Tipo operando 2
+                                                        </span>
+                                                        <div class="dropdown">
+                                                            <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                    id="selTipoOperando" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                #{columnasProformaMBean.tipoOperandoSeleccionado}
+                                                                <span class="caret"></span>
+                                                            </button>
+                                                            <ul class="dropdown-menu" aria-labelledby="selTipoOperando" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                                <li>
+                                                                    <a class="pointer-cursor" onclick="seleccionarTipoOperando([{name: 'tipoOperando', value: 'columna'}]);">
+                                                                        Columna
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a class="pointer-cursor" onclick="seleccionarTipoOperando([{name: 'tipoOperando', value: 'constante'}]);">
+                                                                        Constante
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                            <div class="col-xs-5 margin-bottom-10">
+                                                <p:remoteCommand name="seleccionarOperacion" actionListener="#{columnasProformaMBean.seleccionarOperacion}"
+                                                                 update=":formDlgOperacion:operacion"/>
+                                                <h:panelGroup id="operacion">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon input-group-matisses noround">
+                                                            Operación
+                                                        </span>
+                                                        <div class="dropdown">
+                                                            <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                    id="selOperacion" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                #{columnasProformaMBean.idOperacionSeleccionada}
+                                                                <span class="caret"></span>
+                                                            </button>
+                                                            <ul class="dropdown-menu" aria-labelledby="selOperacion" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                                <ui:repeat value="#{columnasProformaMBean.operaciones}" var="operacion">
+                                                                    <li>
+                                                                        <a class="pointer-cursor" onclick="seleccionarOperacion([{name: 'idOperacion', value: '#{operacion.idOperacion}'}])">
+                                                                            #{operacion.operacion}
+                                                                        </a>
+                                                                    </li>
+                                                                </ui:repeat>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <h:panelGroup id="segundoOperando">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon input-group-matisses noround">
+                                                            Operando 2
+                                                        </span>
+                                                        <ui:fragment rendered="#{columnasProformaMBean.tipoOperando eq 'columna'}">
+                                                            <p:remoteCommand name="seleccionarSegundoOperando" actionListener="#{columnasProformaMBean.seleccionarSegundoOperando}"
+                                                                             update=":formDlgOperacion:segundoOperando"/>
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                        id="selSegundoOperando" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                    #{columnasProformaMBean.segundoOperandoSeleccionado}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu" aria-labelledby="selSegundoOperando" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                                    <ui:repeat value="#{columnasProformaMBean.columnas}" var="segundoOperando">
+                                                                        <li>
+                                                                            <a class="pointer-cursor" onclick="seleccionarSegundoOperando([{name: 'idSegundoOperando', value: '#{segundoOperando.idColumna}'}]);">
+                                                                                <ui:fragment rendered="#{segundoOperando.nombre2 == null or empty segundoOperando.nombre2}">
+                                                                                    #{segundoOperando.nombre1}
+                                                                                </ui:fragment>
+                                                                                <ui:fragment rendered="#{segundoOperando.nombre2 != null and not empty segundoOperando.nombre2}">
+                                                                                    #{segundoOperando.nombre1} - #{segundoOperando.nombre2}
+                                                                                </ui:fragment>
+                                                                            </a>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </div>
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{columnasProformaMBean.tipoOperando eq 'constante'}">
+                                                            <h:inputText class="form-control input-lg noround" pt:placeholder="Constante" value="#{columnasProformaMBean.constante}"/>
+                                                        </ui:fragment>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <p:remoteCommand name="guardarOperacionColumna" actionListener="#{columnasProformaMBean.guardarOperacionColumna}"
+                                                         update=":formColumnasProforma:detalleOperacion :formDlgOperacion:msg"/>
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                            Cerrar
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="guardarOperacionColumna();">
+                                            Guardar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:form id="formColumnasProforma" pt:role="form">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Columnas compras</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <h:panelGroup id="administrarColumna">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:inputText id="txt_columna" value="#{columnasProformaMBean.nombre1}" pt:placeholder="Columna" class="form-control input-lg margin-bottom-10 noround"
+                                         autocomplete="off">
+                                <f:ajax event="change"/>
+                            </h:inputText>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:inputText id="txt_columnaIngles" value="#{columnasProformaMBean.nombreIngles1}" pt:placeholder="Columna Inglés" class="form-control input-lg margin-bottom-10 noround"
+                                         autocomplete="off">
+                                <f:ajax event="change"/>
+                            </h:inputText>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:inputText id="txt_subColumna" value="#{columnasProformaMBean.nombre2}" pt:placeholder="Sub Columna" class="form-control input-lg margin-bottom-10 noround"
+                                         autocomplete="off">
+                                <f:ajax event="change"
+                                        render=":formColumnasProforma:txt_subColumna :formColumnasProforma:msg :formColumnasProforma:btn_cancelar"/>
+                            </h:inputText>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:inputText id="txt_subColumnaIngles" value="#{columnasProformaMBean.nombreIngles2}" pt:placeholder="Sub Columna Inglés" class="form-control input-lg margin-bottom-10 noround"
+                                         autocomplete="off">
+                                <f:ajax render=":formColumnasProforma:txt_subColumnaIngles :formColumnasProforma:msg :formColumnasProforma:btn_cancelar"/>
+                            </h:inputText>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-6 margin-bottom-10">
+                            <p:remoteCommand name="seleccionarDatoColumna" actionListener="#{columnasProformaMBean.seleccionarDatoColumna}"
+                                             update=":formColumnasProforma:datosColumna"/>
+                            <h:panelGroup id="datosColumna">
+                                <div class="input-group">
+                                    <span class="input-group-addon input-group-matisses noround">
+                                        Datos columna
+                                    </span>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                id="selDatosColumna" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            #{columnasProformaMBean.idTipoDatoSeleccionado}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="selDatosColumna" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                            <ui:repeat value="#{columnasProformaMBean.tipoDatos}" var="tipo">
+                                                <li>
+                                                    <a class="pointer-cursor" onclick="seleccionarDatoColumna([{name: 'idTipoDato', value: '#{tipo.idTipoDato}'}]);">
+                                                        #{tipo.tipoDato}
+                                                    </a>
+                                                </li>
+                                            </ui:repeat>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:inputText id="txt_decimalesVisibles" pt:placeholder="Decimales Visibles" class="form-control input-lg margin-bottom-10 noround"
+                                         value="#{columnasProformaMBean.decimalesVisibles}" autocomplete="off">
+                                <f:ajax event="change"/>
+                            </h:inputText>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:inputText id="txt_longitudTabla" pt:placeholder="Longitud Tabla" class="form-control input-lg margin-bottom-10 noround"
+                                         value="#{columnasProformaMBean.longitudTabla}" autocomplete="off">
+                                <f:ajax event="change"/>
+                            </h:inputText>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:panelGroup id="chk_crearItem">
+                                <p:remoteCommand name="checkearCrearItem" actionListener="#{columnasProformaMBean.seleccionarCrearItem}" update=":formColumnasProforma:chk_crearItem"/>
+                                <div class="tooltip-style">
+                                    <span class="glyphicon #{columnasProformaMBean.crearItem ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                          onclick="checkearCrearItem();"></span>
+                                    <h:outputLabel value="Crear Item" class="label-normal" onclick="checkearCrearItem();"/>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:panelGroup id="chk_tipoItem">
+                                <p:remoteCommand name="checkearTipoItem" actionListener="#{columnasProformaMBean.seleccionarTipoItem}"
+                                                 update=":formColumnasProforma:chk_tipoItem :formColumnasProforma:chk_tipoIdentificador :formColumnasProforma:chk_tipoImagen
+                                                 :formColumnasProforma:chk_tipoCantidad :formColumnasProforma:chk_tipoValorTotal :formColumnasProforma:chk_tipoCBM
+                                                 :formColumnasProforma:chk_tipoValorUnitario :formColumnasProforma:chk_tipoDescuento :formColumnasProforma:chk_tipoDescripcionItem"/>
+                                <span class="glyphicon #{columnasProformaMBean.tipoItem ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                      onclick="checkearTipoItem();"></span>
+                                <h:outputLabel value="Tipo Item" class="label-normal" onclick="checkearTipoItem();"/>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:panelGroup id="chk_tipoIdentificador">
+                                <p:remoteCommand name="checkearTipoIdentificador" actionListener="#{columnasProformaMBean.seleccionarTipoIdentificador}"
+                                                 update=":formColumnasProforma:chk_tipoItem :formColumnasProforma:chk_tipoIdentificador :formColumnasProforma:chk_tipoImagen
+                                                 :formColumnasProforma:chk_tipoCantidad :formColumnasProforma:chk_tipoValorTotal :formColumnasProforma:chk_tipoCBM
+                                                 :formColumnasProforma:chk_tipoValorUnitario :formColumnasProforma:chk_tipoDescuento :formColumnasProforma:chk_tipoDescripcionItem"/>
+                                <span class="glyphicon #{columnasProformaMBean.tipoIdentificador ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                      onclick="checkearTipoIdentificador();"></span>
+                                <h:outputLabel value="Tipo Identificar" class="label-normal" onclick="checkearTipoIdentificador();"/>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:panelGroup id="chk_tipoImagen">
+                                <p:remoteCommand name="checkearTipoImagen" actionListener="#{columnasProformaMBean.seleccionarTipoImagen}"
+                                                 update=":formColumnasProforma:chk_tipoItem :formColumnasProforma:chk_tipoIdentificador :formColumnasProforma:chk_tipoImagen
+                                                 :formColumnasProforma:chk_tipoCantidad :formColumnasProforma:chk_tipoValorTotal :formColumnasProforma:chk_tipoCBM
+                                                 :formColumnasProforma:chk_tipoValorUnitario :formColumnasProforma:chk_tipoDescuento :formColumnasProforma:chk_tipoDescripcionItem"/>
+                                <span class="glyphicon #{columnasProformaMBean.tipoImagen ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                      onclick="checkearTipoImagen();"></span>
+                                <h:outputLabel value="Tipo Imagen" class="label-normal" onclick="checkearTipoImagen();"/>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:panelGroup id="chk_tipoCantidad">
+                                <p:remoteCommand name="checkearTipoCantidad" actionListener="#{columnasProformaMBean.seleccionarTipoCantidad}"
+                                                 update=":formColumnasProforma:chk_tipoItem :formColumnasProforma:chk_tipoIdentificador :formColumnasProforma:chk_tipoImagen
+                                                 :formColumnasProforma:chk_tipoCantidad :formColumnasProforma:chk_tipoValorTotal :formColumnasProforma:chk_tipoCBM
+                                                 :formColumnasProforma:chk_tipoValorUnitario :formColumnasProforma:chk_tipoDescuento :formColumnasProforma:chk_tipoDescripcionItem"/>
+                                <span class="glyphicon #{columnasProformaMBean.tipoCantidad ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                      onclick="checkearTipoCantidad();"></span>
+                                <h:outputLabel value="Tipo Cantidad" class="label-normal" onclick="checkearTipoCantidad();"/>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:panelGroup id="chk_tipoValorTotal">
+                                <p:remoteCommand name="checkearTipoValorTotal" actionListener="#{columnasProformaMBean.seleccionarTipoValorTotal}"
+                                                 update=":formColumnasProforma:chk_tipoItem :formColumnasProforma:chk_tipoIdentificador :formColumnasProforma:chk_tipoImagen
+                                                 :formColumnasProforma:chk_tipoCantidad :formColumnasProforma:chk_tipoValorTotal :formColumnasProforma:chk_tipoCBM
+                                                 :formColumnasProforma:chk_tipoValorUnitario :formColumnasProforma:chk_tipoDescuento"/>
+                                <span class="glyphicon #{columnasProformaMBean.tipoValorTotal ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                      onclick="checkearTipoValorTotal();"></span>
+                                <h:outputLabel value="Tipo Valor Total" class="label-normal" onclick="checkearTipoValorTotal();"/>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:panelGroup id="chk_tipoCBM">
+                                <p:remoteCommand name="checkearTipoCBM" actionListener="#{columnasProformaMBean.seleccionarTipoCBM}"
+                                                 update=":formColumnasProforma:chk_tipoItem :formColumnasProforma:chk_tipoIdentificador :formColumnasProforma:chk_tipoImagen
+                                                 :formColumnasProforma:chk_tipoCantidad :formColumnasProforma:chk_tipoValorTotal :formColumnasProforma:chk_tipoCBM
+                                                 :formColumnasProforma:chk_tipoValorUnitario :formColumnasProforma:chk_tipoDescuento :formColumnasProforma:chk_tipoDescripcionItem"/>
+                                <span class="glyphicon #{columnasProformaMBean.tipoCBM ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                      onclick="checkearTipoCBM();"></span>
+                                <h:outputLabel value="Tipo CBM" class="label-normal" onclick="checkearTipoCBM();"/>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:panelGroup id="chk_tipoValorUnitario">
+                                <p:remoteCommand name="checkearTipoValorUnitario" actionListener="#{columnasProformaMBean.seleccionarTipoValorUnitario}"
+                                                 update=":formColumnasProforma:chk_tipoItem :formColumnasProforma:chk_tipoIdentificador :formColumnasProforma:chk_tipoImagen
+                                                 :formColumnasProforma:chk_tipoCantidad :formColumnasProforma:chk_tipoValorTotal :formColumnasProforma:chk_tipoCBM
+                                                 :formColumnasProforma:chk_tipoValorUnitario :formColumnasProforma:chk_tipoDescuento :formColumnasProforma:chk_tipoDescripcionItem"/>
+                                <span class="glyphicon #{columnasProformaMBean.tipoValorUnitario ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                      onclick="checkearTipoValorUnitario();"></span>
+                                <h:outputLabel value="Tipo Valor Unitario" class="label-normal" onclick="checkearTipoValorUnitario();"/>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:panelGroup id="chk_tipoDescuento">
+                                <p:remoteCommand name="checkearTipoDescuento" actionListener="#{columnasProformaMBean.seleccionarTipoDescuento}"
+                                                 update=":formColumnasProforma:chk_tipoItem :formColumnasProforma:chk_tipoIdentificador :formColumnasProforma:chk_tipoImagen
+                                                 :formColumnasProforma:chk_tipoCantidad :formColumnasProforma:chk_tipoValorTotal :formColumnasProforma:chk_tipoCBM
+                                                 :formColumnasProforma:chk_tipoValorUnitario :formColumnasProforma:chk_tipoDescuento :formColumnasProforma:chk_tipoDescripcionItem"/>
+                                <span class="glyphicon #{columnasProformaMBean.tipoDescuento ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                      onclick="checkearTipoDescuento();"></span>
+                                <h:outputLabel value="Tipo Descuento" class="label-normal" onclick="checkearTipoDescuento();"/>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:panelGroup id="chk_tipoDescripcionItem">
+                                <p:remoteCommand name="checkearTipoDescripcionItem" actionListener="#{columnasProformaMBean.seleccionarTipoDescripcionItem}"
+                                                 update=":formColumnasProforma:chk_tipoItem :formColumnasProforma:chk_tipoIdentificador :formColumnasProforma:chk_tipoImagen
+                                                 :formColumnasProforma:chk_tipoCantidad :formColumnasProforma:chk_tipoValorTotal :formColumnasProforma:chk_tipoCBM
+                                                 :formColumnasProforma:chk_tipoValorUnitario :formColumnasProforma:chk_tipoDescuento :formColumnasProforma:chk_tipoDescripcionItem"/>
+                                <span class="glyphicon #{columnasProformaMBean.tipoDescripcionItem ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                      onclick="checkearTipoDescripcionItem();"></span>
+                                <h:outputLabel value="Tipo Descripción Ítem" class="label-normal" onclick="checkearTipoDescripcionItem();"/>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:panelGroup id="chk_obligatoria">
+                                <p:remoteCommand name="checkearObligatoria" actionListener="#{columnasProformaMBean.seleccionarObligatoria}" update=":formColumnasProforma:chk_obligatoria"/>
+                                <span class="glyphicon #{columnasProformaMBean.obligatoria ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                      onclick="checkearObligatoria();"></span>
+                                <h:outputLabel value="Obligatoria" class="label-normal" onclick="checkearObligatoria();"/>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:panelGroup id="chk_modificable">
+                                <p:remoteCommand name="checkearModificable" actionListener="#{columnasProformaMBean.seleccionarModificable}" update=":formColumnasProforma:chk_modificable"/>
+                                <span class="glyphicon #{columnasProformaMBean.modificable ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                      onclick="checkearModificable();"></span>
+                                <h:outputLabel value="Modificable" class="label-normal" onclick="checkearModificable();"/>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:panelGroup id="chk_modificarNuevo">
+                                <p:remoteCommand name="checkearModificableNuevo" actionListener="#{columnasProformaMBean.seleccionarModificarNuevo}" update=":formColumnasProforma:chk_modificarNuevo"/>
+                                <span class="glyphicon #{columnasProformaMBean.modificarNuevo ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                      onclick="checkearModificableNuevo();"></span>
+                                <h:outputLabel value="Modificar Nuevo" class="label-normal" onclick="checkearModificableNuevo();"/>
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <h:panelGroup id="chk_requiereOperacion">
+                                <p:remoteCommand name="checkearRequiereOperacion" actionListener="#{columnasProformaMBean.seleccionarRequiereOperacion}"
+                                                 update=":formColumnasProforma:chk_requiereOperacion :dlgOperacion" oncomplete="validarModal();"/>
+                                <span class="glyphicon #{columnasProformaMBean.requiereOperacion ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                      onclick="checkearRequiereOperacion();"></span>
+                                <h:outputLabel value="Columna Calculada" class="label-normal" onclick="checkearRequiereOperacion();"/>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup id="detalleOperacion">
+                    <h:panelGroup rendered="#{not empty columnasProformaMBean.detalleOperaciones}">
+                        <br/>
+                        <div class="row">
+                            <div class="col-xs-12 center-component">
+                                <h4>
+                                    Operación
+                                </h4>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-xs-12 center-component">
+                                <p:remoteCommand name="editarOperacion" actionListener="#{columnasProformaMBean.obtenerDatosOperacion}" update=":dlgOperacion"
+                                                 oncomplete="validarModal();"/>
+                                <ui:repeat value="#{columnasProformaMBean.detalleOperaciones}" var="detalleOperacion">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-3 col-md-6"
+                                             onclick="editarOperacion();">
+                                            <div class="row">
+                                                <div class="col-xs-12 operaciones-agregadas">
+                                                    <ui:fragment rendered="#{detalleOperacion.idColumna1.nombre2 != null and not empty detalleOperacion.idColumna1.nombre2}">
+                                                        <span class="input-lg">
+                                                            #{detalleOperacion.idColumna1.nombre1} - #{detalleOperacion.idColumna1.nombre2}
+                                                        </span>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{detalleOperacion.idColumna1.nombre2 == null or empty detalleOperacion.idColumna1.nombre2}">
+                                                        <span class="input-lg">
+                                                            #{detalleOperacion.idColumna1.nombre1}
+                                                        </span>
+                                                    </ui:fragment>
+
+                                                    <span class="input-lg">
+                                                        #{detalleOperacion.idOperacion.operacion}
+                                                    </span>
+
+                                                    <h:panelGroup rendered="#{detalleOperacion.idColumna2.nombre1 != null and not empty detalleOperacion.idColumna2.nombre1}">
+                                                        <ui:fragment rendered="#{detalleOperacion.idColumna2.nombre2 != null and not empty detalleOperacion.idColumna2.nombre2}">
+                                                            <span class="input-lg">
+                                                                #{detalleOperacion.idColumna2.nombre1} - #{detalleOperacion.idColumna2.nombre2}
+                                                            </span>
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{detalleOperacion.idColumna2.nombre2 == null or empty detalleOperacion.idColumna2.nombre2}">
+                                                            <span class="input-lg">
+                                                                #{detalleOperacion.idColumna2.nombre1}
+                                                            </span>
+                                                        </ui:fragment>
+                                                    </h:panelGroup>
+                                                    <h:panelGroup rendered="#{detalleOperacion.constante != null}">
+                                                        <span class="input-lg">
+                                                            #{detalleOperacion.constante}
+                                                        </span>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <br/>
+                <h:panelGroup id="btns">
+                    <div class="row right-component">
+                        <div class="col-xs-12">
+                            <p:remoteCommand name="guardarDatosColumna" actionListener="#{columnasProformaMBean.guardarDatosColumna}"
+                                             update=":formColumnasProforma:administrarColumna :formColumnasProforma:btns :formColumnasProforma:listaColumnasProforma
+                                             :formColumnasProforma:msg :formColumnasProforma:detalleOperacion" oncomplete="cerrarModalEspera();"/>
+                            <p:remoteCommand name="eliminarColumnaProforma" actionListener="#{columnasProformaMBean.eliminarColumnaProforma}"
+                                             update=":formColumnasProforma:administrarColumna :formColumnasProforma:btns :formColumnasProforma:listaColumnasProforma :formColumnasProforma:msg
+                                             :formColumnasProforma:detalleOperacion" oncomplete="cerrarModalEspera();"/>
+                            <p:remoteCommand name="limpiar" actionListener="#{columnasProformaMBean.limpiar}"
+                                             update=":formColumnasProforma:administrarColumna :formColumnasProforma:btns :formColumnasProforma:listaColumnasProforma :formColumnasProforma:msg
+                                             :formColumnasProforma:detalleOperacion" oncomplete="cerrarModalEspera();"/>
+
+                            <button type="button" class="btn btn-primary btn-lg noround #{columnasProformaMBean.editandoColumna ? 'disabled btn-deshabilitado' : ''} margin-bottom-10"
+                                    onclick="abrirModalEspera(); guardarDatosColumna();">
+                                Crear
+                            </button>
+                            <button type="button" class="btn btn-primary btn-lg noround #{columnasProformaMBean.editandoColumna ? '' : 'disabled btn-deshabilitado'} margin-bottom-10"
+                                    onclick="abrirModalEspera(); guardarDatosColumna();">
+                                Editar
+                            </button>
+                            <button type="button" class="btn btn-default btn-lg noround #{columnasProformaMBean.editandoColumna ? '' : 'disabled btn-deshabilitado'} margin-bottom-10"
+                                    onclick="abrirModalEspera(); eliminarColumnaProforma();">
+                                Eliminar
+                            </button>
+                            <button type="button" class="btn btn-default btn-lg noround margin-bottom-10
+                                    #{empty columnasProformaMBean.nombre1 and empty columnasProformaMBean.nombreIngles1
+                                      and empty columnasProformaMBean.nombre2 and empty columnasProformaMBean.nombreIngles2 ? 'disabled btn-deshabilitado' : ''}"
+                                    onclick="abrirModalEspera(); limpiar();">
+                                Limpiar
+                            </button>
+                        </div>
+                    </div>
+                    <br/>
+                </h:panelGroup>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p:messages id="msg" showDetail="true" showSummary="true"/>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row right-component">
+                    <div class="col-xs-12 col-md-6 col-md-offset-6">
+                        <div class="form-group has-feedback">
+                            <p:remoteCommand name="buscar" actionListener="#{columnasProformaMBean.buscarColumnas}" oncomplete="cerrarModalEspera();"
+                                             update=":formColumnasProforma:listaColumnasProforma :formColumnasProforma:paginador :formColumnasProforma:msg :formColumnasProforma:btns"/>
+                            <h:inputText id="txt_busqueda" pt:placeholder="Parámetro Búsqueda" value="#{columnasProformaMBean.parametroBusqueda}" styleClass="form-control input-lg noround"
+                                         autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                     abrirModalEspera();
+                                                     buscar();
+                                                     return false;
+                                                 }"/>
+                            <span class="form-control-feedback glyphicon glyphicon-search inline-search" aria-hidden="true"></span>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+                <div class="row">
+                    <h:panelGroup id="listaColumnasProforma">
+                        <p:remoteCommand name="seleccionarColumnaProforma" actionListener="#{columnasProformaMBean.obtenerDatosColumnaProforma}"
+                                         update=":formColumnasProforma:administrarColumna :formColumnasProforma:btns :formColumnasProforma:listaColumnasProforma :formColumnasProforma:detalleOperacion"/>
+                        <ui:fragment rendered="#{empty columnasProformaMBean.columnasProforma}">
+                            <h4>
+                                <p>
+                                    No se encontraron datos
+                                </p>
+                            </h4>
+                        </ui:fragment>
+                        <ui:repeat value="#{columnasProformaMBean.columnasProforma}" var="columna" rendered="#{not empty columnasProformaMBean.columnasProforma}">
+                            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+                                <div class="columnas-proforma #{columnasProformaMBean.idColumna == columna.idColumna ? 'columnas-proforma-activo' : ''}"
+                                     onclick="seleccionarColumnaProforma([{name: 'idColumna', value: '#{columna.idColumna}'}])">
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            <h:outputLabel class="input-lg" value="Columna"/>
+                                        </div>
+                                        <div class="col-xs-12 center-component #{empty columna.nombre1 ? 'columnas-proforma-input-sinAsignar' : null}">
+                                            <h:outputText class="input-lg" value="#{empty columna.nombre1 ? '[Sin Asignar]' : columna.nombre1}"/>
+                                        </div>
+                                        <div class="col-xs-12 center-component">
+                                            <h:outputLabel class="input-lg" value="SubColumna"/>
+                                        </div>
+                                        <div class="col-xs-12 center-component #{empty columna.nombre2 ? 'columnas-proforma-input-sinAsignar' : null}">
+                                            <h:outputText class="input-lg" value="#{empty columna.nombre2 ? '[Sin Asignar]' : columna.nombre2}"/>
+                                        </div>
+                                    </div>
+                                    <div class="pointColumnas">
+                                        <h:graphicImage value="#{baruApplicationBean.obtenerValorPropiedad('url.local.pointColumnas')}"/>
+                                    </div>
+                                    <h:panelGroup class="showOverlayColumnas">
+                                        <div class="row" style="color: #000000 !important">
+                                            <div class="col-xs-12">
+                                                <ui:fragment rendered="#{not empty columna.nombre1Ingles}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <b>
+                                                                Columna Ingles: 
+                                                            </b>
+                                                            <span>
+                                                                #{columna.nombre1Ingles}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{not empty columna.nombre2Ingles}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <b>
+                                                                SubColumna Ingles: 
+                                                            </b>
+                                                            <span>
+                                                                #{columna.nombre2Ingles}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{columna.permitirCrearItem}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                            <span style="color: #000000">
+                                                                Crear Item
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{columna.tipoItem}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                            <span style="color: #000000">
+                                                                Tipo Item
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{columna.tipoIdentificador}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                            <span style="color: #000000">
+                                                                Tipo Identificador
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{columna.tipoImagen}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                            <span style="color: #000000">
+                                                                Tipo Imagen
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{columna.tipoCantidad}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                            <span style="color: #000000">
+                                                                Tipo Cantidad
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{columna.tipoValorTotal}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                            <span style="color: #000000">
+                                                                Tipo Valor Total
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{columna.tipoCBM}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                            <span style="color: #000000">
+                                                                Tipo CBM
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{columna.tipoValorUnitario}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                            <span style="color: #000000">
+                                                                Tipo Valor Unitario
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{columna.tipoDescuento}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                            <span style="color: #000000">
+                                                                Tipo Descuento
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{columna.tipoDescripcionItem}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                            <span style="color: #000000">
+                                                                Tipo Descripcion Ítem
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{columna.obligatoria}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                            <span style="color: #000000">
+                                                                Obligatoria
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{columna.incluirProforma}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                            <span style="color: #000000">
+                                                                Incluir Proforma
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{columna.modificable}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                            <span style="color: #000000">
+                                                                Modificable
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{columna.modificableSiNuevo}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                            <span style="color: #000000">
+                                                                Modificar Nuevo
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{columna.requiereOperacion}">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <span class="glyphicon glyphicon-check checkbox-proforma"></span>
+                                                            <span style="color: #000000">
+                                                                Columna Calculada
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </h:panelGroup>
+                </div>
+                <div class="row">
+                    <p:remoteCommand name="paginar" actionListener="#{columnasProformaMBean.irAPaginaEspecifica}" oncomplete="cerrarModalEspera();"
+                                     update=":formColumnasProforma:paginador :formColumnasProforma:listaColumnasProforma"/>
+                    <p:remoteCommand name="anteriorPagina" actionListener="#{columnasProformaMBean.anteriorPagina}" oncomplete="cerrarModalEspera();"
+                                     update=":formColumnasProforma:paginador :formColumnasProforma:listaColumnasProforma"/>
+                    <p:remoteCommand name="siguientePagina" actionListener="#{columnasProformaMBean.siguientePagina}" oncomplete="cerrarModalEspera();"
+                                     update=":formColumnasProforma:paginador :formColumnasProforma:listaColumnasProforma"/>
+                    <h:panelGroup id="paginador">
+                        <nav class="nav-paginator-center">
+                            <ul class="pagination pagination-lg">
+                                <li class="#{columnasProformaMBean.pagina == 1 ? 'disabled' : ''}" style="cursor: pointer">
+                                    <a aria-label="Previus" onclick="abrirModalEspera(); anteriorPagina();">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <ui:repeat var="pagina" value="#{columnasProformaMBean.paginasVisibles}">
+                                    <li class="#{columnasProformaMBean.pagina == pagina ? 'active' : ''}" style="cursor: pointer">
+                                        <a onclick="abrirModalEspera(); paginar([{name: 'irAPagina', value: '#{pagina}'}]);">
+                                            #{pagina}
+                                        </a>
+                                    </li>
+                                </ui:repeat>
+                                <li class="#{columnasProformaMBean.ultimaPagina ? 'disabled' : ''}" style="cursor: pointer">
+                                    <a aria-label="Next" onclick="abrirModalEspera(); siguientePagina();">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </h:panelGroup>
+                </div>
+            </h:form>
+        </div>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

@@ -1,0 +1,178 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Informes CCYGA</title>
+    </h:head>
+    <h:body>
+        <m:navbar />
+        <h:form id="formSolicitud" enctype="multipart/form-data">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>NEXT - Nueva solicitud</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-md-3">
+                        <p:remoteCommand name="seleccionarTipo" actionListener="#{crearSolicitudNextMBean.seleccionarTipo}"
+                                         update=":formSolicitud:tipoSolicitud" oncomplete="cerrarModalEspera();"/>
+                        <div class="form-group">
+                            <h:outputLabel value="Tipo"/>
+                            <h:panelGroup id="tipoSolicitud">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-default dropdown-toggle input-lg btn-lg noround" style="width: 100%"
+                                            id="selTipo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        #{crearSolicitudNextMBean.tipoSeleccionado}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="selTipo" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                        <ui:repeat value="#{crearSolicitudNextMBean.tiposSolicitud}" var="tipoSolicitud">
+                                            <li><a class="pointer-cursor" 
+                                                   onclick="abrirModalEspera(); seleccionarTipo([{name: 'idTipo', value: '#{tipoSolicitud.idTipoSolicitud}'}, {name: 'nombreTipo', value: '#{tipoSolicitud.nombre}'}]);">
+                                                    #{tipoSolicitud.nombre}
+                                                </a></li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-3">
+                        <p:remoteCommand name="seleccionarPrioridad" actionListener="#{crearSolicitudNextMBean.seleccionarPrioridad}"
+                                         update=":formSolicitud:prioridadSolicitud" oncomplete="cerrarModalEspera();"/>
+                        <div class="form-group">
+                            <h:outputLabel value="Prioridad"/>
+                            <h:panelGroup id="prioridadSolicitud">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-default dropdown-toggle input-lg btn-lg noround" style="width: 100%"
+                                            id="selPrioridad" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        #{crearSolicitudNextMBean.prioridadSeleccionada}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="selPrioridad" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                        <ui:repeat value="#{crearSolicitudNextMBean.prioridadesSolicitud}" var="prioridadSolicitud">
+                                            <li><a class="pointer-cursor" 
+                                                   onclick="abrirModalEspera(); seleccionarPrioridad([{name: 'idPrioridad', value: '#{prioridadSolicitud.idPrioridad}'}, {name: 'nombrePrioridad', value: '#{prioridadSolicitud.nombre}'}]);">
+                                                    #{prioridadSolicitud.nombre}
+                                                </a></li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-3">
+                        <p:remoteCommand name="seleccionarEquipo" actionListener="#{crearSolicitudNextMBean.seleccionarEquipo}"
+                                         update=":formSolicitud:equipoSolicitud" oncomplete="cerrarModalEspera();"/>
+                        <div class="form-group">
+                            <h:outputLabel value="Equipo"/>
+                            <h:panelGroup id="equipoSolicitud">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-default dropdown-toggle input-lg btn-lg noround" style="width: 100%"
+                                            id="selEquipo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        #{crearSolicitudNextMBean.equipoSeleccionado}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="selEquipo" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                        <ui:repeat value="#{crearSolicitudNextMBean.equiposSolicitud}" var="equipoSolicitud">
+                                            <li><a class="pointer-cursor" 
+                                                   onclick="abrirModalEspera(); seleccionarEquipo([{name: 'idEquipo', value: '#{equipoSolicitud.idEquipo}'}, {name: 'nombreEquipo', value: '#{equipoSolicitud.nombre}'}, {name: 'nombreAD', value: '#{equipoSolicitud.nombreDirectorioActivo}'}]);">
+                                                    #{equipoSolicitud.nombre}
+                                                </a></li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-3">
+                        <div class="form-group">
+                            <h:outputLabel value="Asunto (35 caracteres máx.)" for="txt_asunto"/>
+                            <h:inputText id="txt_asunto" styleClass="form-control input-lg noround" value="#{crearSolicitudNextMBean.asuntoSolicitud}" 
+                                         pt:placeholder="dale un título a tu solicitud" style="margin-bottom: 5px;" maxlength="35">
+                                <f:ajax listener="#{crearSolicitudNextMBean.cambioAsunto}"></f:ajax>
+                            </h:inputText>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <h:outputLabel value="Describe tu solicitud. Recuerda incluir toda la información que tengas" for="txt_descripcion"/>
+                            <h:inputTextarea id="txt_descripcion" styleClass="form-control noround" value="#{crearSolicitudNextMBean.descripcionSolicitud}" 
+                                             style="margin-bottom: 5px;" rows="4">
+                                <f:ajax listener="#{crearSolicitudNextMBean.cambioDescripcion}"></f:ajax>
+                            </h:inputTextarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <label class="btn btn-default btn-lg btn-file noround">
+                            Cargar archivos 
+                            <h:inputFile value="#{crearSolicitudNextMBean.archivoAdjunto}" style="display: none;">
+                                <f:ajax listener="#{crearSolicitudNextMBean.guardarAdjunto}" render=":formSolicitud:archivosAdjuntos"/>
+                            </h:inputFile>
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <h:panelGroup id="archivosAdjuntos">
+                        <ui:repeat value="#{crearSolicitudNextMBean.adjuntosSolicitud}" var="adjunto">
+                            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                <div class="archivo-next">
+                                    <table style="width: 100%">
+                                        <tr>
+                                            <td rowspan="2">
+                                                <h:graphicImage value="http://www.matisses.co/360/#{adjunto.extension}.png" height="64"/>
+                                            </td>
+                                            <td colspan="2">
+                                                #{adjunto.nombre}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Ver</td>
+                                            <td>Eliminar</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </h:panelGroup>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <h:outputLabel value="¿Tienes fecha límite?"/>
+                            <p:calendar id="fechaLimite" styleClass="input-lg noround" mask="true" pattern="dd/MM/yyyy" 
+                                        value="#{crearSolicitudNextMBean.fechaLimite}" readonlyInput="true" navigator="true">
+                                <f:ajax listener="#{crearSolicitudNextMBean.cambioFechaLimite}"></f:ajax>
+                            </p:calendar>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

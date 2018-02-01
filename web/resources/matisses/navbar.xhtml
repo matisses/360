@@ -1,0 +1,295 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:composite="http://java.sun.com/jsf/composite" 
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <composite:interface>
+
+    </composite:interface>
+    <composite:implementation>
+        <script type="text/javascript">
+            function abrirModalEspera() {
+                $('#modalEspera').modal('show');
+            }
+
+            function cerrarModalEspera() {
+                $('#modalEspera').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function cerrarModalSucursal() {
+                $('#modalSucursal').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+
+        <div class="modal fade" id="modalEspera" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog">
+                <div class="modal-content dialog-content noround">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12 center-component">
+                                <span class="input-lg">
+                                    Estamos procesando tu solicitud.
+                                </span>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width: 100%; background-color: #BF0039!important"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalSucursal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content dialog-content noround">
+                    <div class="modal-header dialog-header">
+                        <h4 class="modal-title">
+                            Sucursal Usuario
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <h:form id="formSucursal">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+                                    <div class="form-group">
+                                        <p:remoteCommand name="buscarSucursal" actionListener="#{sucursalUsuarioMBean.buscarSucursal}" update="@form"/>
+
+                                        <label>Parámetro búsqueda</label>
+                                        <div class="input-group">
+                                            <h:inputText class="form-control input-lg noround" value="#{sucursalUsuarioMBean.parametroBusqueda}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                        buscarSucursal();
+                                                        return false;
+                                                    }"/>
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-primary btn-lg noround" type="button" style="font-size: 23px; padding: 8.5px 10px 4.5px 10px" onclick="buscarSucursal();">
+                                                    <span class="glyphicon glyphicon-search"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="max-height: 375px; overflow: auto">
+                                <h:panelGroup id="sucursales">
+                                    <p:remoteCommand name="cambiarSucursal" actionListener="#{sucursalUsuarioMBean.cambiarSucursal}" update="@form" oncomplete="cerrarModalSucursal();"/>
+
+                                    <ui:repeat value="#{sucursalUsuarioMBean.sucursalesFiltradas}" var="sucursal">
+                                        <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10" onclick="cambiarSucursal([{name: 'almacen', value: '#{sucursal.whsCode}'}]);">
+                                            <div class="#{userSessionInfoMBean.almacen eq sucursal.whsCode ? 'contenedor-sucursal-activo' : 'contenedor-sucursal'} pointer-cursor">
+                                                <div class="row">
+                                                    <div class="col-xs-12 center-component" style="height: 58px">
+                                                        <b style="font-size: 20px">#{sucursal.nombrextablet}</b>
+                                                    </div>
+                                                </div>
+                                                <hr style="border-bottom: 1px solid #BF0039; margin-bottom: 4px; margin-top: 0px"/>
+                                                <div class="row">
+                                                    <div class="col-xs-12 center-component">
+                                                        #{sucursal.city}
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12 center-component">
+                                                        #{sucursal.street}
+                                                    </div>
+                                                </div>
+                                                <ui:fragment rendered="#{userSessionInfoMBean.almacen eq sucursal.whsCode}">
+                                                    <div style="position: absolute; top: -4px; right: 22px; background: #FFFFFF; font-size: 19px; height: 20px">
+                                                        <span class="glyphicon glyphicon-check color-360-original"></span>
+                                                    </div>
+                                                </ui:fragment>
+                                            </div>
+                                        </div>
+                                    </ui:repeat>
+                                </h:panelGroup>
+                            </div>
+                        </h:form>
+                    </div>
+                    <div class="modal-footer dialog-footer">
+                        <div class="row">
+                            <div class="col-xs-12 right-component">
+                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/360/"> 
+                        <img class="img-responsive" src="/360/images/logo_navbar.png"/>
+                    </a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ui:fragment rendered="#{not fn:contains(request.requestURL,'/ayuda/')}">
+                        <ul class="nav navbar-nav">
+                            <ui:repeat value="#{navbarSessionMBean.menu}" var="item">
+                                <ui:fragment rendered="#{item.esMenu()}">
+                                    <li class="dropdown">
+                                        <a href="#{item.ruta}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                            #{item.nombre} <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+                                            <ui:repeat value="#{item.submenu}" var="subitem">
+                                                <ui:fragment rendered="#{subitem.esMenu()}">
+                                                    <ui:fragment rendered="#{subitem.separadorAntes}">
+                                                        <li role="separator" class="divider"></li>
+                                                    </ui:fragment>
+                                                    <li class="dropdown-submenu">
+                                                        <a tabindex="-1" href="#{subitem.ruta}">#{subitem.nombre}</a>
+                                                        <ul class="dropdown-menu">
+                                                            <ui:repeat value="#{subitem.submenu}" var="subitem2">
+                                                                <ui:fragment rendered="#{subitem2.separadorAntes}">
+                                                                    <li role="separator" class="divider"></li>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{subitem2.destino eq null}">
+                                                                    <li><a href="#{subitem2.ruta}" target="_self">#{subitem2.nombre}</a></li>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{subitem2.destino ne null}">
+                                                                    <li><a href="#{subitem2.ruta}" target="#{subitem2.destino}">#{subitem2.nombre}</a></li>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{subitem2.separadorDespues}">
+                                                                    <li role="separator" class="divider"></li>
+                                                                </ui:fragment>
+                                                            </ui:repeat>
+                                                        </ul>
+                                                    </li>
+                                                    <ui:fragment rendered="#{subitem.separadorDespues}">
+                                                        <li role="separator" class="divider"></li>
+                                                    </ui:fragment>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{not subitem.esMenu()}">
+                                                    <ui:fragment rendered="#{subitem.separadorAntes}">
+                                                        <li role="separator" class="divider"></li>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{subitem.destino eq null}">
+                                                        <li><a href="#{subitem.ruta}" target="_self">#{subitem.nombre}</a></li>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{subitem.destino ne null}">
+                                                        <li><a href="#{subitem.ruta}" target="#{subitem.destino}">#{subitem.nombre}</a></li>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{subitem.separadorDespues}">
+                                                        <li role="separator" class="divider"></li>
+                                                    </ui:fragment>
+                                                </ui:fragment>
+                                            </ui:repeat>
+                                        </ul>
+                                    </li>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{not item.esMenu()}">
+                                    <ui:fragment rendered="#{item.separadorAntes}">
+                                        <li role="separator" class="divider"></li>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{item.destino eq null}">
+                                        <li><a href="#{item.ruta}" target="_self">#{item.nombre}</a></li>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{item.destino ne null}">
+                                        <li><a href="#{item.ruta}" target="#{item.destino}">#{item.nombre}</a></li>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{item.separadorDespues}">
+                                        <li role="separator" class="divider"></li>
+                                    </ui:fragment>
+                                </ui:fragment>
+                            </ui:repeat>
+                        </ul>
+                        <h:form styleClass="navbar-form navbar-left" role="search" id="formBuscar">
+                            <div class="form-group">
+                                <p:autoComplete id="textoBusqueda" styleClass="form-control noround hidden-sm hidden-xs" 
+                                                placeholder="Buscar en menú" completeMethod="#{navbarSessionMBean.buscarEnMenu}" 
+                                                value="#{navbarSessionMBean.busqueda}" autocomplete="off">
+                                    <p:ajax event="itemSelect" resetValues="true" listener="#{navbarSessionMBean.itemBusquedaSeleccionado}" />
+                                </p:autoComplete>
+                            </div>
+                        </h:form>
+                        <h:form id="formUsuario">
+                            <ul class="nav navbar-nav navbar-right">
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                        #{userSessionInfoMBean.nombreMostrar} <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="#">
+                                                <span class="glyphicon glyphicon-user"></span> Mi Cuenta (360)
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="/360/empleados/administrar/">
+                                                Información empleado
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="/360/empleados/certificados/">
+                                                Certificados
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="/360/empleados/cumple/">
+                                                Cumpleaños
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#modalSucursal" data-toggle="modal">
+                                                <span class="glyphicon glyphicon-home"></span> Sucursal
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="/360/firma/">
+                                                <span class="glyphicon glyphicon-tags"></span> Firma Correo
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="/360/directorio/">
+                                                <span class="glyphicon glyphicon-book"></span>
+                                                Directorio
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#{fn:replace(request.requestURL,'/360/','/360/ayuda/')}" target="_blank">
+                                                <span class="glyphicon glyphicon-question-sign"></span> Ayuda
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <h:commandLink action="#{userSessionInfoMBean.finalizarSesion}">
+                                                <span class="glyphicon glyphicon-log-out"></span> Salir
+                                            </h:commandLink>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </h:form>
+                    </ui:fragment>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+    </composite:implementation>
+</html>
+

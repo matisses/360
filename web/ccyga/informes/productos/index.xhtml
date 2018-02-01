@@ -1,0 +1,486 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script type="text/javascript">
+            function abrirModalArticulo() {
+                $('#modalArticulo').modal('show');
+            }
+
+            function cerrarModalArticulo() {
+                $('#modalArticulo').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Productos activos CCYGA</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <h:panelGroup id="panelArticulo">
+            <h:panelGroup rendered="#{informeProductosCcygaMBean.dlgProducto}">
+                <h:form id="formArticulo">
+                    <div class="modal fade" id="modalArticulo" data-keyboard="false" data-backdrop="static">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiar();">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Detalle producto
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h:panelGroup id="datos">
+                                        <p:messages showDetail="true" showSummary="true"/>
+                                        <div class="row">
+                                            <div class="col-xs-4" style="#{informeProductosCcygaMBean.proceso.idProcesoProducto != null ? '' : 'top: 23px'}">
+                                                <div class="row">
+                                                    <div class="col-xs-12 center-component">
+                                                        <img class="img-mini" src="#{imagenProductoMBean.obtenerUrlProducto(informeProductosCcygaMBean.producto.referencia, true)}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12 center-component" style="font-size: 18px">
+                                                        #{baruGenericMBean.convertirARefCorta(informeProductosCcygaMBean.producto.referencia)}
+                                                    </div>
+                                                </div>
+                                                <ui:fragment rendered="#{informeProductosCcygaMBean.proceso.idProcesoProducto != null}">
+                                                    <br/>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component">
+                                                            <h:commandLink id="btn_imprimir" actionListener="#{informeProductosCcygaMBean.generarPDF}">
+                                                                <span class="glyphicon glyphicon-print" style="font-size: 27px; color: #BF0039; cursor: pointer"></span>
+                                                            </h:commandLink>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                            </div>
+                                            <div class="col-xs-8">
+                                                <div class="row">
+                                                    <div class="col-xs-8">
+                                                        <p:remoteCommand name="seleccionarProceso" actionListener="#{informeProductosCcygaMBean.seleccionarProcesoCCYGA}"
+                                                                         update=":formArticulo:procesos"/>
+                                                        <div class="form-group">
+                                                            <h:outputLabel value="Proceso:"/>
+                                                            <h:panelGroup id="procesos">
+                                                                <div class="dropdown">
+                                                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                            id="selProcesos" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                                        #{informeProductosCcygaMBean.procesoSeleccionado}
+                                                                        <span class="caret"></span>
+                                                                    </button>
+                                                                    <ul class="dropdown-menu" aria-labelledby="selProcesos" style="width: 100%; max-height: 190px; overflow-y: auto">
+                                                                        <ui:repeat value="#{informeProductosCcygaMBean.procesos}" var="proceso">
+                                                                            <li>
+                                                                                <a class="pointer-cursor" onclick="seleccionarProceso([{name: 'proceso', value: '#{proceso.idProceso}'}]);">
+                                                                                    #{proceso.nombre}
+                                                                                </a>
+                                                                            </li>
+                                                                        </ui:repeat>
+                                                                    </ul>
+                                                                </div>
+                                                            </h:panelGroup>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-4 right-component" style="top: 25px">
+                                                        <p:remoteCommand name="finalizarProceso" actionListener="#{informeProductosCcygaMBean.finalizarProceso}"
+                                                                         update=":formArticulo:datos :formArticulo:listaProcesos :formArticulo:btns"/>
+                                                        <button type="button" class="btn btn-default btn-lg noround #{informeProductosCcygaMBean.proceso.idProcesoProducto != null ? '' : 'disabled btn-deshabilitado'}"
+                                                                onclick="finalizarProceso();">
+                                                            Finalizar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <div class="form-group">
+                                                            <h:outputLabel value="Comentario proceso:"/>
+                                                            <h:inputText id="txt_comentario" class="form-control input-lg noround" value="#{informeProductosCcygaMBean.proceso.comentario}" 
+                                                                         pt:placeholder="Comentarios sobre el proceso" style="margin-bottom: 5px;" autocomplete="off"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-4">
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Producto:"/>
+                                                    <br/>
+                                                    <h:outputText value="#{informeProductosCcygaMBean.producto.idProducto}" class="input-lg" style="font-size: 34px"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-8">
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Documento ingreso:"/>
+                                                    <h:inputText id="txt_documento" class="form-control input-lg noround" value="#{informeProductosCcygaMBean.producto.documento}" autocomplete="off"
+                                                                 pt:placeholder="(Opcional)"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div class="form-group">
+                                                    <h:outputLabel value="Descripción del requerimiento:"/>
+                                                    <h:inputTextarea id="txta_descripcion" class="form-control input-lg noround" rows="3" value="#{informeProductosCcygaMBean.producto.descripcion}"
+                                                                     style="resize: none"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                    <hr/>
+                                    <div class="row">
+                                        <p:remoteCommand name="seleccionarProcesoProducto" actionListener="#{informeProductosCcygaMBean.seleccionarProceso}"
+                                                         update=":formArticulo:datos :formArticulo:listaProcesos :formArticulo:btns"/>
+                                        <h:panelGroup id="listaProcesos">
+                                            <div class="col-xs-12" style="margin-bottom: 10px">
+                                                <ui:repeat value="#{informeProductosCcygaMBean.producto.procesos}" var="proc">
+                                                    <div class="col-xs-6 center-component #{informeProductosCcygaMBean.proceso.idProcesoProducto eq proc.idProcesoProducto ?
+                                                                                            'proceso-producto-activo' : 'proceso-producto'}" style="height: 20px"
+                                                         onclick="seleccionarProcesoProducto([{name: 'idProceso', value: '#{proc.idProcesoProducto}'}])">
+                                                        #{proc.nombre}
+                                                        <ui:fragment rendered="#{proc.comentario != null and proc.comentario != ''}">
+                                                            <div class="comentario-proceso">
+                                                                #{proc.comentario}
+                                                            </div>
+                                                        </ui:fragment>
+                                                    </div>
+                                                </ui:repeat>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <h:panelGroup id="btns">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <p:remoteCommand name="guardarProducto" actionListener="#{informeProductosCcygaMBean.guardarProducto}"
+                                                                 update=":formArticulo:datos :formArticulo:listaProcesos :formArticulo:btns"/>
+                                                <p:remoteCommand name="eliminarProducto" actionListener="#{informeProductosCcygaMBean.eliminarProducto}"
+                                                                 update=":formArticulo:datos :formArticulo:listaProcesos :formArticulo:btns"/>
+                                                <p:remoteCommand name="limpiar" actionListener="#{informeProductosCcygaMBean.limpiarDlg}"
+                                                                 update=":formArticulo:datos :formArticulo:listaProcesos :formArticulo:btns :formInformeProductos"/>
+
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="limpiar();">
+                                                    Cerrar
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-lg noround #{informeProductosCcygaMBean.proceso.idProcesoProducto != null ? '' : 'disabled btn-deshabilitado'}"
+                                                        onclick="limpiar();">
+                                                    Nuevo
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-lg noround #{informeProductosCcygaMBean.proceso.idProcesoProducto != null ? '' : 'disabled btn-deshabilitado'}"
+                                                        onclick="eliminarProducto();">
+                                                    Eliminar
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="guardarProducto();">
+                                                    Guardar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+        </h:panelGroup>
+
+        <h:form id="formInformeProductos">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Productos CCYGA</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <h:panelGroup id="filtros">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-4">
+                            <div class="form-group">
+                                <p:remoteCommand name="ordenarProductos" actionListener="#{informeProductosCcygaMBean.ordenarProductos}" update=":formInformeProductos:filtros :formInformeProductos:productos"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <div class="input-group">
+                                    <span class="input-group-addon input-group-matisses noround">Ordenar por</span>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                id="selOrdenar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            #{informeProductosCcygaMBean.ordenarPor}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="selOrdenar" style="width: 100%">
+                                            <li>
+                                                <a onclick="abrirModalEspera(); ordenarProductos([{name: 'orderBy', value: 'idProducto'}])" style="cursor: pointer">
+                                                    Id producto
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); ordenarProductos([{name: 'orderBy', value: 'referencia'}])" style="cursor: pointer">
+                                                    Referencia
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); ordenarProductos([{name: 'orderBy', value: 'descripcion'}])" style="cursor: pointer">
+                                                    Descripción
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <span class="input-group-btn">
+                                        <p:remoteCommand name="alternarOrden" actionListener="#{informeProductosCcygaMBean.alternarOrden}" update=":formInformeProductos:filtros :formInformeProductos:productos"
+                                                         oncomplete="cerrarModalEspera();"/>
+                                        <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); alternarOrden();">
+                                            <span class="glyphicon #{informeProductosCcygaMBean.sortOrder eq 'ASC' ? 'glyphicon-sort-by-order' : 
+                                                                     (informeProductosCcygaMBean.sortOrder eq 'DESC' ? 'glyphicon-sort-by-order-alt' : '')}"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-4">
+                            <div class="form-group">
+                                <p:remoteCommand name="filtrarProductos" actionListener="#{informeProductosCcygaMBean.filtrarProductos}" update=":formInformeProductos:filtros :formInformeProductos:productos"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <div class="input-group">
+                                    <span class="input-group-addon input-group-matisses noround">Filtrar por</span>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                id="selFiltrar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            #{informeProductosCcygaMBean.filtroSeleccionado}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="selFiltrar" style="width: 100%">
+                                            <li>
+                                                <a onclick="abrirModalEspera(); filtrarProductos([{name: 'filtro', value: 'clientes'}])" style="cursor: pointer">
+                                                    Clientes
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); filtrarProductos([{name: 'filtro', value: 'demostraciones'}])" style="cursor: pointer">
+                                                    Demostraciones
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); filtrarProductos([{name: 'filtro', value: 'ventas'}])" style="cursor: pointer">
+                                                    Ventas
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); filtrarProductos([{name: 'filtro', value: 'todos'}])" style="cursor: pointer">
+                                                    Todos
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-4">
+                            <div class="form-group has-feedback">
+                                <p:remoteCommand name="buscar" actionListener="#{informeProductosCcygaMBean.buscar}" update=":formInformeProductos:filtros :formInformeProductos:productos"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <h:inputText id="txt_buscar" class="form-control input-lg noround" value="#{informeProductosCcygaMBean.parametroBusqueda}"
+                                             pt:placeholder="Parámetro Busqueda" autocomplete="off"
+                                             onkeypress="if (event.keyCode === 13) {
+                                                         abrirModalEspera();
+                                                         buscar();
+                                                         return false;
+                                                     }"/>
+                                <span class="form-control-feedback glyphicon glyphicon-search inline-search" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-offset-1 col-sm-5">
+                            <div class="form-group">
+                                <p:remoteCommand name="cambiarSizePage" actionListener="#{informeProductosCcygaMBean.cambiarSizePage}" update=":formInformeProductos:filtros :formInformeProductos:productos"
+                                                 oncomplete="cerrarModalEspera();"/>
+                                <div class="input-group">
+                                    <span class="input-group-addon input-group-matisses noround">Mostrar</span>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                id="selSizePage" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            #{informeProductosCcygaMBean.sizePage}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="selSizePage">
+                                            <li>
+                                                <a onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '9'}])" style="cursor: pointer">
+                                                    9
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '18'}])" style="cursor: pointer">
+                                                    18
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onclick="abrirModalEspera(); cambiarSizePage([{name: 'sizePage', value: '27'}])" style="cursor: pointer">
+                                                    27
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <span class="input-group-addon input-group-matisses noround">x pag.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-5 center-component">
+                            <div class="form-group">
+                                <p:remoteCommand name="mostrarPrimeraPagina" actionListener="#{informeProductosCcygaMBean.mostrarPrimeraPagina}"
+                                                 update=":formInformeProductos:filtros :formInformeProductos:productos" oncomplete="cerrarModalEspera();"/>
+                                <p:remoteCommand name="mostrarPaginaAnterior" actionListener="#{informeProductosCcygaMBean.mostrarPaginaAnterior}"
+                                                 update=":formInformeProductos:filtros :formInformeProductos:productos" oncomplete="cerrarModalEspera();"/>
+                                <p:remoteCommand name="mostrarPaginaEspecifica" actionListener="#{informeProductosCcygaMBean.mostrarPaginaEspecifica}"
+                                                 update=":formInformeProductos:filtros :formInformeProductos:productos" oncomplete="cerrarModalEspera();"/>
+                                <p:remoteCommand name="mostrarPaginaSiguiente" actionListener="#{informeProductosCcygaMBean.mostrarPaginaSiguiente}"
+                                                 update=":formInformeProductos:filtros :formInformeProductos:productos" oncomplete="cerrarModalEspera();"/>
+                                <p:remoteCommand name="mostrarUltimaPagina" actionListener="#{informeProductosCcygaMBean.mostrarUltimaPagina}"
+                                                 update=":formInformeProductos:filtros :formInformeProductos:productos" oncomplete="cerrarModalEspera();"/>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarPrimeraPagina();">
+                                        1
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarPaginaAnterior();">
+                                        <span class="glyphicon glyphicon-chevron-left"></span>
+                                    </button>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-default dropdown-toggle btn-lg noround" data-toggle="dropdown"
+                                                aria-haspopup="true" aria-expanded="false">
+                                            #{informeProductosCcygaMBean.pagina} de #{informeProductosCcygaMBean.totalPaginas}
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" style="max-height: 165px; overflow-y: auto">
+                                            <ui:repeat value="#{informeProductosCcygaMBean.paginas}" var="pagina">
+                                                <li>
+                                                    <a onclick="abrirModalEspera(); mostrarPaginaEspecifica([{name: 'pagina', value: '#{pagina}'}])" style="cursor: pointer">
+                                                        #{pagina}
+                                                    </a>
+                                                </li>
+                                            </ui:repeat>
+                                        </ul>
+                                    </div>
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarPaginaSiguiente();">
+                                        <span class="glyphicon glyphicon-chevron-right"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarUltimaPagina();">
+                                        #{informeProductosCcygaMBean.totalPaginas}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <div class="row">
+                    <p:remoteCommand name="cerrarProducto" action="#{informeProductosCcygaMBean.cerrarProducto}" update=":formInformeProductos:filtros :formInformeProductos:productos"
+                                     oncomplete="cerrarModalEspera(); cerrarModalArticulo();"/>
+                    <h:panelGroup id="productos">
+                        <p:remoteCommand name="seleccionarProducto" actionListener="#{informeProductosCcygaMBean.seleccionarProducto}" update=":panelArticulo"
+                                         oncomplete="abrirModalArticulo();"/>
+                        <ui:fragment rendered="#{empty informeProductosCcygaMBean.productos}">
+                            <h4>
+                                <p>
+                                    No se encontraron datos
+                                </p>
+                            </h4>
+                        </ui:fragment>
+                        <ui:repeat value="#{informeProductosCcygaMBean.productos}" var="producto">
+                            <div class="col-xs-12 col-sm-6 col-lg-4">
+                                <div class="producto-activo-ccyga" style="border: 1px solid #{producto.cliente ? '#FFB4B4' : (producto.demo ? '#9696FF' : '#DDDDDD')} !important; cursor: pointer"
+                                     onclick="seleccionarProducto([{name: 'idProducto', value: '#{producto.idProducto}'}]);">
+                                    <div class="row #{producto.cliente ? 'titulo-producto-activo-ccyga-cliente' : (producto.demo ? 'titulo-producto-activo-ccyga-demo' : 
+                                                      'titulo-producto-activo-ccyga')} titulo-producto-activo-ccyga ">
+                                        <div class="col-xs-12 justify-component">
+                                            <span style="padding-left: 5px;">
+                                                <b>[#{producto.idProducto}] #{producto.descripcion}</b>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-5">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <img class="img-mini" src="#{imagenProductoMBean.obtenerUrlProducto(producto.referencia, true)}"/>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <h:outputText styleClass="input-lg" value="#{baruGenericMBean.convertirARefCorta(producto.referencia)}"/>
+                                                </div>
+                                            </div>
+                                            <ui:fragment rendered="#{informeProductosCcygaMBean.tieneInventario(producto.referencia, producto.cliente, producto.demo) == false}">
+                                                <div class="row">
+                                                    <div class="col-xs-12 center-component">
+                                                        <span class="glyphicon glyphicon-remove cerrar-producto-ccyga"
+                                                              onclick="abrirModalEspera(); cerrarProducto([{name: 'idProducto', value: '#{producto.idProducto}'}])"
+                                                              style="visibility: #{informeProductosCcygaMBean.tieneInventario(producto.referencia, producto.cliente, producto.demo) ? 'hidden' : 'visible'}"></span>
+                                                    </div>
+                                                </div>
+                                            </ui:fragment>
+                                        </div>
+                                        <div class="col-xs-7">
+                                            <div class="row">
+                                                <ui:repeat value="#{producto.procesos}" var="proceso">
+                                                    <div class="col-xs-12 right-component" style="padding-right: 69px; height: 20px">
+                                                        <ui:fragment rendered="#{proceso.laboresActivas gt 0}">
+                                                            <span class="txt-12">
+                                                                <span class="labor-activa-ccyga">
+                                                                    <h:outputText class="texto-labor-activa-ccyga" value="#{proceso.nombre} x #{proceso.laboresActivas}"/>
+                                                                    <div class="empleados-labor-activa-ccyga left-component">
+                                                                        <ul style="padding-left: 12px !important; margin-bottom: 0 !important">
+                                                                            <ui:repeat value="#{proceso.empleadosLabor}" var="empleado">
+                                                                                <li>
+                                                                                    <span>#{empleado}</span>
+                                                                                </li>
+                                                                            </ui:repeat>
+                                                                        </ul>
+                                                                    </div>
+                                                                </span>
+                                                            </span>
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{proceso.laboresActivas eq 0}">
+                                                            <span class="txt-12">
+                                                                #{proceso.nombre}
+                                                            </span>
+                                                        </ui:fragment>
+                                                    </div>
+                                                </ui:repeat>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </h:panelGroup>
+                </div>
+            </div>
+            <br/>
+        </h:form>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

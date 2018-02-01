@@ -1,0 +1,321 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <script type="text/javascript">
+            function abrirModalEliminar() {
+                $('#modalEliminar').modal('show');
+            }
+
+            function cerrarModalEliminar() {
+                $('#modalEliminar').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalConfirmacion() {
+                $('#modalConfirmacion').modal('show');
+            }
+
+            function cerrarModalConfirmacion() {
+                $('#modalConfirmacion').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Contar Inventario</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        
+        <div class="container">
+            <h:panelGroup id="panelEliminar">
+                <h:form id="formModalEliminar">
+                    <div class="modal fade" id="modalEliminar">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header-alerta">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title">
+                                        Eliminar Referencia
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            <p>
+                                                ¿Está seguro(a) que desea eliminar esta referencia del inventario?
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-4 center-component">
+                                            <h:graphicImage value="#{imagenProductoMBean.obtenerUrlProducto(contarMBean.referencia, true)}" class="img-mini"/>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-8">
+                                            <div class="row">
+                                                <div class="col-xs-5 right-component">
+                                                    <b>Referencia: </b>
+                                                </div>
+                                                <div class="col-xs-7">
+                                                    #{contarMBean.referencia}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-5 right-component">
+                                                    <b>Cantidad: </b>
+                                                </div>
+                                                <div class="col-xs-7">
+                                                    1
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <p:remoteCommand name="eliminarReferencia" actionListener="#{contarMBean.eliminarReferencia}"
+                                                     update=":formContar:txt_referencia :formContar:detalle :formContar:msg :formContar:galeria"
+                                                     oncomplete="cerrarModalEliminar(); document.getElementById('formContar:txt_referencia').focus();"/>
+                                    
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                        Cancelar
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="eliminarReferencia();">
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelConfirmacion">
+                <h:form id="formConfirmacion">
+                    <div class="modal fade" id="modalConfirmacion" data-backdrop="static" data-keyboard="false">
+                        <div class="modal-dialog">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header-advertencia">
+                                    <h4 class="modal-title">
+                                        Confirmación
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            <p>
+                                                <span class="glyphicon glyphicon-alert" style="color: #F0AD4E; font-size: 16px"></span>
+                                                Esta seguro que desea finalizar el conteo,
+                                                si desea finalizarlo tenga en cuenta que no podrá volverlo a iniciar.
+                                            </p>
+                                            <p>
+                                                <b>¿Desea continuar?</b>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <div class="row">
+                                        <div class="col-xs-12 right-component">
+                                            <p:remoteCommand name="cancelarItemEliminar"/>
+                                            <p:remoteCommand name="modal" update=":panelConfirmacion" oncomplete="finalizarConteo();"/>
+                                            <p:remoteCommand name="finalizarConteo" action="#{contarMBean.finalizarConteo}" update=":formContar" oncomplete="cerrarModalEspera();"/>
+
+                                            <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                No
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-lg noround" onclick="modal(); abrirModalEspera();" style="margin-left: 0px">
+                                                Sí
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:form id="formContar">
+                <p:focus context="formContar" for="txt_referencia"/>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li>
+                                <h:commandLink class="miga" value="Conteos Inventario" action="conteos"/>
+                            </li>
+                            <li class="active">
+                                <a>Contar Inventario</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="row">
+                    <p:remoteCommand name="agregarReferencia" actionListener="#{contarMBean.agregarReferencia}"
+                                     update=":formContar:txt_referencia :formContar:detalle :formContar:msg :formContar:galeria"
+                                     oncomplete="cerrarModalEspera(); document.getElementById('formContar:txt_referencia').focus();"/>
+                    
+                    <div class="col-xs-12 col-sm-offset-2 col-sm-6 col-md-offset-3 col-md-4 margin-bottom-10">
+                        <h:inputText id="txt_referencia" class="form-control input-lg noround" value="#{contarMBean.referencia}" pt:placeholder="Referencia"
+                                     autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                 abrirModalEspera();
+                                                 agregarReferencia();
+                                                 return false;
+                                             }"/>
+                    </div>
+                    <div class="col-xs-6 col-sm-2 col-md-2 center-component">
+                        <button type="button" class="btn btn-lg btn-primary noround" onclick="agregarReferencia();">
+                            Agregar
+                        </button>
+                    </div>
+                    <ui:fragment rendered="#{userSessionInfoMBean.validarPermisoUsuario('CONTEO', 'FINALIZAR')}">
+                        <div class="col-xs-6 col-sm-2 col-md-2 center-component">
+                            <p:remoteCommand name="abrirModal" oncomplete="abrirModalConfirmacion();" update=":panelConfirmacion"/>
+                            
+                            <button type="button" class="btn btn-lg btn-default noround" onclick="abrirModal();">
+                                Finalizar
+                            </button>
+                        </div>
+                    </ui:fragment>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                <h:panelGroup id="galeria">
+                    <h:panelGroup rendered="#{not empty contarMBean.galeria}">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-4">
+                                <div id="images" class="carousel slide">
+                                    <ol class="carousel-indicators">
+                                        <ui:repeat value="#{contarMBean.galeria}" var="galeriaPoint">
+                                            <li data-target="#images" data-slide-to="#{galeriaPoint.posicion}" class="#{galeriaPoint.posicion eq '0' ? 'active' : ''}"></li>
+                                        </ui:repeat>
+                                    </ol>
+
+                                    <div class="carousel-inner">
+                                        <ui:repeat value="#{contarMBean.galeria}" var="galeria">
+                                            <div class="item #{galeria.posicion eq '0' ? 'active' : ''}">
+                                                <img src="#{galeria.url}" class="img-responsive" style="max-height: 236px"/>
+                                            </div>
+                                        </ui:repeat>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-8">
+                                <div class="row">
+                                    <div class="col-xs-12 center-component">
+                                        <span style="font-size: 35px; color: #BF0039; font-weight: bold">
+                                            #{contarMBean.ultimaReferencia}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 center-component">
+                                        <span style="font-size: 30px">
+                                            #{baruGenericMBean.obtenerNombreReferencia(contarMBean.ultimaReferencia)}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-5 right-component">
+                                        <span style="color: #BF0039; font-size: 30px">
+                                            COP
+                                        </span>
+                                    </div>
+                                    <div class="col-xs-7 left-component">
+                                        <h:outputText value="#{baruGenericMBean.obtenerPrecioVenta(contarMBean.ultimaReferencia)}" style="font-size: 30px">
+                                            <f:convertNumber currencySymbol="$" type="currency"/>
+                                        </h:outputText>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 center-component">
+                                        <p:remoteCommand name="eliminarUltimaReferencia" actionListener="#{contarMBean.eliminarReferencia}"
+                                                         update=":formContar:txt_referencia :formContar:detalle :formContar:msg :formContar:galeria"
+                                                         oncomplete="cerrarModalEspera(); document.getElementById('formContar:txt_referencia').focus();"/>
+                                        
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); eliminarUltimaReferencia();">
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <hr/>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-offset-6 col-sm-6 col-md-offset-8 col-md-4">
+                        <div class="form-group has-feedback">
+                            <p:remoteCommand name="buscar" actionListener="#{contarMBean.buscarReferencia}" update=":formContar:detalle" oncomplete="cerrarModalEspera();"/>
+                            
+                            <h:inputText id="txt_buscar" class="form-control input-lg noround" value="#{contarMBean.parametroBusqueda}"
+                                         pt:placeholder="Parámetro Busqueda" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                     abrirModalEspera();
+                                                     buscar();
+                                                     return false;
+                                                 }"/>
+                            <span class="form-control-feedback glyphicon glyphicon-search inline-search" aria-hidden="true"></span>
+                        </div>
+                    </div>
+                </div>
+                <h:panelGroup id="detalle">
+                    <h:panelGroup rendered="#{not empty contarMBean.detalle}">
+                        <div class="row">
+                            <p:remoteCommand name="seleccionarReferencia" actionListener="#{contarMBean.seleccionarReferenciaEliminar}" update=":panelEliminar" oncomplete="abrirModalEliminar();"/>
+                            
+                            <ui:repeat value="#{contarMBean.detalle}" var="detalle">
+                                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 contenedor-contar" style="height: 145px; max-height: 145px; border: 1px solid #D7D7D7"
+                                     onclick="seleccionarReferencia([{name: 'referencia', value: '#{detalle.referencia}'}])">
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <h:graphicImage value="#{imagenProductoMBean.obtenerUrlProducto(detalle.referencia, true)}" class="img-mini"/>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <div class="row">
+                                                <div class="col-xs-12 right-component" style="font-weight: bold">
+                                                    <h:outputText value="#{baruGenericMBean.convertirARefCorta(detalle.referencia)}" style="font-size: 20px"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 center-component">
+                                                <span style="font-size: 35px; color: #BF0039; font-weight: bold">
+                                                    #{detalle.cantidad}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 justify-component">
+                                            <h:outputText value="#{baruGenericMBean.obtenerNombreReferencia(detalle.referencia)}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <br/>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

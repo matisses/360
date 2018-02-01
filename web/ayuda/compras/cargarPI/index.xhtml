@@ -1,0 +1,535 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <title>360 - Ayuda Cargar Proforma</title>
+    </h:head>
+    <h:body>
+        <m:navbar/>
+        <div class="panel-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h1 class="h1_manual">
+                            Cargar Proforma
+                        </h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            En esta página se le permite al usuario realizar la respectiva carga de la proforma después de ser recibida por el proveedor;
+                            además de permitir la asignación de nuevas columnas o de columnas existentes a las creadas por el proveedor;
+                            también se le permitirá al usuario la eliminación de las columnas que se consideren no serán usadas en la proforma.
+                            Se debe tener en cuenta que todas las modificaciones se guardaran en una versión diferente a la plantilla pre-definida para el proveedor.
+                        </p>
+                        <p>
+                            <b>Tenga en cuenta lo siguiente: </b>
+                            La configuración del encabezado de la PI no puede cambiar en cuanto a su estructura,
+                            ya que esta está diseñada de acuerdo a la plantilla de muestra y el encabezado es leído tal cual como fue configurado.
+                            Este paso es súper importante tenerlo en cuenta debido a que de aquí se tienen los datos del proveedor,
+                            lo que permitirá una asociación exacta de la PI con el Proveedor.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Después de tener la anterior información clara, procedamos a cargar nuestra proforma.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 class="h2_manual">
+                            Contenido
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ul>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <a href="#seleccionar_proforma">Seleccionar Proforma</a>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#datos_proveedor">Datos Proveedor</a>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#columnas">Columnas</a>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#asignacion_configuracion">Asignación y Configuración</a>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <ul>
+                                        <div class="row">
+                                            <li class="padding-top-1">
+                                                <div class="col-xs-12">
+                                                    <a href="#asignacion">Asignación</a>
+                                                </div>
+                                            </li>
+                                        </div>
+                                        <div class="row">
+                                            <li class="padding-top-1">
+                                                <div class="col-xs-12">
+                                                    <a href="#configuracion">Configuración</a>
+                                                </div>
+                                            </li>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#crear_proforma">Crear Proforma</a>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#mensajes_recibidos">Mensajes Recibidos</a>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <br/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="seleccionar_proforma" class="h2_manual anchor">
+                            Seleccionar Proforma
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Para crear una nueva proforma en el sistema se debe primero cargar el archivo de excel que tiene los datos de la carga,
+                            para esto en los siguientes pasos se explicara como subir el archivo y las condiciones que este debe tener para que el sistema no se confunda con los datos.
+                        </p>
+                    </div>
+                </div>
+                <div class="row" style="margin-left: 25px">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            <b>1 - </b>En la parte superior de la vista, el usuario puede visualizar un componente como el que se muestra en la <b>Imagen 1</b>.
+                        </p>
+                        <p>
+                            En la imagen se muestra un componente con un botón <b>Examinar...</b>, de clic en este.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <img class="img-responsive" src="/360/images/ayuda/compras/cargarPI/seleccionarPI.png"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12" style="text-align: center">
+                                <i>[Imagen 1]</i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-left: 25px">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            <b>2 - </b>Después de dar clic en el anterior botón, se nos abrirá el explorador de archivos de Windows;
+                            seleccione el archivo que desea subir y de clic en <b>Abrir</b>. Luego de haber seleccionado el archivo se deberá ver como lo muestra la <b>Imagen 2</b>.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <img class="img-responsive" src="/360/images/ayuda/compras/cargarPI/archivoSeleccionado.png"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12" style="text-align: center">
+                                <i>[Imagen 2]</i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-left: 25px">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            <b>3 - </b>Una vez seleccionado el archivo de extensiones <b>.xlsx</b> o <b>.xls</b>,
+                            el usuario puede dar clic en el botón <b>Cargar</b> para que el sistema comience el escaneo del archivo y por consiguiente se puedan ver los datos.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            El usuario puede ver al cargar la proforma que se muestran los datos del proveedor y las columnas que se pudieron detectar del archivo.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="datos_proveedor" class="h2_manual anchor">
+                            Datos Proveedor
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            En estos datos se verá la información de contacto y la razón social del proveedor, así como el logo de este.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <img class="img-responsive" src="/360/images/ayuda/compras/cargarPI/datosProveedor.png"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12" style="text-align: center">
+                                <i>[Imagen 3]</i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="columnas" class="h2_manual anchor">
+                            Columnas
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            El sistema detectara automáticamente las columnas del archivo y se las mostrara al usuario para que este decida si desea incluirlas o ignorarlas.
+                        </p>
+                        <p>
+                            Se pueden tener 3 tipos de columnas que se explicaran a continuación:
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <ul>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                                <p>
+                                                    <b>Fondo gris </b>Son las columnas que se encontraron en el archivo y existen en las columnas del sistema,
+                                                    el sistema es capaz de detectar esto automáticamente para facilitar el trabajo del usuario; además de que así se verán también las columnas asignadas.
+                                                </p>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <img class="img-responsive" src="/360/images/ayuda/compras/cargarPI/columnaExistente.png"/>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12" style="text-align: center">
+                                                        <i>[Imagen 4]</i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                                <p>
+                                                    <b>Fondo blanco </b>Estas columnas no fueron asociadas a ninguna existente como en el primer tipo,
+                                                    estas columnas permiten la asignación con columnas del sistema.
+                                                </p>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <img class="img-responsive" src="/360/images/ayuda/compras/cargarPI/columnaNueva.png"/>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12" style="text-align: center">
+                                                        <i>[Imagen 5]</i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                                                <p>
+                                                    <b>Fondo verde </b>Las columnas con este color son más características,
+                                                    porque están indicando que son obligatorias ósea que no importa si tiene o no datos estas serán agregadas automáticamente.
+                                                </p>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <img class="img-responsive" src="/360/images/ayuda/compras/cargarPI/columnaObligatoria.png"/>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12" style="text-align: center">
+                                                        <i>[Imagen 6]</i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Después de tener claro cada tipo de columna, ahora empezaremos a configurar la forma como se quiere ver posteriormente la proforma y la asignación de las columnas.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="asignacion_configuracion" class="h2_manual anchor">
+                            Asignación y Configuración
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Lo más importante en este módulo es la facilidad de configuración y asignación de las columnas obtenidas.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3 id="asignacion" class="h3_manual anchor">
+                            Asignación
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            Para poder asignarle una columna existente a una columna obtenida del archivo cargado,
+                            de clic sobre la columna y esta quedara de un color rojo como se muestra en la <b>Imagen 7</b>.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <img class="img-responsive" src="/360/images/ayuda/compras/cargarPI/columnaSeleccionada.png"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12" style="text-align: center">
+                                <i>[Imagen 7]</i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Lo anterior permite trabajar sobre la columna seleccionada, además se habilitara un botón identificado con el siguiente icono
+                            <span class="glyphicon glyphicon-plus"></span>, dando clic en este se abrirá una ventana emergente como la de la <b>Imagen 8</b>.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <img class="img-responsive" src="/360/images/ayuda/compras/cargarPI/asignarColumna.png"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12" style="text-align: center">
+                                <i>[Imagen 8]</i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <p>
+                                    <b>1 - Crear columna </b>Seleccione esta opción para crear una columna. <b>Para saber más sobre este tema, vaya y mire el manual de columnas.</b>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <p>
+                                    <b>2 - Usar columna </b>Seleccione una columna de la lista para asignarla.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            De clic en <b>Guardar</b> para que los cambios queden almacenados o de lo contrario de clic en <b>Cancelar</b>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3 id="configuracion" class="h3_manual anchor">
+                            Configuración
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            En este paso el usuario puede dar posición o eliminar una columna que crea innecesaria; para eliminar la columna de clic en el botón con el siguiente icono 
+                            <span class="glyphicon glyphicon-minus"></span> y esta se eliminara. Use los botones identificados con los iconos 
+                            <span class="glyphicon glyphicon-chevron-left"></span> y <span class="glyphicon glyphicon-chevron-right"></span>,
+                            para mover las columnas; recuerde que las primeras 5 columnas se mostraran como más importantes en la proforma.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="crear_proforma" class="h2_manual anchor">
+                            Crear Proforma
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Una vez se tengan las columnas como se quieren en la proforma de clic en <b>Crear</b>,
+                            para que la proforma se genere o de clic en <b>Cancelar</b> para no hacer nada y limpiar la zona de trabajo.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="mensajes_recibidos" class="h2_manual anchor">
+                            Mensajes Recibidos
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Si en algún momento usted recibe alguno de estos mensajes por parte del sistema, esto le ayudara a identificar cual es la gravedad 
+                            y el significado de este: 
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <th class="head-tabla">
+                                    Tipo
+                                </th>
+                                <th class="head-tabla">
+                                    Msj
+                                </th>
+                                <th class="head-tabla">
+                                    Causa / Solución
+                                </th>
+                            </tr>
+                            <ui:repeat value="#{obtenerDatosProformaAyudaMBean.mensajes}" var="mensaje">
+                                <tr>
+                                    <td>
+                                        <span class="#{mensaje[0] eq 'E' ? 'glyphicon glyphicon-remove-sign' : mensaje[0] eq 'I' ? 'glyphicon glyphicon-info-sign'
+                                                       : mensaje[0] eq 'A' ? 'glyphicon glyphicon-question-sign': ''}"
+                                              title="#{mensaje[0] eq 'E' ? 'Error' : mensaje[0] eq 'I' ? 'Información' : mensaje[0] eq 'A' ? 'Advertencia': ''}"
+                                              style="font-size: 30px; #{mensaje[0] eq 'E' ? 'color: #DD5555;' : mensaje[0] eq 'I' ? 'color: #46B8DA;'
+                                                                        : mensaje[0] eq 'A' ? 'color: #FFBF00;': ''}"></span>
+                                    </td>
+                                    <td>
+                                        #{mensaje[1]}
+                                    </td>
+                                    <td>
+                                        <p>
+                                            #{mensaje[2]}
+                                        </p>
+                                        <ui:fragment rendered="#{not empty mensaje[3]}">
+                                            <hr/>
+                                            <p>
+                                                #{mensaje[3]}
+                                            </p>
+                                        </ui:fragment>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </table>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+            </div>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

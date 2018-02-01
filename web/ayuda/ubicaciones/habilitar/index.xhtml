@@ -1,0 +1,333 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <title>360 - Ayuda Habilitar Ubicaciones</title>
+    </h:head>
+    <h:body>
+
+        <m:navbar/>
+        <div class="panel-body">
+            <div class="container" style="text-align: justify">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h1 class="h1_manual">
+                            Habilitar Ubicaciones
+                        </h1>
+                        <p>
+                            Este módulo le permite al usuario habilidar o deshabilitar las ubicaciones del almacén en el que inició sesión.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="habilitar" class="anchor h2_manual">
+                            Habilitar
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Para habilitar una ubicación en el campo con el mismo nombre y de enter para consultar el estado de esta; si la ubicación
+                            esta habilitada mostrara 
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ul>
+                            <div class="row">
+                                <li id="primero" class="anchor">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <p>
+                                                    <b>Primero </b> Los movimientos son únicamente del almacén en el que se inició sesión, no se permite y no
+                                                    sirve para realizarlos de almacén a almacén.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="segundo" class="anchor">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <p>
+                                                    <b>Segundo </b> El modulo se debe usar si y solo si, la mercancía no tiene que pasar por piso (<b>TM</b>),
+                                                    de lo contrario se debe usar las funciones de <b>Cargue</b> y <b>Descargue</b> según correspondan.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="tercero" class="anchor">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <p>
+                                                    <b>Tercero </b> Esta aplicación es para el uso del personal de tiendas y/o para los que posean el permiso de
+                                                    usarlo.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="deshabilitar" class="anchor h2_manual">
+                            Deshabilitar
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Después de tener claro todas las condiciones que aplican para este módulo y de tener claro su funcionalidad, procederemos a explicar
+                            los pasos y la forma de usar este módulo.
+                        </p>
+                        <p>
+                            Para mover artículos de una ubicación a otra, se necesitan los siguientes datos:
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ul>
+                            <div class="row">
+                                <li id="li_crearMovimiento" class="anchor">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <p id="ubicacion_origen" class="anchor">
+                                                    <b>Ubicación Origen </b> Código de la ubicación de la que se quiere sacar la mercancía.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="li_crearMovimiento" class="anchor">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <p id="ubicacion_destino" class="anchor">
+                                                    <b>Ubicación Destino </b> Código de la ubicación a la que entrara la mercancía.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li id="crearSolicitud" class="anchor">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <p id="referencia" class="anchor">
+                                                    <b>Referencia </b> Código del producto a descargar. Existen dos métodos para ingresar la referencia:
+                                                </p>
+                                                <p id="referenciaCompleta" class="anchor">
+                                                    <b>1 - Referencia completa </b> Es necesario que se ingresen los 20 caracteres de la referencia.
+                                                    Este método se usa normalmente al escanear los códigos de barras de los productos.
+                                                </p>
+                                                <p id="referenciaCorta" class="anchor">
+                                                    <b>2 - Referencia corta </b> Sólo los usuarios con permiso podrán ingresar referencias cortas.
+                                                    Una referencia corta está compuesta por los tres primeros dígitos (<b>código del proveedor</b>), un separador
+                                                    (<b>asterisco o punto</b>) y los últimos dígitos (<b>consecutivo del producto dentro del proveedor</b>).
+                                                    Ejemplos: <b>105*1022</b>, <b>223.10</b>, <b>228*5</b>, <b>117.0015</b>.
+                                                    Los usuarios que no tengan autorización para ingresar referencias cortas recibirán un mensaje indicándoles
+                                                    que no tienen permiso para hacerlo, y deberán usar el proceso de <a class="a_href_manual" href="#referenciaCompleta">referencia completa</a>.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Una vez ingresadas tanto la ubicación origen como la ubicación destino y la referencia, se debe dar clic en el botón
+                            <b>Agregar</b> para incluir la referencia al movimiento. Al ingresar la primera referencia
+                            los campos de ubicación se bloquearan para evitar que estas se cambien, ya que no se puede mover en un solo traslado, de varias ubicaciones.
+                            <b>OJO </b> Lo anterior no implica que al darle agregar se realice el respectivo movimiento.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <p>
+                            Al agregar la referencia se verá como la siguiente <b>Imagen 1</b>.
+                        </p>
+                        <p>
+                            <b>1 - </b>Foto artículo
+                            <br/>
+                            <b>2 - </b>Descripción del artículo
+                            <br/>
+                            <b>3 - </b>Referencia corta
+                            <br/>
+                            <b>4 - </b>Cantidad a transferir
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <img class="img-responsive" src="/360/images/ayuda/ubicaciones/traslado/articulo.png"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12" style="text-align: center">
+                                <i>[Imagen 1]</i>
+                            </div>
+                        </div>
+                        <br/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <p>
+                            Para eliminar una referencia dé clic sobre esta y se mostrará un dialogo como el de la <b>Imagen 2</b>.
+                        </p>
+                        <br/>
+                        <p>
+                            Esta función de eliminado, únicamente elimina de a una unidad por vez, para eliminar dé clic en el botón <b>Eliminar</b>,
+                            de lo contrario de clic en <b>Cancelar</b>.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <img class="img-responsive" src="/360/images/ayuda/ubicaciones/traslado/modalEliminar.png"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12" style="text-align: center">
+                                <i>[Imagen 2]</i>
+                            </div>
+                        </div>
+                        <br/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Luego de tener todas las referencias necesarias para el movimiento, dé clic en el botón de <b>Trasladar</b> y espere la
+                            respuesta del sistema, el cual indicará si fue o no exitoso el movimiento.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="mensajesSistema" class="h2_manual anchor">Mensajes del Sistema</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Si en algún momento el usuario recibe uno de los siguientes mensajes por parte del sistema, esta guía le ayudara a identificarlo y 
+                            solucionarlo.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="row table-row">
+                            <div class="col-sm-1 hidden-xs center-component">
+                                <span class="table-ayuda">
+                                    Tipo
+                                </span>
+                            </div>
+                            <div class="col-sm-3 hidden-xs center-component">
+                                <span class="table-ayuda">
+                                    Mensaje
+                                </span>
+                            </div>
+                            <div class="col-sm-4 hidden-xs center-component">
+                                <span class="table-ayuda">
+                                    Causa
+                                </span>
+                            </div>
+                            <div class="col-sm-4 hidden-xs center-component">
+                                <span class="table-ayuda">
+                                    Solución
+                                </span>
+                            </div>
+                        </div>
+                        <ui:repeat value="#{trasladoEntreUbicacionesAyudaMBean.mensajes}" var="mensaje">
+                            <div class="row table-row">
+                                <div class="col-sm-1 hidden-sm hidden-md hidden-lg">
+                                    <span class="table-ayuda">
+                                        Tipo
+                                    </span>
+                                </div>
+                                <div class="col-sm-1 center-component">
+                                    <span class="#{mensaje[0] eq 'E' ? 'glyphicon glyphicon-remove-sign' : mensaje[0] eq 'I' ? 'glyphicon glyphicon-info-sign'
+                                                   : mensaje[0] eq 'A' ? 'glyphicon glyphicon-question-sign': ''}"
+                                          title="#{mensaje[0] eq 'E' ? 'Error' : mensaje[0] eq 'I' ? 'Información' : mensaje[0] eq 'A' ? 'Advertencia': ''}"
+                                          style="font-size: 30px; #{mensaje[0] eq 'E' ? 'color: #DD5555;' : mensaje[0] eq 'I' ? 'color: #46B8DA;'
+                                                                    : mensaje[0] eq 'A' ? 'color: #FFBF00;': ''}"></span>
+                                </div>
+                                <div class="col-sm-3 hidden-sm hidden-md hidden-lg">
+                                    <span class="table-ayuda">
+                                        Mensaje
+                                    </span>
+                                </div>
+                                <div class="col-sm-3">
+                                    <span class="col-xs-12">
+                                        #{mensaje[1]}
+                                    </span>
+                                </div>
+                                <div class="col-sm-4 hidden-sm hidden-md hidden-lg">
+                                    <span class="table-ayuda">
+                                        Causa
+                                    </span>
+                                </div>
+                                <div class="col-sm-4">
+                                    <span class="col-xs-12">
+                                        #{mensaje[2]}
+                                    </span>
+                                </div>
+                                <div class="col-sm-4 hidden-sm hidden-md hidden-lg">
+                                    <span class="table-ayuda">
+                                        Solución
+                                    </span>
+                                </div>
+                                <div class="col-sm-4">
+                                    <span class="col-xs-12">
+                                        #{mensaje[3]}
+                                    </span>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

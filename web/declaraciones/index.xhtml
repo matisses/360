@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" http-equiv="Content-Type"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script src="/360/js/arriba.js"></script>
+        <title>360 - Declaraciones importación</title>
+    </h:head>
+
+    <h:body style="padding-right: 0px !important">
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <span class="ir-arriba">
+            <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+        </span>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <ol class="breadcrumb">
+                        <li class="active">
+                            <a>Declaraciones de importación</a>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 right-component">
+                    <h:form id="formArchivo" enctype="multipart/form-data">
+                        <label class="btn btn-default btn-lg btn-file noround">
+                            Cargar archivo
+                            <h:inputFile value="#{declaracionesImportacionMBean.archivo}" style="display: none">
+                                <f:ajax listener="#{declaracionesImportacionMBean.cargarArchivo}" render=":formDeclaracion"/>
+                            </h:inputFile>
+                        </label>
+                    </h:form>
+                </div>
+            </div>
+            <hr/>
+            <h:form id="formDeclaracion">
+                <p:messages showDetail="true" showSummary="true"/>
+
+                <h:panelGroup rendered="#{declaracionesImportacionMBean.declaraciones ne null and not empty declaracionesImportacionMBean.declaraciones}">
+                    <div class="row">
+                        <ui:repeat value="#{declaracionesImportacionMBean.declaraciones}" var="declaracion">
+                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                <div style="border: 1px solid #DDDDDD; padding: 10px; height: 154px">
+                                    <div class="row">
+                                        <div class="col-xs-5 center-component">
+                                            <img class="img-mini" src="#{imagenProductoMBean.obtenerUrlProducto(declaracion.referencia, true)}"/>
+                                        </div>
+                                        <div class="col-xs-7 right-component">
+                                            <div class="row">
+                                                <div class="col-xs-12" style="font-size: 17px">
+                                                    <b>#{baruGenericMBean.convertirARefCorta(declaracion.referencia)}</b> - <span class="badge badge-360-original">#{declaracion.cantidad}</span>
+                                                </div>
+                                                <div class="col-xs-12" style="font-size: 12px">
+                                                    <b>Fecha</b>: #{baruGenericMBean.getValorFormateado('Date', declaracion.fecha, 0)}
+                                                </div>
+                                                <div class="col-xs-12" style="font-size: 12px">
+                                                    <b>Imp.</b>: #{declaracion.numimp}
+                                                </div>
+                                                <div class="col-xs-12" style="font-size: 12px">
+                                                    <b>DO</b>: #{declaracion.do1}
+                                                </div>
+                                                <div class="col-xs-12" style="font-size: 12px">
+                                                    <b>DIM</b>: #{declaracion.dim}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 justify-component">
+                                            #{baruGenericMBean.obtenerNombreReferencia(declaracion.referencia)}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 right-component">
+                            <p:remoteCommand name="limpiar" actionListener="#{declaracionesImportacionMBean.limpiar}" oncomplete="cerrarModalEspera();" update=":formDeclaracion :formArchivo"/>
+                            <p:remoteCommand name="guardar" actionListener="#{declaracionesImportacionMBean.guardar}" oncomplete="cerrarModalEspera();" update=":formDeclaracion :formArchivo"/>
+
+                            <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); limpiar();">
+                                Cancelar
+                            </button>
+                            <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); guardar();">
+                                Guardar
+                            </button>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </h:form>
+        </div>
+        <br/>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

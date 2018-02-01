@@ -1,0 +1,204 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <title>360 - Usuarios</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <h:form id="formUsuarios">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+                        <div class="form-group">
+                            <p:remoteCommand name="seleccionarUsuario" actionListener="#{usuario360MBean.seleccionarUsuario}" update=":formUsuarios:usuarios :formUsuarios:perfiles"
+                                             oncomplete="cerrarModalEspera();"/>
+                            <h:outputLabel value="Usuario"/>
+                            <h:panelGroup id="usuarios">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround"
+                                            style="width: 100%" id="selUsuarios" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        #{usuario360MBean.usuarioSeleccionado}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selUsuarios" data-live-search="true">
+                                        <ui:repeat value="#{usuario360MBean.usuarios}" var="usuario">
+                                            <li>
+                                                <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarUsuario([{name: 'usuario', value: '#{usuario}'}]);">
+                                                    #{usuario}
+                                                </a>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                <h:panelGroup id="perfiles">
+                    <h:panelGroup rendered="#{not empty usuario360MBean.usuario and usuario360MBean.usuario ne null}">
+                        <div class="row">
+                            <h3>Perfiles</h3>
+                            <div class="col-xs-12 col-sm-6 col-md-4 col-md-offset-2 margin-bottom-10">
+                                <div class="row">
+                                    <div class="col-xs-12 margin-bottom-10">
+                                        <p:remoteCommand name="filtrarListaDisponibles" actionListener="#{usuario360MBean.filtrarListaDisponibles}"
+                                                         update=":formUsuarios:perfilesDisponibles :formUsuarios:msg" oncomplete="cerrarModalEspera();"/>
+                                        <h:inputText id="txt_filtroPerfil" class="form-control input-lg noround" autocomplete="off" pt:placeholder="Parámetro busqueda"
+                                                     value="#{usuario360MBean.filtroDisponibles}" onkeypress="if (event.keyCode === 13) {
+                                                                 abrirModalEspera();
+                                                                 filtrarListaDisponibles();
+                                                                 return false;
+                                                             }"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 margin-bottom-10">
+                                        <h:panelGroup id="perfilesDisponibles">
+                                            <div class="hidden-lg hidden-md">
+                                                <p:remoteCommand name="seleccionarPerfilAgregar" actionListener="#{usuario360MBean.seleccionarPerfilAgregar}"
+                                                                 update=":formUsuarios:perfilesDisponibles :formUsuarios:msg" oncomplete="cerrarModalEspera();"/>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon input-group-matisses noround">
+                                                        Perfil disponible
+                                                    </span>
+                                                    <div class="dropdown">
+                                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                id="selPerfiles" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                            #{usuario360MBean.perfilAgregarSeleccionado}
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selPerfiles" style="width: 100%">
+                                                            <ui:repeat value="#{usuario360MBean.listaPerfilesDisponiblesFiltrada}" var="perfil">
+                                                                <li>
+                                                                    <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarPerfilAgregar([{name: 'perfil', value: '#{perfil.codigo}'}]);">
+                                                                        #{perfil.nombre}
+                                                                    </a>
+                                                                </li>
+                                                            </ui:repeat>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="hidden-sm hidden-xs">
+                                                <p:remoteCommand name="seleccionarPerfil" actionListener="#{usuario360MBean.seleccionarPerfil}"
+                                                                 update=":formUsuarios:perfilesDisponibles :formUsuarios:perfilesSeleccionados :formUsuarios:msg" oncomplete="cerrarModalEspera();"/>
+                                                <select class="form-control input-lg input-lg-auto noround" id="selPerfil" size="10">
+                                                    <ui:repeat value="#{usuario360MBean.listaPerfilesDisponiblesFiltrada}" var="perfil">
+                                                        <option class="pointer-cursor" onclick="abrirModalEspera(); seleccionarPerfil([{name: 'perfil', value: '#{perfil.codigo}'}]);">
+                                                            #{perfil.nombre}
+                                                        </option>
+                                                    </ui:repeat>
+                                                </select>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="hidden-lg hidden-md">
+                                    <div class="row">
+                                        <p:remoteCommand name="agregarPerfil" actionListener="#{usuario360MBean.agregarPerfil}"
+                                                         update=":formUsuarios:perfilesDisponibles: :formUsuarios:perfilesSeleccionados :formUsuarios:msg" oncomplete="cerrarModalEspera();"/>
+                                        <div class="col-xs-12 right-component">
+                                            <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); agregarPerfil();">
+                                                Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                <div class="row">
+                                    <div class="col-xs-12 margin-bottom-10">
+                                        <p:remoteCommand name="filtrarListaSeleccionados" actionListener="#{usuario360MBean.filtrarListaSeleccionados}"
+                                                         update=":formUsuarios:perfilesSeleccionados :formUsuarios:msg" oncomplete="cerrarModalEspera();"/>
+                                        <h:inputText id="txt_filtroPerfilSeleccionado" class="form-control input-lg noround" autocomplete="off" pt:placeholder="Parámetro busqueda"
+                                                     value="#{usuario360MBean.filtroSeleccionados}" onkeypress="if (event.keyCode === 13) {
+                                                                 abrirModalEspera();
+                                                                 filtrarListaSeleccionados();
+                                                                 return false;
+                                                             }"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 margin-bottom-10">
+                                        <h:panelGroup id="perfilesSeleccionados">
+                                            <div class="hidden-lg hidden-md">
+                                                <p:remoteCommand name="seleccionarPerfilQuitar" actionListener="#{usuario360MBean.seleccionarPerfilQuitar}"
+                                                                 update=":formUsuarios:perfilesSeleccionados :formUsuarios:msg" oncomplete="cerrarModalEspera();"/>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon input-group-matisses noround">
+                                                        Perfil seleccionado
+                                                    </span>
+                                                    <div class="dropdown">
+                                                        <button type="button" class="btn btn-default dropdown-toggle input-lg noround" style="width: 100%"
+                                                                id="selPerfiles" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                            #{usuario360MBean.perfilQuitarSeleccionado}
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selPerfiles" style="width: 100%">
+                                                            <ui:repeat value="#{usuario360MBean.listaPerfilesSeleccionadosFiltrada}" var="perfil">
+                                                                <li>
+                                                                    <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarPerfilQuitar([{name: 'perfil', value: '#{perfil.codigo}'}]);">
+                                                                        #{perfil.nombre}
+                                                                    </a>
+                                                                </li>
+                                                            </ui:repeat>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="hidden-sm hidden-xs">
+                                                <p:remoteCommand name="deseleccionarPerfil" actionListener="#{usuario360MBean.deseleccionarPerfil}"
+                                                                 update=":formUsuarios:perfilesDisponibles :formUsuarios:perfilesDisponibles :formUsuarios:msg" oncomplete="cerrarModalEspera();"/>
+                                                <select class="form-control input-lg input-lg-auto noround" id="selPerfil" size="10">
+                                                    <ui:repeat value="#{usuario360MBean.listaPerfilesSeleccionadosFiltrada}" var="perfil">
+                                                        <option class="pointer-cursor" onclick="abrirModalEspera(); deseleccionarPerfil([{name: 'perfil', value: '#{perfil.codigo}'}]);">
+                                                            #{perfil.nombre}
+                                                        </option>
+                                                    </ui:repeat>
+                                                </select>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="hidden-lg hidden-md">
+                                    <div class="row">
+                                        <p:remoteCommand name="quitarPerfil" actionListener="#{usuario360MBean.quitarPerfil}"
+                                                         update=":formUsuarios:perfilesDisponibles: :formUsuarios:perfilesSeleccionados :formUsuarios:msg" oncomplete="cerrarModalEspera();"/>
+                                        <div class="col-xs-12 right-component">
+                                            <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); quitarPerfil();">
+                                                Quitar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

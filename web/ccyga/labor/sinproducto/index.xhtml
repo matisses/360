@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Registro labor CCYGA</title>
+    </h:head>
+    <h:body>
+        <m:navbarCcyga />
+        <h:form id="formLabor">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="labor-ccyga">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <span class="txt-14">Est&aacute; a punto de #{laborSinProductoCcygaMBean.laborCcygaDTO eq null ? 'iniciar' : 'finalizar'} una labor en el proceso</span>
+                                </div>
+                            </div>
+                            <hr/>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <span class="txt-18">#{laborSinProductoCcygaMBean.nombreProceso}</span>
+                                </div>
+                            </div>
+                            <hr/>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <h:commandButton class="btn btn-primary btn-lg form-control input-lg noround" action="#{laborSinProductoCcygaMBean.iniciarLabor}"
+                                                     rendered="#{laborSinProductoCcygaMBean.laborCcygaDTO eq null}" value="Iniciar"/>
+                                    <h:commandButton class="btn btn-primary btn-lg form-control input-lg noround" action="#{laborSinProductoCcygaMBean.finalizarLabor}"
+                                                     rendered="#{laborSinProductoCcygaMBean.laborCcygaDTO ne null}" value="Finalizar"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

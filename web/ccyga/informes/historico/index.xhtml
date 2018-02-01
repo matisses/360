@@ -1,0 +1,243 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" http-equiv="Content-Type"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <title>360 - Histórico productos</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <ol class="breadcrumb">
+                        <li class="active">
+                            <a>Histórico</a>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+            <h:form id="formBusqueda">
+                <p:focus for=":formBusqueda:txt_referencia"/>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <h:outputLabel value="Referencia:"/>
+                            <h:inputText id="txt_referencia" class="form-control input-lg noround" autocomplete="off" pt:placeholder="Referencia" value="#{informeHistoricoProductoMBean.referencia}"
+                                         onkeypress="if (event.keyCode === 13) {
+                                                     abrirModalEspera();
+                                                     buscar();
+                                                     return false;
+                                                 }"/>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <h:outputLabel value="Número producto:"/>
+                            <h:inputText id="txt_producto" class="form-control input-lg noround" autocomplete="off" pt:placeholder="Nro. producto" value="#{informeHistoricoProductoMBean.idProducto}"
+                                         onkeypress="if (event.keyCode === 13) {
+                                                     abrirModalEspera();
+                                                     buscar();
+                                                     return false;
+                                                 }"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 right-component">
+                        <p:remoteCommand name="buscar" actionListener="#{informeHistoricoProductoMBean.buscar}" update=":formInforme" oncomplete="cerrarModalEspera();"/>
+                        <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); buscar();">
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+            </h:form>
+            <hr/>
+            <h:form id="formInforme">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ui:fragment rendered="#{empty informeHistoricoProductoMBean.resultado}">
+                            <h4>
+                                <p>
+                                    No hay registros para mostrar
+                                </p>
+                            </h4>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{not empty informeHistoricoProductoMBean.resultado}">
+                            <p:remoteCommand name="cargarInfoFila" actionListener="#{informeHistoricoProductoMBean.cargarInfoFila}" update=":formInforme:detalle" oncomplete="cerrarModalEspera();"/>
+                            <p:remoteCommand name="cargar" actionListener="#{informeHistoricoProductoMBean.cargarInfoFila}" update=":formInforme:detalle" oncomplete="cerrarModalEspera();"/>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-6">
+                                    <table class="table table-bordered table-striped">
+                                        <tr>
+                                            <th class="head-tabla">
+                                                Ref
+                                            </th>
+                                            <th class="head-tabla">
+                                                Prod
+                                            </th>
+                                            <th class="head-tabla">
+                                                Proceso
+                                            </th>
+                                            <th class="head-tabla">
+                                                Tiempo
+                                            </th>
+                                            <th class="head-tabla">
+                                                Entradas
+                                            </th>
+                                            <th class="head-tabla"></th>
+                                        </tr>
+                                        <ui:repeat value="#{informeHistoricoProductoMBean.resultado}" var="dato">
+                                            <ui:repeat value="#{dato.historico}" var="historico">
+                                                <tr>
+                                                    <td class="center-component">
+                                                        <b>#{baruGenericMBean.convertirARefCorta(dato.referencia)}</b>
+                                                    </td>
+                                                    <td class="right-component">
+                                                        <b>#{historico.producto.idProducto}</b>
+                                                    </td>
+                                                    <td class="center-component">
+                                                        #{historico.proceso.nombre}
+                                                    </td>
+                                                    <td class="right-component">
+                                                        #{historico.tiempoFormateado}
+                                                    </td>
+                                                    <td class="right-component">
+                                                        <span class="badge #{historico.entradas gt 2 ? 'badge-360-original' : 'badge-gray'}">
+                                                            #{historico.entradas}
+                                                        </span>
+                                                    </td>
+                                                    <td class="center-component">
+                                                        <span class="glyphicon glyphicon-eye-open btn-detalle-historico-ccyga"
+                                                              onclick="abrirModalEspera(); cargar([{name: 'idProducto', value: '#{dato.producto}'}, {name: 'idProceso', value: '#{historico.proceso.idProceso}'}]);">
+
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </ui:repeat>
+                                            <tr class="background-colo-360-original">
+                                                <td colspan="6" class="center-component">
+                                                    <b>Total: #{dato.tiempoTotal}</b>
+                                                </td>
+                                            </tr>
+                                        </ui:repeat>
+                                    </table>
+                                </div>
+                                <h:panelGroup id="detalle">
+                                    <ui:fragment rendered="#{informeHistoricoProductoMBean.idProcesoSeleccionado eq null}">
+                                        <h4>
+                                            <p>
+                                                Seleccione un proceso
+                                            </p>
+                                        </h4>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{informeHistoricoProductoMBean.idProcesoSeleccionado ne null}">
+                                        <div class="col-xs-12 col-sm-12 col-md-6">
+                                            <table class="table table-bordered table-striped">
+                                                <tr>
+                                                    <th class="head-tabla" rowspan="2">
+                                                        <div class="row">
+                                                            <div class="col-xs-12" style="top: 18px">
+                                                                Empleado
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th class="head-tabla">
+                                                        Inicio
+                                                    </th>
+                                                    <th class="head-tabla">
+                                                        Fin
+                                                    </th>
+                                                    <th class="head-tabla" rowspan="2">
+                                                        <div class="row">
+                                                            <div class="col-xs-12" style="top: 8px">
+                                                                <p class="p-table">
+                                                                    Duración
+                                                                </p>
+                                                                <p class="p-table">
+                                                                    (HH:MM)
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th class="head-tabla">
+                                                        Fecha - Hora
+                                                    </th>
+                                                    <th class="head-tabla">
+                                                        Fecha - Hora
+                                                    </th>
+                                                </tr>
+                                                <ui:repeat value="#{informeHistoricoProductoMBean.filaSeleccionada.detalle}" var="detalle">
+                                                    <tr>
+                                                        <td class="center-component">
+                                                            <div class="row">
+                                                                <div class="col-xs-12">
+                                                                    #{detalle.nombreEmpleado}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="center-component">
+                                                            <p class="p-table">
+                                                                <h:outputText value="#{detalle.fecha}">
+                                                                    <f:convertDateTime pattern="yyyy-MM-dd" timeZone="GTM-5"/>
+                                                                </h:outputText>
+                                                            </p>
+                                                            <p class="p-table">
+                                                                <h:outputText value="#{detalle.inicio}">
+                                                                    <f:convertDateTime pattern="HH:mm" timeZone="GTM-5"/>
+                                                                </h:outputText>
+                                                            </p>
+                                                        </td>
+                                                        <td class="center-component">
+                                                            <ui:fragment rendered="#{detalle.finalizado}">
+                                                                <p class="p-table">
+                                                                    <h:outputText value="#{detalle.fin}">
+                                                                        <f:convertDateTime pattern="yyyy-MM-dd" timeZone="GTM-5"/>
+                                                                    </h:outputText>
+                                                                </p>
+                                                                <p class="p-table">
+                                                                    <h:outputText value="#{detalle.fin}">
+                                                                        <f:convertDateTime pattern="HH:mm" timeZone="GTM-5"/>
+                                                                    </h:outputText>
+                                                                </p>
+                                                            </ui:fragment>
+                                                        </td>
+                                                        <td class="right-component">
+                                                            <div class="row">
+                                                                <div class="col-xs-12">
+                                                                    #{detalle.duracion}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </ui:repeat>
+                                            </table>
+                                        </div>
+                                    </ui:fragment>
+                                </h:panelGroup>
+                            </div>
+                        </ui:fragment>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

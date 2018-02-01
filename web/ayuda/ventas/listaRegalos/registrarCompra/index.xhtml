@@ -1,0 +1,275 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <title>360 - Ayuda Registro Compra Lista de Regalo</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        <div class="panel-body">
+            <div class="container" style="text-align: justify">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h1 class="h1_manual">
+                            Registrar Compra Lista de Regalo
+                        </h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            En este módulo le permite al asesor interactuar con las lista de regalos de la mano del cliente, para seleccionar que productos desea adquirir de estas. A continuación se expone el modo de uso.   
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="contenido" class="h2_manual anchor">
+                            Contenido
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <ul>
+                        <div class="row">
+                            <li class="padding-top-1">
+                                <div class="col-xs-12">
+                                    <a href="#consultaDatos">Consulta de Datos</a>
+                                </div> 
+                            </li>
+                        </div>
+                        <div class="row">
+                            <li class="padding-top-1">
+                                <div class="col-xs-12">
+                                    <a href="#seleccionarProductos">Seleccionar Productos</a>
+                                </div> 
+                            </li>
+                        </div>
+                        <div class="row">
+                            <li class="padding-top-1">
+                                <div class="col-xs-12">
+                                    <a href="#mensajeSistema">Mensajes del Sistema</a>
+                                </div> 
+                            </li>
+                        </div>
+                    </ul>
+                </div>
+                <br/>
+                <br/>
+                <br/>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="consultaDatos" class="h2_manual anchor">
+                            Consulta de Datos 
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Es necesario saber el número de la factura para luego pasar a consultar las listas de regalos; solo se muestran las listas de regalos activas y que no están vencidas.
+                            <br/>
+                            <i>
+                                <b>Ver imagen 1:</b> Primer parámetro de consulta.
+                            </i>
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <img class="img-responsive" src="/360/images/ayuda/ventas/listaRegalos/registrarCompra/primerParametroConsulta.png"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12" style="text-align: center">
+                                <i>[Imagen 1]</i>
+                            </div>
+                        </div>
+                        <br/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Una vez digitada la factura de venta, se debe oprimir la tecla ↔ <i>tabular</i> para que el sistema despliegue el segundo parámetro de búsqueda, que se utilizara para ingresar ya sea el nombre de la lista, el código, el creador o cocreador de la lista de regalo.
+                            <br/>
+                            <i>
+                                <b>Ver imagen 2:</b> Segundo parámetro de consulta. 
+                            </i>
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <img class="img-responsive" src="/360/images/ayuda/ventas/listaRegalos/registrarCompra/segundoParametroConsulta.png"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12" style="text-align: center">
+                                <i>[Imagen 2]</i>
+                            </div>
+                        </div>
+                        <br/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12" >
+                        <p>
+                            Si el sistema encuentra lista de regalos que coincidan con el segundo parámetro de consulta ingresado por el usuario, este presta la funcionalidad de poder escoger que lista es realmente se va a usar.
+                            <br/>
+                            <i>
+                                <b>Ver imagen 3:</b> Listas de Regalos Encontradas.
+                            </i>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <img class="img-responsive" src="/360/images/ayuda/ventas/listaRegalos/registrarCompra/listasRegalosEncontradas.png"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12" style="text-align: center">
+                            <i>[Imagen 3]</i>
+                        </div>
+                    </div>
+                    <br/>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id='seleccionarProductos' class="h2_manual anchor">
+                            Seleccionar Productos 
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Una vez se consulten los datos, se despliega la acción de seleccionar productos. Aquí se visualizan los productos que el cliente solicitara seleccionar para registrarlo a la lista de regalo.
+                            <br/>
+                            <i>
+                                <b>Ver imagen 4:</b> Seleccionar Productos.
+                            </i>
+                            <br/>
+                            <b>Recomendación:</b> Antes de hacer clic en Guardar verifique que la factura y la lista de regalo correspondan a la que el cliente desea registrar.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <img class="img-responsive" src="/360/images/ayuda/ventas/listaRegalos/registrarCompra/seleccionarProductos.png"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12" style="text-align: center">
+                            <i>[Imagen 4]</i>
+                        </div>
+                    </div>
+                    <br/>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            En la imagen 4, el <b>punto 1</b> contiene información básica del producto, adicional se informa la cantidad faltante por regalar en la lista de regalo. El <b>punto 2</b> se ofrece dos acciones como funcionalidad adicional, la primera es para <b>agregar</b> el producto cuando el botón este en negativo y la segunda es para <b>eliminar</b> cuando botón este en positivo; para cualquiera de estas dos acciones debe seleccionar el producto y hacer clic en el botón. En el <b>punto 3</b> están disponibles los botones de <i>Cancelar</i> el registro o <i>Guardarlo</i>.
+                            <br/>
+                            Al hacer clic en el botón <i>Guardar</i> el cliente puede dejarle un comentario al dueño de la lista de regalo, si él lo desea, de lo contario hacer clic en el botón <i>Terminar</i> se finalizara el proceso de registro.
+                            <br/>
+                            <i>
+                                <b>Ver imagen 5.</b> Terminar Registro.
+                            </i>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <img class="img-responsive" src="/360/images/ayuda/ventas/listaRegalos/registrarCompra/terminarRegistro.png"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12" style="text-align: center">
+                            <i>[Imagen 5]</i>
+                        </div>
+                    </div>
+                    <br/>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="mensajeSistema" class="h2_manual anchor">
+                            Mensajes del sistema
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Si en algún momento el usuario recibe uno de los siguientes mensajes por parte del sistema, esta es la guía le ayudara a identificarlo, de lo contrario debe comunicarse con el departamento de sistemas al correo y posteriormente montar un soporte del caso al portal.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <th class="head-tabla">
+                                    Tipo
+                                </th>
+                                <th class="head-tabla">
+                                    Msj
+                                </th>
+                                <th class="head-tabla">
+                                    Causa / Solución
+                                </th>
+                            </tr>
+                            <ui:repeat value="#{registarCompraListaRegaloMBean.mensaje}" var="mensaje">
+                                <tr>
+                                    <td>
+                                        <span class="#{mensaje[0] eq 'E' ? 'glyphicon glyphicon-remove-sign' : mensaje[0] eq 'I' ? 'glyphicon glyphicon-info-sign'
+                                                       : mensaje[0] eq 'A' ? 'glyphicon glyphicon-question-sign': ''}"
+                                              title="#{mensaje[0] eq 'E' ? 'Error' : mensaje[0] eq 'I' ? 'Información' : mensaje[0] eq 'A' ? 'Advertencia': ''}"
+                                              style="font-size: 30px; #{mensaje[0] eq 'E' ? 'color: #DD5555;' : mensaje[0] eq 'I' ? 'color: #46B8DA;'
+                                                                        : mensaje[0] eq 'A' ? 'color: #FFBF00;': ''}"></span>
+                                    </td>
+                                    <td>
+                                        #{mensaje[1]}
+                                    </td>
+                                    <td>
+                                        <p>
+                                            #{mensaje[2]}
+                                        </p>
+                                        <ui:fragment rendered="#{not empty mensaje[3]}">
+                                            <hr/>
+                                            <p>
+                                                #{mensaje[3]}
+                                            </p>
+                                        </ui:fragment>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

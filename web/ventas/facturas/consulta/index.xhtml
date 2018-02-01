@@ -1,0 +1,308 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Consulta Facturas</title>
+    </h:head>
+    <h:body>
+        <m:navbar/>
+        <div class="container">
+
+            <h:form id="formConsulta">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Consulta Facturas</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <h:panelGroup id="buscador">
+                    <h:panelGroup rendered="#{consultaFacturasMBean.obligaLogeo}">
+                        <p:focus context="formConsulta" for="parametroBusqueda"/>
+                        <p:remoteCommand name="buscarFactura" actionListener="#{consultaFacturasMBean.buscarFactura}" update=":formConsulta:datos :formConsulta:msg" oncomplete="cerrarModalEspera();"/>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+                                <div class="form-group">
+                                    <h:outputLabel value="Parámetro búsqueda:"/>
+                                    <h:inputText id="parametroBusqueda" class="form-control input-lg noround" value="#{consultaFacturasMBean.parametroBusqueda}"
+                                                 pt:placeholder="Parámetro búsqueda" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                             abrirModalEspera();
+                                                             buscarFactura();
+                                                             return false;
+                                                         }"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                        <hr/>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <h:panelGroup id="datos">
+                    <div class="row">
+                        <div class="col-xs-12 margin-bottom-10">
+                            <div style="background-color: #DDDDDD; padding: 10px; font-size: 20px">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-6 center-component">
+                                        <b>#Factura: </b>#{consultaFacturasMBean.facturaDto.numeroFactura}
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6 center-component">
+                                        <b>Estado: </b>#{consultaFacturasMBean.facturaDto.estado}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6 col-md-3 center-component margin-bottom-10" style="font-size: 18px">
+                            <b>Fecha: </b>#{consultaFacturasMBean.facturaDto.fechaFacturaTxt}
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3 center-component margin-bottom-10" style="font-size: 18px">
+                            <b>Total: </b>#{consultaFacturasMBean.facturaDto.totalTxt}
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-6 center-component margin-bottom-10" style="font-size: 18px">
+                            <b>Asesor: </b>#{consultaFacturasMBean.facturaDto.asesor}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6 center-component margin-bottom-10" style="font-size: 18px">
+                            <b>Documento cliente: </b>#{consultaFacturasMBean.facturaDto.nitClienteTxt}
+                        </div>
+                        <div class="col-xs-12 col-sm-6 center-component margin-bottom-10" style="font-size: 18px">
+                            <b>Nombre cliente: </b>#{consultaFacturasMBean.facturaDto.nombreCliente}
+                        </div>
+                    </div>
+
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <ul id="tabs" class="nav nav-pills">
+                                <li class="active noround pointer-cursor">
+                                    <a href="#tab_productos" data-toggle="pill" class="input-lg noround">
+                                        Productos <span class="badge badge-360-original">#{consultaFacturasMBean.facturaDto.productos.size()}</span>
+                                    </a>
+                                </li>
+                                <li class="noround pointer-cursor">
+                                    <a href="#tab_pagos" data-toggle="pill" class="input-lg noround">
+                                        Pagos <span class="badge badge-360-original">#{consultaFacturasMBean.facturaDto.pagos.size()}</span>
+                                    </a>
+                                </li>
+                                <li class="noround pointer-cursor">
+                                    <a href="#tab_devoluciones" data-toggle="pill" class="input-lg noround">
+                                        Devoluciones <span class="badge badge-360-original">#{consultaFacturasMBean.facturaDto.devoluciones.size()}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="tab_productos">
+                                    <div class="row">
+                                        <ui:repeat value="#{consultaFacturasMBean.facturaDto.productos}" var="producto">
+                                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                                <div style="border: 1px solid #DDDDDD; margin: 5px; padding: 10px; height: 145px">
+                                                    <div class="row">
+                                                        <div class="col-xs-6">
+                                                            <img src="#{imagenProductoMBean.obtenerUrlProducto(producto.referencia, true)}" class="img-mini"/>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <div class="row">
+                                                                <div class="col-xs-12 right-component" style="font-size: 20px">
+                                                                    <b>#{baruGenericMBean.convertirARefCorta(producto.referencia)}</b>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xs-12 right-component">
+                                                                    <h:outputText value="#{producto.precio}" style="font-size: 16px">
+                                                                        <f:convertNumber type="currency" currencySymbol="$" currencyCode="COP" maxFractionDigits="0"/>
+                                                                    </h:outputText>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xs-12 right-component">
+                                                                    <span class="badge badge-360-original">#{producto.cantidad}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12 justify-component">
+                                                            #{producto.descripcion}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="tab_pagos">
+                                    <div class="row">
+                                        <ui:repeat value="#{consultaFacturasMBean.facturaDto.pagos}" var="pago">
+                                            <div class="col-xs-12 #{consultaFacturasMBean.facturaDto.pagos.size() > 1 ? 'col-sm-6' : ''}">
+                                                <div style="border: 1px solid #DDDDDD; margin: 5px; padding: 10px; height: 145px">
+                                                    <div class="row">
+                                                        <div class="col-xs-5 center-component" style="font-size: 29px">
+                                                            <b>Recibo </b>#{pago.docNum}
+                                                        </div>
+                                                        <div class="col-xs-7">
+                                                            <div class="row">
+                                                                <div class="col-xs-1 right-component">
+                                                                    <span class="glyphicon glyphicon-list-alt" title="Valor en cheques"></span>
+                                                                </div>
+                                                                <div class="col-xs-9">
+                                                                    <h:outputText value="#{pago.valorCheque}" style="font-size: 16px">
+                                                                        <f:convertNumber type="currency" currencySymbol="$" currencyCode="COP" maxFractionDigits="0"/>
+                                                                    </h:outputText>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xs-1 right-component">
+                                                                    <span class="glyphicon glyphicon-credit-card" title="Valor en tarjetas"></span>
+                                                                </div>
+                                                                <div class="col-xs-9">
+                                                                    <h:outputText value="#{pago.valorTarjetas}" style="font-size: 16px">
+                                                                        <f:convertNumber type="currency" currencySymbol="$" currencyCode="COP" maxFractionDigits="0"/>
+                                                                    </h:outputText>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xs-1 right-component">
+                                                                    <span class="glyphicon glyphicon-usd" title="Valor en efectivo"></span>
+                                                                </div>
+                                                                <div class="col-xs-9">
+                                                                    <h:outputText value="#{pago.valorEfectivo}" style="font-size: 16px">
+                                                                        <f:convertNumber type="currency" currencySymbol="$" currencyCode="COP" maxFractionDigits="0"/>
+                                                                    </h:outputText>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xs-1 right-component">
+                                                                    <span class="glyphicon glyphicon-refresh" title="Valor en cruces"></span>
+                                                                </div>
+                                                                <div class="col-xs-9">
+                                                                    <h:outputText value="#{pago.valorCruces}" style="font-size: 16px">
+                                                                        <f:convertNumber type="currency" currencySymbol="$" currencyCode="COP" maxFractionDigits="0"/>
+                                                                    </h:outputText>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xs-12" style="font-size: 18px">
+                                                                    <b>Crea: </b>#{pago.usuario}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="tab_devoluciones">
+                                    <p:remoteCommand name="seleccionarDevolucion" actionListener="#{consultaFacturasMBean.seleccionarDevolucion}"
+                                                     update=":formConsulta:devoluciones :formConsulta:detalleDevolucion" oncomplete="cerrarModalEspera();"/>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                            <h:panelGroup id="devoluciones">
+                                                <ui:repeat value="#{consultaFacturasMBean.facturaDto.devoluciones}" var="devolucion">
+                                                    <div class="pointer-cursor #{devolucion.numeroDevolucion eq consultaFacturasMBean.numeroDevolucion ?
+                                                                                 'contenedor-devoluciones-consulta-factura-activo' : 'contenedor-devoluciones-consulta-factura'}"
+                                                         onclick="abrirModalEspera(); seleccionarDevolucion([{name: 'numeroDevolucion', value: '#{devolucion.numeroDevolucion}'}]);">
+                                                        <div class="row">
+                                                            <div class="col-xs-12 center-component" style="font-size: 18px">
+                                                                <b>Documento: </b>#{devolucion.numeroDevolucion}
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-xs-12 center-component" style="font-size: 18px">
+                                                                <b>Fecha: </b>
+                                                                <h:outputText value="#{devolucion.fecha}">
+                                                                    <f:convertDateTime pattern="yyyy-MM-dd"/>
+                                                                </h:outputText>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-xs-12 center-component" style="font-size: 18px">
+                                                                <b>Valor: </b>
+                                                                <h:outputText value="#{devolucion.total}">
+                                                                    <f:convertNumber type="currency" currencySymbol="$" currencyCode="COP" maxFractionDigits="0"/>
+                                                                </h:outputText>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ui:repeat>
+                                            </h:panelGroup>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-6 col-md-8 margin-bottom-10">
+                                            <h:panelGroup id="detalleDevolucion">
+                                                <h:panelGroup rendered="#{not empty consultaFacturasMBean.detalleDevolucion}">
+                                                    <div class="row">
+                                                        <ui:repeat value="#{consultaFacturasMBean.detalleDevolucion}" var="detalle">
+                                                            <div class="col-xs-12 col-md-6">
+                                                                <div style="border: 1px solid #DDDDDD; margin: 5px; padding: 10px; height: 145px">
+                                                                    <div class="row">
+                                                                        <div class="col-xs-6">
+                                                                            <img src="#{imagenProductoMBean.obtenerUrlProducto(detalle.referencia, true)}" class="img-mini"/>
+                                                                        </div>
+                                                                        <div class="col-xs-6">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 right-component" style="font-size: 20px">
+                                                                                    <b>#{baruGenericMBean.convertirARefCorta(detalle.referencia)}</b>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12 right-component">
+                                                                                    <span class="badge badge-360-original">#{detalle.cantidad}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-xs-12 justify-component">
+                                                                            #{baruGenericMBean.obtenerNombreReferencia(detalle.referencia)}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </ui:repeat>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </h:form>
+            <br/>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

@@ -1,0 +1,273 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <title>360 - Ayuda Contenedores Proveedor</title>
+    </h:head>
+    <h:body>
+        <m:navbar/>
+        <div class="panel-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h1 class="h1_manual">
+                            Contenedores Proveedor
+                        </h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 justify-component">
+                        <p>
+                            En este módulo el usuario puede asignarle o quitarles contenedores a los proveedores, para que estos trabajen únicamente con los seleccionados.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 class="h2_manual">
+                            Contenido
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ul>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <a href="#seleccionar_proveedor">Seleccionar Proveedor</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <a href="#agregar_contenedor">Agregar Contenedor</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <a href="#quitar_contenedor">Quitar Contenedor</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                            <div class="row">
+                                <li class="padding-top-1">
+                                    <div class="col-xs-12">
+                                        <a href="#mensajes_recibidos">Mensajes Recibidos</a>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <br/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="seleccionar_proveedor" class="h2_manual anchor">
+                            Seleccionar Proveedor
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Para realizar las operaciones de agregado y eliminado,
+                            es muy importante primero que todo aprender como seleccionar el proveedor al que se le quiere asignar o quitar el contenedor;
+                            para esto haga lo siguiente.
+                        </p>
+                        <p>
+                            <div class="row" style="margin-left: 25px">
+                                <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                    <p>
+                                        Ingrese el código del proveedor en el contenedor que se encuentra en la vista; este contenedor es igual al que se muestra en la siguiente imagen.
+                                        Luego de <b>Enter </b>para ejecutar la consulta.
+                                    </p>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                    <img class="img-responsive" src="/360/images/ayuda/compras/contenedor/codigoProveedor.png"/>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-left: 25px">
+                                <div class="col-xs-12 margin-bottom-10 justify-component">
+                                    <p>
+                                        Una vez encontrado el proveedor, se desplegara una lista con los contenedores disponibles para ser agregados y los que ya han sido agregados al proveedor.
+                                    </p>
+                                </div>
+                            </div>
+                        </p>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="agregar_contenedor" class="h2_manual anchor">
+                            Agregar Contenedor
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Para agregar un contenedor al proveedor siga los siguientes pasos:
+                        </p>
+                    </div>
+                </div>
+                <div class="row" style="margin-left: 25px">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            <b>1 - </b>Seleccione un contenedor de los disponibles en la lista.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/contenedor/listaContenedores.png"/>
+                    </div>
+                </div>
+                <div class="row" style="margin-left: 25px">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            <b>2 - </b>De clic en el botón <b>Agregar </b>para poder incluirle en contenedor al proveedor.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            Luego de que agregue el contenedor, este se verá en un contenedor como el siguiente. En el contenedor se ve el nombre del contenedor que se agregó.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/contenedor/contenedorNormal.png"/>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 id="quitar_contenedor" class="h2_manual anchor">
+                            Quitar Contenedor
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            Para quitar un contenedor al proveedor haga lo siguiente:
+                        </p>
+                    </div>
+                </div>
+                <div class="row" style="margin-left: 25px">
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10 justify-component">
+                        <p>
+                            <b>1 - </b>Pase con el cursor del mouse por encima del contenedor; una vez hecho esto el contenedor tomara un color rojo y aparecerá un icono como el siguiente 
+                            <span class="glyphicon glyphicon-trash"></span>, lo anterior se puede observar en la siguiente imagen.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                        <img class="img-responsive" src="/360/images/ayuda/compras/contenedor/contenedorSeleccionado.png"/>
+                    </div>
+                </div>
+                <div class="row" style="margin-left: 25px">
+                    <div class="col-xs-12 margin-bottom-10 justify-component">
+                        <p>
+                            <b>2 - </b>De clic en el botón con el siguiente icono <span class="glyphicon glyphicon-trash"></span> para proceder con la eliminación.
+                        </p>
+                        <p>
+                            El sistema dejara eliminar únicamente el contenedor, solo si este no está siendo usado por alguna proforma.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <h2 id="mensajes_recibidos" class="h2_manual anchor">
+                            Mensajes del Sistema
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            Si en algún momento el usuario recibe uno de los siguientes mensajes por parte del sistema, esta guía le ayudara a identificarlo y 
+                            solucionarlo.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <th class="head-tabla">
+                                    Tipo
+                                </th>
+                                <th class="head-tabla">
+                                    Msj
+                                </th>
+                                <th class="head-tabla">
+                                    Causa / Solución
+                                </th>
+                            </tr>
+                            <ui:repeat value="#{contenedoresProveedorAyudaMBean.mensajes}" var="mensaje">
+                                <tr>
+                                    <td>
+                                        <span class="#{mensaje[0] eq 'E' ? 'glyphicon glyphicon-remove-sign' : mensaje[0] eq 'I' ? 'glyphicon glyphicon-info-sign'
+                                                       : mensaje[0] eq 'A' ? 'glyphicon glyphicon-question-sign': ''}"
+                                              title="#{mensaje[0] eq 'E' ? 'Error' : mensaje[0] eq 'I' ? 'Información' : mensaje[0] eq 'A' ? 'Advertencia': ''}"
+                                              style="font-size: 30px; #{mensaje[0] eq 'E' ? 'color: #DD5555;' : mensaje[0] eq 'I' ? 'color: #46B8DA;'
+                                                                        : mensaje[0] eq 'A' ? 'color: #FFBF00;': ''}"></span>
+                                    </td>
+                                    <td>
+                                        #{mensaje[1]}
+                                    </td>
+                                    <td>
+                                        <p>
+                                            #{mensaje[2]}
+                                        </p>
+                                        <ui:fragment rendered="#{not empty mensaje[3]}">
+                                            <hr/>
+                                            <p>
+                                                #{mensaje[3]}
+                                            </p>
+                                        </ui:fragment>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </table>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+            </div>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

@@ -1,0 +1,45 @@
+<style type="text/css">
+    body, html, .body {
+        /*background: #f3f3f3 !important; */
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+        color: #444;
+    }
+</style>
+<container>
+    <spacer size="16"></spacer>
+    <row>
+        <columns>
+            <center>
+                <img src="https://www.matisses.co/360/360_150h.png" alt="logo">
+            </center>
+        </columns>
+    </row>
+    <row>
+        <columns large="8">
+            <table style="width: 100%"><tr><td style="width: 100%; text-align: center;"><br/><h1>Nuevo comentario en solicitud de servicio</h1></td></tr></table>
+        </columns>
+        <columns large="8">
+            <table style="width: 100%">
+                <tr>
+                    <td style="width: 100%; text-align: center;" colspan="2">
+                        Se registr&oacute; la solicitud de servicio <b>#${ticketNumber}</b>
+                    </td>
+                </tr>
+				<tr>
+                    <td style="width: 50%; text-align: right;">C&eacute;dula:</td>
+					<td style="width: 50%; text-align: left;">${cardCode}</td>
+				</tr>
+				<tr>
+                    <td style="width: 50%; text-align: right;">Referencia:</td>
+					<td style="width: 50%; text-align: left;">${itemCode}</td>
+				</tr>
+				<tr>
+                    <td style="width: 100%; text-align: center;" colspan="2"><b>${comentario}</b></td>
+				</tr>
+				<tr>
+                    <td style="width: 100%; text-align: center;" colspan="2">Se recomienda ir a SAP si desea revisar la informaci&oacute;n completa de la solicitud.</td>
+				</tr>
+            </table>
+        </columns>
+    </row>
+</container>

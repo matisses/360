@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Traslados Pallet</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+        <div class="container">
+
+            <h:form id="formPallet">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Traslados pallet</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-4 col-md-offset-2 margin-bottom-10">
+                        <p:remoteCommand name="seleccionarAlmacenOrigen" actionListener="#{trasladoPalletMBean.seleccionarAlmacenOrigen}" oncomplete="cerrarModalEspera();"
+                                         update=":formPallet:almacenesDestino :formPallet:almacenesOrigen"/>
+                        <div class="form-group">
+                            <h:outputLabel value="Almacén Origen" for="almacenesOrigen"/>
+                            <h:panelGroup id="almacenesOrigen">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround #{trasladoPalletMBean.ubicacionesSeleccionadas eq 0 ? '' : 'disabled'}"
+                                            style="width: 100%" id="selAlmacenOrigen" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        #{trasladoPalletMBean.almacenOrigenSeleccionado}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selAlmacenOrigen" data-live-search="true">
+                                        <ui:repeat value="#{trasladoPalletMBean.almacenesOrigen}" var="almOrigen">
+                                            <li>
+                                                <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarAlmacenOrigen([{name: 'almacenOrigen', value: '#{almOrigen.whsCode}'}]);">
+                                                    #{almOrigen.whsCode} - #{almOrigen.nombrextablet}
+                                                </a>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                        <p:remoteCommand name="seleccionarAlmacenDestino" actionListener="#{trasladoPalletMBean.seleccionarAlmacenDestino}" oncomplete="cerrarModalEspera();"
+                                         update=":formPallet:almacenesDestino :formPallet:ubicaciones"/>
+                        <div class="form-group">
+                            <h:outputLabel value="Almacén Destino" for="almacenesDestino"/>
+                            <h:panelGroup id="almacenesDestino">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-default dropdown-toggle input-lg noround
+                                            #{not empty trasladoPalletMBean.almacenOrigen and trasladoPalletMBean.almacenOrigen ne null and trasladoPalletMBean.ubicacionesSeleccionadas eq 0 ? '' : 'disabled'}"
+                                            style="width: 100%" id="selAlmacenDestino" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        #{trasladoPalletMBean.almacenDestinoSeleccionado}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selAlmacenDestino" data-live-search="true">
+                                        <ui:repeat value="#{trasladoPalletMBean.almacenesDestino}" var="almDestino">
+                                            <li>
+                                                <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarAlmacenDestino([{name: 'almacenDestino', value: '#{almDestino.whsCode}'}]);">
+                                                    #{almDestino.whsCode} - #{almDestino.nombrextablet}
+                                                </a>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                <hr/>
+
+                <h:panelGroup id="ubicaciones">
+                    <p:remoteCommand name="seleccionarUbicacion" actionListener="#{trasladoPalletMBean.seleccionarUbicacion}"
+                                     update=":formPallet:almacenesDestino :formPallet:ubicaciones :formPallet:almacenesOrigen :formPallet:btns"/>
+                    <div class="row">
+                        <ui:repeat value="#{trasladoPalletMBean.ubicacionesPallet}" var="ubicacion">
+                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10 center-component">
+                                <div class="#{ubicacion.usando ? 'contenedor-pallet-activo' : 'contenedor-pallet'} pointer-cursor"
+                                     onclick="seleccionarUbicacion([{name: 'absEntry', value: '#{ubicacion.absEntry}'}]);">
+                                    #{ubicacion.binCode}
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </div>
+                </h:panelGroup>
+
+                <br/>
+
+                <h:panelGroup id="btns">
+                    <h:panelGroup rendered="#{trasladoPalletMBean.ubicacionesSeleccionadas gt 0}">
+                        <div class="row">
+                            <div class="col-xs-12 center-component">
+                                <h:panelGroup id="chk_imprimir">
+                                    <p:remoteCommand name="checkearImprimir" actionListener="#{trasladoPalletMBean.imprimirTraslado}" update=":formPallet:chk_imprimir"/>
+                                    <div class="tooltip-style">
+                                        <span class="glyphicon #{trasladoPalletMBean.imprimir ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                              onclick="checkearImprimir();"></span>
+                                        <h:outputLabel value="Imprimir traslado" class="label-normal" onclick="checkearImprimir();"/>
+                                    </div>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12 right-component">
+                                <p:remoteCommand name="limpiar" actionListener="#{trasladoPalletMBean.limpiar}" update=":formPallet" oncomplete="cerrarModalEspera();"/>
+                                <p:remoteCommand name="crearTrasladoSAP" actionListener="#{trasladoPalletMBean.crearTrasladoSAP}" update=":formPallet" oncomplete="cerrarModalEspera();"/>
+                                <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); limpiar();">
+                                    Cancelar
+                                </button>
+                                <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); crearTrasladoSAP();">
+                                    Trasladar
+                                </button>
+                            </div>
+                        </div>
+                        <br/>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <br/>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
