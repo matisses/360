@@ -729,8 +729,9 @@ public class ProductoCcygaMBean implements Serializable {
 
     public String abrirPdf() {
         if (productoSeleccionado != 0) {
-            String url = applicationMBean.obtenerValorPropiedad("url.web.rotuloCcyga") + productoSeleccionado;
-            if (new File(applicationMBean.obtenerValorPropiedad("url.folder.rotuloCcyga") + File.separator + productoSeleccionado + ".pdf").exists()) {
+            String document = "rotuloCcyga";
+            String url = applicationMBean.obtenerValorPropiedad("url.web.logistica") + document + "/" + productoSeleccionado;
+            if (new File(applicationMBean.obtenerValorPropiedad("url.folder.logistica") + document + File.separator + productoSeleccionado + ".pdf").exists()) {
                 return "openRuta('" + url + ".pdf');";
             } else {
                 String[] rotulo = generarDocumento(productoSeleccionado);

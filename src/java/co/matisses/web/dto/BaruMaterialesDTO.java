@@ -6,6 +6,7 @@ package co.matisses.web.dto;
  */
 public class BaruMaterialesDTO {
 
+    private Integer cantidadAverias;
     private String code;
     private String name;
     private String cuidados;
@@ -29,6 +30,21 @@ public class BaruMaterialesDTO {
         this.uParte = uParte;
         this.uNombreWeb = uNombreWeb;
         this.seleccionado = false;
+    }
+
+    public BaruMaterialesDTO(Integer cantidadAverias, String code, String name, String cuidados) {
+        this.cantidadAverias = cantidadAverias;
+        this.code = code;
+        this.name = name;
+        this.cuidados = cuidados;
+    }
+
+    public Integer getCantidadAverias() {
+        return cantidadAverias;
+    }
+
+    public void setCantidadAverias(Integer cantidadAverias) {
+        this.cantidadAverias = cantidadAverias;
     }
 
     public String getCode() {

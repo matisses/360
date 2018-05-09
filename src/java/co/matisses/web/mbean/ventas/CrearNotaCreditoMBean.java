@@ -755,10 +755,10 @@ public class CrearNotaCreditoMBean implements Serializable {
     private Long crearNotaCredito(Long docEntry, String cardCode, String docNum, String groupNum, String wuid) {
         SalesDocumentDTO document = new SalesDocumentDTO();
 
-        if (docEntry != null && docEntry != 0) {
-            FacturaSAP factura = facturaSAPFacade.findByDocNum(ventasSessionMBean.getNumeroFactura());
+        FacturaSAP factura = facturaSAPFacade.findByDocNum(ventasSessionMBean.getNumeroFactura());
 
-            if (factura != null && factura.getDocEntry() != null && factura.getDocEntry() != 0) {
+        if (factura != null && factura.getDocEntry() != null && factura.getDocEntry() != 0) {
+            if (docEntry != null && docEntry != 0) {
                 document.setSalesPerson(factura.getSlpCode().longValue());
 
                 if (factura.getuVendedor1() != null && !factura.getuVendedor1().isEmpty()) {
@@ -782,88 +782,109 @@ public class CrearNotaCreditoMBean implements Serializable {
                     document.getSalesEmployees().add(dto);
                 }
             }
-        }
-        document.setDocEntry(docEntry);
-        document.setRefDocnum(docNum);
-        document.setCardCode(cardCode);
-        document.setComments("Devolución generada por 360 ");
-        if (!docNum.isEmpty()) {
-            document.setComments(document.getComments() + " para la factura " + docNum);
-        }
-        document.setComments(document.getComments() + ". " + comentario);
-        document.setPaymentGroupCode(groupNum);
-        document.setSource("P");
-        document.setSeriesCode(serieFacade.obtenerSerieNotaCredito().getSeries().toString());
-        document.setWuid(wuid);
-        document.setCreditNoteType("D");
+            document.setDocEntry(docEntry);
+            document.setRefDocnum(docNum);
+            document.setCardCode(cardCode);
+            document.setComments("Devolución generada por 360 ");
+            if (!docNum.isEmpty()) {
+                document.setComments(document.getComments() + " para la factura " + docNum);
+            }
+            document.setComments(document.getComments() + ". " + comentario);
+            document.setPaymentGroupCode(groupNum);
+            document.setSource("T");
+            document.setSeriesCode(serieFacade.obtenerSerieNotaCredito().getSeries().toString());
+            document.setWuid(wuid);
+            document.setCreditNoteType("D");
+            document.setDesignerCode(factura.getUDiseno());
 
-        List<SalesDocumentLineDTO> detalle = new ArrayList<>();
-        List<DetalleFacturaSAP> detFac = detalleFacturaSAPFacade.obtenerDetalleFactura(docEntry.doubleValue());
+            List<SalesDocumentLineDTO> detalle = new ArrayList<>();
+            List<DetalleFacturaSAP> detFac = detalleFacturaSAPFacade.obtenerDetalleFactura(docEntry.doubleValue());
 
-        int line = 1;
-        for (NotaCreditoDTO n : itemsAplicables) {
-            SalesDocumentLineDTO dto = new SalesDocumentLineDTO();
+            int line = 1;
+            int cantidad = 0;
+            for (NotaCreditoDTO n : itemsAplicables) {
+                cantidad = n.getCantidadUsada();
 
-            dto.setItemCode(n.getReferencia());
-            dto.setQuantity(n.getCantidadUsada());
-            dto.setPrice(n.getPrice());
-            dto.setWhsCode("9803");
-            dto.setLineNum(line);
-            if (docEntry > 0) {
-                for (DetalleFacturaSAP d : detFac) {
-                    if (d.getItemCode().equals(n.getReferencia()) && d.getQuantity().intValue() > 0) {
-                        List<SaldoItemInventario> s = saldoItemInventarioFacade.obtenerSaldoAlmacen("9803");
-                        if (s != null && s.isEmpty()) {
-                            if (d.getQuantity().intValue() >= n.getCantidadUsada()) {
-                                dto.setGrossBuyPrice(facturaSAPFacade.obtenerCostoReferencia(docEntry.intValue(), n.getReferencia(), d.getWhsCode()));
-                                d.setQuantity(new BigDecimal(d.getQuantity().intValue() - n.getCantidadUsada()));
-                                saldoItemInventarioFacade.alterarCostoAlmacen(dto.getGrossBuyPrice(), d.getItemCode(), "9803");
-                                break;
-                            } else if (d.getQuantity().intValue() < n.getCantidadUsada()) {
-                                dto.setGrossBuyPrice(facturaSAPFacade.obtenerCostoReferencia(docEntry.intValue(), n.getReferencia(), d.getWhsCode()));
-                                d.setQuantity(new BigDecimal(0));
-                                saldoItemInventarioFacade.alterarCostoAlmacen(dto.getGrossBuyPrice(), d.getItemCode(), "9803");
+                if (docEntry > 0) {
+                    for (DetalleFacturaSAP d : detFac) {
+                        SalesDocumentLineDTO dto = new SalesDocumentLineDTO();
+
+                        dto.setItemCode(n.getReferencia());
+                        //dto.setPrice(n.getPrice());
+                        dto.setWhsCode("9803");
+                        dto.setLineNum(line);
+                        document.setSalesCostingCode(d.getOcrCode2());
+
+                        if (d.getItemCode().equals(n.getReferencia()) && d.getQuantity().intValue() > 0) {
+                            dto.setPrice(d.getPriceAfVAT());
+                            dto.setTaxCode(d.getTaxCode());
+
+                            if (d.getDiscPrcnt() != null && d.getDiscPrcnt().intValue() > 0) {
+                                dto.setDiscountPercent(d.getDiscPrcnt().doubleValue());
                             }
-                        } else {
-                            mostrarMensaje("Error", "La bodega 9803 no esta completamente vacia.", true, false, false);
-                            log.log(Level.SEVERE, "La bodega 9803 no esta completamente vacia");
-                            return 0L;
+
+                            List<SaldoItemInventario> s = saldoItemInventarioFacade.obtenerSaldoAlmacenItemCode("9803", n.getReferencia());
+                            if (s != null && s.isEmpty()) {
+                                if (d.getQuantity().intValue() >= cantidad) {
+                                    dto.setQuantity(cantidad);
+                                    dto.setLineNumFV(d.getuLineNumFV());
+                                    dto.setGrossBuyPrice(facturaSAPFacade.obtenerCostoReferencia(docEntry.intValue(), n.getReferencia(), d.getWhsCode()));
+                                    d.setQuantity(new BigDecimal(d.getQuantity().intValue() - cantidad));
+                                    saldoItemInventarioFacade.alterarCostoAlmacen(dto.getGrossBuyPrice(), d.getItemCode(), "9803");
+
+                                    detalle.add(dto);
+                                    cantidad = 0;
+                                    line++;
+                                    break;
+                                } else if (d.getQuantity().intValue() < cantidad) {
+                                    dto.setQuantity(d.getQuantity().intValue());
+                                    dto.setLineNumFV(d.getuLineNumFV());
+                                    dto.setGrossBuyPrice(facturaSAPFacade.obtenerCostoReferencia(docEntry.intValue(), n.getReferencia(), d.getWhsCode()));
+                                    d.setQuantity(new BigDecimal(0));
+                                    saldoItemInventarioFacade.alterarCostoAlmacen(dto.getGrossBuyPrice(), d.getItemCode(), "9803");
+
+                                    detalle.add(dto);
+                                    cantidad -= d.getQuantity().intValue();
+                                    line++;
+                                }
+                            } else {
+                                mostrarMensaje("Error", "La bodega 9803 no esta completamente vacia.", true, false, false);
+                                log.log(Level.SEVERE, "La bodega 9803 no esta completamente vacia");
+                                return 0L;
+                            }
                         }
                     }
                 }
             }
 
-            detalle.add(dto);
-            line++;
-        }
+            if (detalle != null && !detalle.isEmpty()) {
+                document.setDocumentLines(detalle);
 
-        if (detalle != null && !detalle.isEmpty()) {
-            document.setDocumentLines(detalle);
+                CreditNotesClient client = new CreditNotesClient(applicationMBean.obtenerValorPropiedad("url.bcs.rest"));
 
-            CreditNotesClient client = new CreditNotesClient(applicationMBean.obtenerValorPropiedad("url.bcs.rest"));
+                try {
+                    GenericRESTResponseDTO res = client.crearNotaCredito(document);
 
-            try {
-                GenericRESTResponseDTO res = client.crearNotaCredito(document);
-
-                if (res.getEstado() == 0) {
-                    mostrarMensaje("Error", "No se pudo crear la nota crédito " + res.getMensaje(), true, false, false);
-                    log.log(Level.SEVERE, "No se pudo crear la nota credito ", res.getMensaje());
-                    return 0L;
-                } else {
-                    DevolucionSAP dev = devolucionSAPFacade.find(res.getValor());
-
-                    mostrarMensaje("Éxito", "Nota crédito " + dev.getDocNum() + " creada correctamente.", false, true, false);
-                    log.log(Level.SEVERE, "Nota credito creada correctamente");
-
-                    if (documentoRelacionado == null || documentoRelacionado.isEmpty()) {
-                        crearSalida(dev.getDocNum(), docNum);
+                    if (res.getEstado() == 0) {
+                        mostrarMensaje("Error", "No se pudo crear la nota crédito " + res.getMensaje(), true, false, false);
+                        log.log(Level.SEVERE, "No se pudo crear la nota credito ", res.getMensaje());
+                        return 0L;
                     } else {
-                        finalizarCotizacionNotaCredito("NF");
-                    }
+                        DevolucionSAP dev = devolucionSAPFacade.find(res.getValor());
 
-                    return dev.getDocNum().longValue();
+                        mostrarMensaje("Éxito", "Nota crédito " + dev.getDocNum() + " creada correctamente.", false, true, false);
+                        log.log(Level.SEVERE, "Nota credito creada correctamente");
+
+                        if (documentoRelacionado == null || documentoRelacionado.isEmpty()) {
+                            crearSalida(dev.getDocNum(), docNum);
+                        } else {
+                            finalizarCotizacionNotaCredito("NF");
+                        }
+
+                        return dev.getDocNum().longValue();
+                    }
+                } catch (Exception e) {
                 }
-            } catch (Exception e) {
             }
         }
         return 0L;

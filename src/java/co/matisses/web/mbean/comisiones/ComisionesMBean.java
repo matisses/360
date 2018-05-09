@@ -612,6 +612,8 @@ public class ComisionesMBean implements Serializable {
                                 if (validarDevolucion(comision.getDocumento(), devolucionesNoAplicables)) {
                                     if (validarSiFVComisionada(comision.getDocumento())) {
                                         comision.setAplicarDV(true);
+                                        comision.setIncluir(true);
+                                        comision.setDocumentoCerrado(true);
                                     } else {
                                         comision.setAplicarDV(false);
                                         comision.setIncluir(false);
@@ -691,7 +693,7 @@ public class ComisionesMBean implements Serializable {
     }
 
     private boolean validarSiFVComisionada(Integer documento) {
-        DevolucionSAP dev = devolucionSAPFacade.find(documento);
+        DevolucionSAP dev = devolucionSAPFacade.obtenerDevolucion(documento);
 
         if (dev != null && dev.getDocEntry() != null && dev.getDocEntry() != 0) {
             ComisionDetalleAsesor det = comisionDetalleAsesorFacade.obtenerDetalleDocumento(Integer.parseInt(dev.getNumAtCard()), empleado.getCodigoAsesor());
@@ -700,10 +702,22 @@ public class ComisionesMBean implements Serializable {
                 if (det.getAplicar()) {
                     return true;
                 } else {
+                    for (ComisionDTO c : datosComision) {
+                        if (c.getDocumento().equals(Integer.parseInt(dev.getNumAtCard())) && c.isAplicar()) {
+                            return true;
+                        }
+                    }
+
                     return false;
                 }
             } else {
-                return true;
+                for (ComisionDTO c : datosComision) {
+                    if (c.getDocumento().equals(Integer.parseInt(dev.getNumAtCard())) && c.isAplicar() && c.isIncluir()) {
+                        return true;
+                    }
+                }
+
+                return false;
             }
         }
         return true;
@@ -764,61 +778,98 @@ public class ComisionesMBean implements Serializable {
 
     private boolean validarPagoDocumento(Integer documento, String tipoDocumento) throws ParseException {
         if (tipoDocumento != null && tipoDocumento.equals("DV")) {
-            return true;
-        } else {
-            /*Validar si el documento fue pagado*/
-            FacturaSAP fac = facturaSAPFacade.findByDocNum(documento);
+            DevolucionSAP dev = devolucionSAPFacade.obtenerDevolucion(documento);
 
-            if (fac != null && fac.getDocEntry() != null && fac.getDocEntry() != 0) {
-                if (fac.getUTipoNota() != null && !fac.getUTipoNota().toString().isEmpty()) {
-                    return true;
-                } else {
-                    BigDecimal pagoTotal = new BigDecimal(0D);
-                    BigDecimal ajustePeso = new BigDecimal(0D);
-                    List<Date> FechaRecibo = new ArrayList<>();
-                    List<Date> FechaEgreso = new ArrayList<>();
-                    List<Date> FechaReconciliacion = new ArrayList<>();
-                    List<Object[]> payments = facturaSAPFacade.obtenerPagosFactura(documento);
+            if (dev != null && dev.getDocEntry() != null && dev.getDocEntry() != 0) {
+                FacturaSAP fac = facturaSAPFacade.findByDocNum(Integer.parseInt(dev.getNumAtCard()));
 
-                    if (payments != null && !payments.isEmpty()) {
-                        /*Se deben sumar las posiciones 5, 6, 7, 8, 9, 10, 12, 13, 14, 15*/
-                        for (Object[] o : payments) {
-                            if (o[2] != null) {
-                                FechaRecibo.add((Date) o[2]);
-                            }
-                            if (o[11] != null) {
-                                FechaEgreso.add((Date) o[11]);
-                            }
-                            if (o[16] != null) {
-                                FechaReconciliacion.add((Date) o[16]);
-                            }
+                if (fac != null && fac.getDocEntry() != null && fac.getDocEntry() != 0) {
+                    Date fechaInicialAplica = new SimpleDateFormat("yyyy-MM-dd").parse(year + "-" + month + "-" + "01");
+                    Date fechaFinalAplica = new SimpleDateFormat("yyyy-MM-dd").parse(year + "-" + month + "-" + "01");
 
-                            pagoTotal = pagoTotal.add((BigDecimal) o[5]).add((BigDecimal) o[6]).add((BigDecimal) o[7]).add((BigDecimal) o[8]).add((BigDecimal) o[9]).
-                                    add((BigDecimal) o[10]).add((BigDecimal) o[12]).add((BigDecimal) o[13]).add((BigDecimal) o[14]).add((BigDecimal) o[15]);
-                            ajustePeso = ajustePeso.add((BigDecimal) o[17]);
-                        }
-                    }
+                    Calendar calendarFinal = Calendar.getInstance();
+                    calendarFinal.setTime(fechaFinalAplica);
 
-                    boolean fechaValida = validarFechaPago(FechaRecibo, FechaEgreso, FechaReconciliacion);
-                    if (pagoTotal.compareTo(fac.getDocTotal()) >= 0 && fechaValida) {
-                        return true;
-                    } else if (pagoTotal.add(ajustePeso).compareTo(fac.getDocTotal()) >= 0 && fechaValida) {
+                    calendarFinal.set(Calendar.DATE, calendarFinal.getActualMaximum(Calendar.DATE));
+                    calendarFinal.add(Calendar.DAY_OF_YEAR, 8);
+                    fechaFinalAplica = calendarFinal.getTime();
+
+                    Date fechaFactura = new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(fac.getDocDate()));
+
+                    if ((fechaFactura.after(fechaInicialAplica) || fechaFactura.equals(fechaInicialAplica)) && (fechaFactura.before(fechaFinalAplica) || fechaFactura.equals(fechaFinalAplica))) {
                         return true;
                     } else {
-                        /*Si el valor pagado no cuadra, se verifica si hay una devolucion de por medio*/
-                        List<DevolucionSAP> returns = devolucionSAPFacade.obtenerDevolucionesFactura(fac.getDocNum());
+                        ComisionDetalleAsesor det = comisionDetalleAsesorFacade.validarDocumento(fac.getDocNum(), empleado.getCodigoAsesor());
 
-                        if (returns != null && !returns.isEmpty()) {
-                            for (DevolucionSAP d : returns) {
-                                pagoTotal = pagoTotal.add(d.getDocTotal());
-                            }
-
-                            return pagoTotal.compareTo(fac.getDocTotal()) >= 0 && fechaValida;
+                        if (det != null && det.getIdComisionDetalleAsesor() != null && det.getIdComisionDetalleAsesor() != 0 && validarPagoFV(fac.getDocNum())) {
+                            return true;
                         }
                     }
                 }
             }
+
+            return false;
+        } else {
+            return validarPagoFV(documento);
         }
+    }
+
+    private boolean validarPagoFV(Integer documento) throws ParseException {
+        /*Validar si el documento fue pagado*/
+        FacturaSAP fac = facturaSAPFacade.findByDocNum(documento);
+
+        if (fac != null && fac.getDocEntry() != null && fac.getDocEntry() != 0) {
+            if (fac.getUTipoNota() != null && !fac.getUTipoNota().toString().isEmpty()) {
+                return true;
+            } else {
+                BigDecimal pagoTotal = new BigDecimal(0D);
+                BigDecimal ajustePeso = new BigDecimal(0D);
+                List<Date> FechaRecibo = new ArrayList<>();
+                List<Date> FechaEgreso = new ArrayList<>();
+                List<Date> FechaReconciliacion = new ArrayList<>();
+                List<Object[]> payments = facturaSAPFacade.obtenerPagosFactura(documento);
+
+                if (payments != null && !payments.isEmpty()) {
+                    /*Se deben sumar las posiciones 5, 6, 7, 8, 9, 10, 12, 13, 14, 15*/
+                    for (Object[] o : payments) {
+                        if (o[2] != null) {
+                            FechaRecibo.add((Date) o[2]);
+                        }
+                        if (o[11] != null) {
+                            FechaEgreso.add((Date) o[11]);
+                        }
+                        if (o[16] != null) {
+                            FechaReconciliacion.add((Date) o[16]);
+                        }
+
+                        pagoTotal = pagoTotal.add((BigDecimal) o[5]).add((BigDecimal) o[6]).add((BigDecimal) o[7]).add((BigDecimal) o[8]).add((BigDecimal) o[9]).
+                                add((BigDecimal) o[10]).add((BigDecimal) o[12]).add((BigDecimal) o[13]).add((BigDecimal) o[14]).add((BigDecimal) o[15]);
+                        ajustePeso = ajustePeso.add((BigDecimal) o[17]);
+                    }
+                }
+
+                boolean fechaValida = validarFechaPago(FechaRecibo, FechaEgreso, FechaReconciliacion);
+                if (pagoTotal.compareTo(fac.getDocTotal()) >= 0 && fechaValida) {
+                    return true;
+                } else if (pagoTotal.add(ajustePeso).compareTo(fac.getDocTotal()) >= 0 && fechaValida) {
+                    return true;
+                } else {
+                    /*Si el valor pagado no cuadra, se verifica si hay una devolucion de por medio*/
+                    List<DevolucionSAP> returns = devolucionSAPFacade.obtenerDevolucionesFactura(fac.getDocNum());
+
+                    if (returns != null && !returns.isEmpty()) {
+                        pagoTotal = new BigDecimal(0);
+
+                        for (DevolucionSAP d : returns) {
+                            pagoTotal = pagoTotal.add(d.getDocTotal());
+                        }
+
+                        return pagoTotal.compareTo(fac.getDocTotal()) >= 0 && fechaValida;
+                    }
+                }
+            }
+        }
+
         return false;
     }
 
@@ -845,7 +896,7 @@ public class ComisionesMBean implements Serializable {
                 }
             }
         }
-        if (FechaEgreso != null && !FechaEgreso.isEmpty()) {
+        if (FechaEgreso != null && !FechaEgreso.isEmpty() && !aplica) {
             for (Date f : FechaEgreso) {
                 if (f.after(fechaInicialAplica) && f.before(fechaFinalAplica)) {
                     aplica = true;
@@ -855,7 +906,7 @@ public class ComisionesMBean implements Serializable {
                 }
             }
         }
-        if (FechaReconciliacion != null && !FechaReconciliacion.isEmpty()) {
+        if (FechaReconciliacion != null && !FechaReconciliacion.isEmpty() && !aplica) {
             for (Date f : FechaReconciliacion) {
                 if (f.after(fechaInicialAplica) && f.before(fechaFinalAplica)) {
                     aplica = true;
@@ -995,6 +1046,13 @@ public class ComisionesMBean implements Serializable {
             if (c.getIdRegla().getIdTipoRegla().getTipoRegla().equals("Referencia")) {
                 referenciasOtraRegla = c.getIdRegla().getValorRegla();
             }
+        }
+
+        if (asesorComplementos && porcentajeComplementos <= 0) {
+            CONSOLE.log(Level.SEVERE, "El asesor de complementos no puede coisionar en mobiliario, debido a que no cumple la meta de complementos.");
+            porcentajeComplementos = 0D;
+            porcentajeMobiliario = 0D;
+            return;
         }
 
         for (ComisionDTO c : datosComision) {

@@ -5,6 +5,7 @@ package co.matisses.web;
  * @author dbotero
  */
 public enum Objetos {
+    AVERÍAS,
     BODEGAS_NO_VENTA,
     BODEGA_SIN_SALDO,
     BONO,
@@ -20,7 +21,7 @@ public enum Objetos {
     CONTENEDORES,
     CONTEO,
     COTIZACION,
-    COTIZACIÓN_ESPECIAL,
+    COTIZACION_ESPECIAL,
     COTIZACIONES_TODAS,
     DEMOSTRACION,
     DEMOSTRACIONES_TODAS,
@@ -30,12 +31,16 @@ public enum Objetos {
     FACTURA_POS,
     FACTURAS_TODAS,
     FILTRO,
+    FILTRO_ROTACIÓN,
     FIRMA_IMPORTS,
     FOTO_PEDIDO_TIENDA,
+    GARANTÍAS,
     GENERICO,
     INVENTARIO,
     LABOR_CCYGA,
     LISTA_REGALOS,
+    LLAMADA_SERVICIO,
+    LOG_CALCULO_ROTACIÓN,
     MATERIALES_Y_COLORES,
     MENU,
     MODELO,
@@ -59,6 +64,7 @@ public enum Objetos {
     SALDO_VENCIDO,
     SMS,
     SESIONES_SAP,
+    SOLICITUD_SISTEMAS,
     SOLICITUDES_TODAS,
     SOPORTE_TECNICO,
     SUCURSAL_PEDIDO_TIENDA,
@@ -71,5 +77,6 @@ public enum Objetos {
     TRASLADO_TALLER,
     TRASLADO_PALLET,
     UBICACION,
-    USUARIO;
+    USUARIO,
+    WIKI;
 }

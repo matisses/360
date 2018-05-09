@@ -444,7 +444,11 @@ public class ListaProductosMBean implements Serializable {
                     }
 
                     if (filtrosIzquierda.containsKey(nombreFiltro)) {
-                        filtrosIzquierda.get(nombreFiltro).put(v.getValor(), false);
+                        if (filtrosIzquierda.containsKey("SUCURSAL") && !v.getValor().contains("CL") && !v.getValor().contains("DM")) {
+                            filtrosIzquierda.get(nombreFiltro).put(v.getValor(), false);
+                        } else if (!filtrosIzquierda.containsKey("SUCURSAL")) {
+                            filtrosIzquierda.get(nombreFiltro).put(v.getValor(), false);
+                        }
                     } else {
                         Map<String, Boolean> newData = new TreeMap<>();
                         newData.put(v.getValor(), false);
@@ -538,7 +542,9 @@ public class ListaProductosMBean implements Serializable {
                 if (sucursales != null && !sucursales.isEmpty()) {
                     for (Object s : sucursales) {
                         if (filtrosIzquierda.containsKey("SUCURSAL")) {
-                            filtrosIzquierda.get("SUCURSAL").put((String) s, false);
+                            if (!((String) s).contains("CL") && !((String) s).contains("DM")) {
+                                filtrosIzquierda.get("SUCURSAL").put((String) s, false);
+                            }
                         } else {
                             Map<String, Boolean> newData = new TreeMap<>();
                             newData.put((String) s, false);
@@ -552,10 +558,10 @@ public class ListaProductosMBean implements Serializable {
             if (!filtros.containsKey("GRUPO")) {
                 filtrosIzquierda.remove("GRUPO");
                 /*Se obtienen los nuevos filtros de grupos*/
-                List<Object> sucursales = itemFacade.obtenerFiltrosGrupo(soloConSaldo, filtros);
+                List<Object> grupos = itemFacade.obtenerFiltrosGrupo(soloConSaldo, filtros);
 
-                if (sucursales != null && !sucursales.isEmpty()) {
-                    for (Object s : sucursales) {
+                if (grupos != null && !grupos.isEmpty()) {
+                    for (Object s : grupos) {
                         if (filtrosIzquierda.containsKey("GRUPO")) {
                             filtrosIzquierda.get("GRUPO").put((String) s, false);
                         } else {
@@ -763,8 +769,10 @@ public class ListaProductosMBean implements Serializable {
 
             if (balances != null && !balances.isEmpty()) {
                 for (SaldoItemInventario b : balances) {
-                    saldos.add(new SaldoItemDTO(b.getOnHand().intValue(), null, b.getSaldoItemInventarioPK().getItemCode(),
-                            b.getSaldoItemInventarioPK().getWhsCode().getWhsCode(), obtenerSaldoUbicacion(item, b.getSaldoItemInventarioPK().getWhsCode().getWhsCode())));
+                    if (!b.getSaldoItemInventarioPK().getWhsCode().getWhsCode().contains("CL") && !b.getSaldoItemInventarioPK().getWhsCode().getWhsCode().contains("DM")) {
+                        saldos.add(new SaldoItemDTO(b.getOnHand().intValue(), null, b.getSaldoItemInventarioPK().getItemCode(),
+                                b.getSaldoItemInventarioPK().getWhsCode().getWhsCode(), obtenerSaldoUbicacion(item, b.getSaldoItemInventarioPK().getWhsCode().getWhsCode())));
+                    }
                 }
             }
         }

@@ -159,7 +159,7 @@ public class UserSessionInfoMBean implements Serializable {
     }
 
     public boolean validarPermisoUsuario(String objeto, String accion) {
-        log.log(Level.INFO, "Validando si el usuario {2} puede {0} {1} ", new Object[]{accion, objeto, usuario});
+//        log.log(Level.INFO, "Validando si el usuario {2} puede {0} {1} ", new Object[]{accion, objeto, usuario});
         return validarPermisoUsuario(Objetos.valueOf(objeto), Acciones.valueOf(accion));
     }
 

@@ -64,6 +64,5 @@ public class ApplicationConfig extends Application {
         resources.add(co.matisses.web.rest.regalos.FiltrosProductoREST.class);
         resources.add(co.matisses.web.rest.regalos.ListaRegalosREST.class);
         resources.add(co.matisses.web.rest.regalos.ListaRegalosSessionValidatorREST.class);
-        resources.add(co.matisses.web.rest.regalos.ProcesoPagosREST.class);
     }
 }

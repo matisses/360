@@ -70,6 +70,12 @@ public class InformesMBean implements Serializable {
     private Integer endYearTaller;
     private Integer endMonthTaller;
     private Integer endDayTaller;
+    private Integer startYearJuan;
+    private Integer startMonthJuan;
+    private Integer startDayJuan;
+    private Integer endYearJuan;
+    private Integer endMonthJuan;
+    private Integer endDayJuan;
     private Integer paso = 1;
     private Integer proceso = 1;
     private Integer semana;
@@ -79,12 +85,15 @@ public class InformesMBean implements Serializable {
     private String tienda;
     private String mes;
     private boolean dlgComentario = false;
+    private boolean juanCamilo = false;
     private Date startDate;
     private Date endDate;
     private Date startDateRoutes;
     private Date endDateRoutes;
     private Date startDateTaller;
     private Date endDateTaller;
+    private Date startDateJuan;
+    private Date endDateJuan;
     private List<Integer> years;
     private List<Integer> startDays;
     private List<Integer> endDays;
@@ -92,6 +101,8 @@ public class InformesMBean implements Serializable {
     private List<Integer> endDaysRoutes;
     private List<Integer> startDaysTaller;
     private List<Integer> endDaysTaller;
+    private List<Integer> startDaysJuan;
+    private List<Integer> endDaysJuan;
     private List<Integer> days;
     private List<Integer> semanas;
     private List<String> rutas;
@@ -102,6 +113,7 @@ public class InformesMBean implements Serializable {
     private List<Object[]> ventasComparativas;
     private List<Object[]> ventasRutas;
     private List<Object[]> movimientosDiarios;
+    private List<Object[]> ventasJuan;
     private List<DatosVentasDTO> datos;
     private List<CostoAcumuladoAlmacenDTO> costoTaller;
     @EJB
@@ -119,10 +131,13 @@ public class InformesMBean implements Serializable {
         ventasComparativas = new ArrayList<>();
         ventasRutas = new ArrayList<>();
         datos = new ArrayList<>();
+        ventasJuan = new ArrayList<>();
     }
 
     @PostConstruct
     protected void initialize() {
+        juanCamilo = false;
+
         cargarYears();
         cargarMonths();
         inicializarFechas(true);
@@ -132,6 +147,13 @@ public class InformesMBean implements Serializable {
         cargarRutas();
         mostrarVentasRutas();
         obtenerSaldoTaller();
+
+        String token = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("token");
+
+        if (token != null && token.toLowerCase().equals("juan")) {
+            juanCamilo = true;
+            mostrarVentasJuan();
+        }
     }
 
     public Integer getStartYear() {
@@ -278,6 +300,54 @@ public class InformesMBean implements Serializable {
         this.endDayTaller = endDayTaller;
     }
 
+    public Integer getStartYearJuan() {
+        return startYearJuan;
+    }
+
+    public void setStartYearJuan(Integer startYearJuan) {
+        this.startYearJuan = startYearJuan;
+    }
+
+    public Integer getStartMonthJuan() {
+        return startMonthJuan;
+    }
+
+    public void setStartMonthJuan(Integer startMonthJuan) {
+        this.startMonthJuan = startMonthJuan;
+    }
+
+    public Integer getStartDayJuan() {
+        return startDayJuan;
+    }
+
+    public void setStartDayJuan(Integer startDayJuan) {
+        this.startDayJuan = startDayJuan;
+    }
+
+    public Integer getEndYearJuan() {
+        return endYearJuan;
+    }
+
+    public void setEndYearJuan(Integer endYearJuan) {
+        this.endYearJuan = endYearJuan;
+    }
+
+    public Integer getEndMonthJuan() {
+        return endMonthJuan;
+    }
+
+    public void setEndMonthJuan(Integer endMonthJuan) {
+        this.endMonthJuan = endMonthJuan;
+    }
+
+    public Integer getEndDayJuan() {
+        return endDayJuan;
+    }
+
+    public void setEndDayJuan(Integer endDayJuan) {
+        this.endDayJuan = endDayJuan;
+    }
+
     public String getComentario() {
         return comentario;
     }
@@ -350,6 +420,14 @@ public class InformesMBean implements Serializable {
         this.dlgComentario = dlgComentario;
     }
 
+    public boolean isJuanCamilo() {
+        return juanCamilo;
+    }
+
+    public void setJuanCamilo(boolean juanCamilo) {
+        this.juanCamilo = juanCamilo;
+    }
+
     public Date getStartDate() {
         return startDate;
     }
@@ -396,6 +474,22 @@ public class InformesMBean implements Serializable {
 
     public void setEndDateTaller(Date endDateTaller) {
         this.endDateTaller = endDateTaller;
+    }
+
+    public Date getStartDateJuan() {
+        return startDateJuan;
+    }
+
+    public void setStartDateJuan(Date startDateJuan) {
+        this.startDateJuan = startDateJuan;
+    }
+
+    public Date getEndDateJuan() {
+        return endDateJuan;
+    }
+
+    public void setEndDateJuan(Date endDateJuan) {
+        this.endDateJuan = endDateJuan;
     }
 
     public List<Integer> getYears() {
@@ -452,6 +546,22 @@ public class InformesMBean implements Serializable {
 
     public void setEndDaysTaller(List<Integer> endDaysTaller) {
         this.endDaysTaller = endDaysTaller;
+    }
+
+    public List<Integer> getStartDaysJuan() {
+        return startDaysJuan;
+    }
+
+    public void setStartDaysJuan(List<Integer> startDaysJuan) {
+        this.startDaysJuan = startDaysJuan;
+    }
+
+    public List<Integer> getEndDaysJuan() {
+        return endDaysJuan;
+    }
+
+    public void setEndDaysJuan(List<Integer> endDaysJuan) {
+        this.endDaysJuan = endDaysJuan;
     }
 
     public List<Integer> getDays() {
@@ -518,6 +628,14 @@ public class InformesMBean implements Serializable {
         this.movimientosDiarios = movimientosDiarios;
     }
 
+    public List<Object[]> getVentasJuan() {
+        return ventasJuan;
+    }
+
+    public void setVentasJuan(List<Object[]> ventasJuan) {
+        this.ventasJuan = ventasJuan;
+    }
+
     public List<DatosVentasDTO> getDatos() {
         return datos;
     }
@@ -538,6 +656,16 @@ public class InformesMBean implements Serializable {
         Long total = 0L;
 
         for (Object[] o : ventas) {
+            total += ((BigDecimal) o[1]).longValue();
+        }
+
+        return total;
+    }
+
+    public Long getTotalVentasJuan() {
+        Long total = 0L;
+
+        for (Object[] o : ventasJuan) {
             total += ((BigDecimal) o[1]).longValue();
         }
 
@@ -637,6 +765,12 @@ public class InformesMBean implements Serializable {
                 cargarDaysTaller(inicio);
                 startDayTaller = cal.getActualMinimum(Calendar.DATE);
                 startDateTaller = new SimpleDateFormat("yyyy-MM-dd").parse(startYearTaller + "-" + startMonthTaller + "-" + startDayTaller);
+
+                startYearJuan = cal.get(Calendar.YEAR);
+                startMonthJuan = cal.get(Calendar.MONTH) + 1;
+                cargarDaysJuan(inicio);
+                startDayJuan = cal.getActualMinimum(Calendar.DATE);
+                startDateJuan = new SimpleDateFormat("yyyy-MM-dd").parse(startYearJuan + "-" + startMonthJuan + "-" + startDayJuan);
             } else {
                 endYear = cal.get(Calendar.YEAR);
                 endMonth = cal.get(Calendar.MONTH) + 1;
@@ -655,6 +789,12 @@ public class InformesMBean implements Serializable {
                 cargarDaysTaller(inicio);
                 endDayTaller = cal.get(Calendar.DATE);
                 endDateTaller = new SimpleDateFormat("yyyy-MM-dd").parse(endYearTaller + "-" + endMonthTaller + "-" + endDayTaller);
+
+                endYearJuan = cal.get(Calendar.YEAR);
+                endMonthJuan = cal.get(Calendar.MONTH) + 1;
+                cargarDaysJuan(inicio);
+                endDayJuan = cal.get(Calendar.DATE);
+                endDateJuan = new SimpleDateFormat("yyyy-MM-dd").parse(endYearJuan + "-" + endMonthJuan + "-" + endDayJuan);
             }
         } catch (Exception e) {
         }
@@ -1055,6 +1195,101 @@ public class InformesMBean implements Serializable {
 
     public void cargarComparativoSemanal() {
         ventasComparativas = facturaSAPFacade.obtenerVentasSemanales(semana, tienda);
+    }
+
+    /**
+     * *********************************************************
+     * INFORME DE VENTAS JUAN CAMILO
+     * *********************************************************
+     */
+    public void cargarDaysJuan(boolean inicio) {
+        GregorianCalendar cal = new GregorianCalendar();
+
+        if (inicio) {
+            startDaysJuan = new ArrayList<>();
+
+            cal.set(Calendar.YEAR, startYearJuan);
+            cal.set(Calendar.MONTH, startMonthJuan - 1);
+
+            for (int j = 1; j <= cal.getActualMaximum(Calendar.DAY_OF_MONTH); j++) {
+                startDaysJuan.add(j);
+            }
+        } else {
+            endDaysJuan = new ArrayList<>();
+
+            cal.set(Calendar.YEAR, endYearJuan);
+            cal.set(Calendar.MONTH, endMonthJuan - 1);
+
+            for (int j = 1; j <= cal.getActualMaximum(Calendar.DAY_OF_MONTH); j++) {
+                endDaysJuan.add(j);
+            }
+        }
+    }
+
+    public void mostrarVentasJuan() {
+        ventasJuan = facturaSAPFacade.obtenerVentasNetasJuanCamilo(startYearJuan, startMonthJuan, startDayJuan, endYearJuan, endMonthJuan, endDayJuan);
+    }
+
+    public void mostrarHoyJuan() {
+        try {
+            GregorianCalendar cal = new GregorianCalendar();
+
+            startYearJuan = cal.get(Calendar.YEAR);
+            endYearJuan = cal.get(Calendar.YEAR);
+            startMonthJuan = cal.get(Calendar.MONTH) + 1;
+            endMonthJuan = cal.get(Calendar.MONTH) + 1;
+            cargarDaysJuan(true);
+            startDayJuan = cal.get(Calendar.DATE);
+            endDayJuan = cal.get(Calendar.DATE);
+            startDateJuan = new SimpleDateFormat("yyyy-MM-dd").parse(startYearJuan + "-" + startMonthJuan + "-" + startDayJuan);
+            endDateJuan = new SimpleDateFormat("yyyy-MM-dd").parse(endYearJuan + "-" + endMonthJuan + "-" + endDayJuan);
+
+            mostrarVentasJuan();
+        } catch (Exception e) {
+        }
+    }
+
+    public void mostrarMesJuan() {
+        inicializarFechas(true);
+        inicializarFechas(false);
+        mostrarVentasJuan();
+    }
+
+    public void mostrarVentasJuanDesktop() {
+        ventasJuan = new ArrayList<>();
+
+        if (startDateJuan != null && endDateJuan != null) {
+            startYearJuan = Integer.parseInt(new SimpleDateFormat("yyyy").format(startDateJuan));
+            startMonthJuan = Integer.parseInt(new SimpleDateFormat("MM").format(startDateJuan));
+            startDayJuan = Integer.parseInt(new SimpleDateFormat("dd").format(startDateJuan));
+
+            endYearJuan = Integer.parseInt(new SimpleDateFormat("yyyy").format(endDateJuan));
+            endMonthJuan = Integer.parseInt(new SimpleDateFormat("MM").format(endDateJuan));
+            endDayJuan = Integer.parseInt(new SimpleDateFormat("dd").format(endDateJuan));
+            mostrarVentasJuan();
+        } else {
+            mostrarMensaje("Error", "No se encontraron datos de ventas para Juan con las fechas ingresadas.", true, false, false);
+            CONSOLE.log(Level.SEVERE, "No se encontraron datos de ventas para Juan con las fechas ingresadas");
+            return;
+        }
+    }
+
+    public void mostrarVentasJuanMobile() {
+        ventasJuan = new ArrayList<>();
+
+        if (startYearJuan != null && startYearJuan != 0 && startMonthJuan != null && startMonthJuan != 0 && startDayJuan != null && startDayJuan != 0
+                && endYearJuan != null && endYearJuan != 0 && endMonthJuan != null && endMonthJuan != 0 && endDayJuan != null && endDayJuan != 0) {
+            try {
+                startDateJuan = new SimpleDateFormat("yyyy-MM-dd").parse(startYearJuan + "-" + startMonthJuan + "-" + startDayJuan);
+                endDateJuan = new SimpleDateFormat("yyyy-MM-dd").parse(endYearJuan + "-" + endMonthJuan + "-" + endDayJuan);
+                mostrarVentasJuan();
+            } catch (Exception e) {
+            }
+        } else {
+            mostrarMensaje("Error", "No se encontraron datos de ventas para Juan con las fechas ingresadas.", true, false, false);
+            CONSOLE.log(Level.SEVERE, "No se encontraron datos de ventas para Juan con las fechas ingresadas");
+            return;
+        }
     }
 
     /**

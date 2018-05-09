@@ -45,4 +45,12 @@ public class SendHtmlEmailClient {
 
         return webTarget.path("enviaremail360").request(MediaType.APPLICATION_JSON).post(Entity.entity(msg, MediaType.APPLICATION_JSON), GenericRESTResponseDTO.class);
     }
+
+    public GenericRESTResponseDTO enviarHtmlEmail(MailMessageDTO msg) {
+        return webTarget.path("enviaremail360").request(MediaType.APPLICATION_JSON).post(Entity.entity(msg, MediaType.APPLICATION_JSON), GenericRESTResponseDTO.class);
+    }
+
+    public GenericRESTResponseDTO enviarHtmlEmailSoporte(MailMessageDTO msg) {
+        return webTarget.path("enviaremailsoporte").request(MediaType.APPLICATION_JSON).post(Entity.entity(msg, MediaType.APPLICATION_JSON), GenericRESTResponseDTO.class);
+    }
 }

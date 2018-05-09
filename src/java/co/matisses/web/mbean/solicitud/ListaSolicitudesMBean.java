@@ -490,11 +490,13 @@ public class ListaSolicitudesMBean implements Serializable {
 
     public String abrirPdf() {
         if (solicitud != null && solicitud.getIdSolicitud() != null && solicitud.getIdSolicitud() != 0) {
-            String url = applicationMBean.obtenerValorPropiedad("url.web.solicitudes") + solicitud.getIdSolicitud();
-            if (new File(applicationMBean.obtenerValorPropiedad("url.folder.solicitudes") + File.separator + solicitud.getIdSolicitud() + ".pdf").exists()) {
+            String documento = "solicitud";
+            String url = applicationMBean.obtenerValorPropiedad("url.web.logistica") + documento + "/" + solicitud.getIdSolicitud();
+            
+            if (new File(applicationMBean.obtenerValorPropiedad("url.folder.logistica") + documento + File.separator + solicitud.getIdSolicitud() + ".pdf").exists()) {
                 return "openRuta('" + url + ".pdf');";
             } else {
-                String[] adjunto = generarDocumento(solicitud.getIdSolicitud(), 1, String.valueOf(solicitud.getIdSolicitud()), "solicitud", userSessionInfoMBean.getAlmacen(), null, false, null);
+                String[] adjunto = generarDocumento(solicitud.getIdSolicitud(), 1, String.valueOf(solicitud.getIdSolicitud()), documento, userSessionInfoMBean.getAlmacen(), null, false, null);
 
                 if (adjunto != null) {
                     if (new File(adjunto[0]).exists()) {

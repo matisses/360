@@ -1,6 +1,6 @@
 package co.matisses.web.mbean.next;
 
-import co.matisses.web.dto.AdjuntoSolicitudNextDTO;
+import co.matisses.web.dto.AdjuntoNextDTO;
 import co.matisses.web.dto.EquipoNextDTO;
 import co.matisses.web.dto.PrioridadSolicitudNextDTO;
 import co.matisses.web.dto.TipoSolicitudNextDTO;
@@ -42,7 +42,7 @@ public class CrearSolicitudNextMBean implements Serializable {
     private List<TipoSolicitudNextDTO> tiposSolicitud;
     private List<PrioridadSolicitudNextDTO> prioridadesSolicitud;
     private List<EquipoNextDTO> equiposSolicitud;
-    private List<AdjuntoSolicitudNextDTO> adjuntosSolicitud;
+    private List<AdjuntoNextDTO> adjuntosSolicitud;
 
     public CrearSolicitudNextMBean() {
         tiposSolicitud = new ArrayList<>();
@@ -127,7 +127,7 @@ public class CrearSolicitudNextMBean implements Serializable {
         this.archivoAdjunto = archivoAdjunto;
     }
 
-    public List<AdjuntoSolicitudNextDTO> getAdjuntosSolicitud() {
+    public List<AdjuntoNextDTO> getAdjuntosSolicitud() {
         return adjuntosSolicitud;
     }
 
@@ -202,7 +202,7 @@ public class CrearSolicitudNextMBean implements Serializable {
         try (InputStream input = archivoAdjunto.getInputStream()) {
             File newFile = new File(System.getProperty("jboss.server.temp.dir"), archivoAdjunto.getSubmittedFileName());
             Files.copy(input, newFile.toPath());
-            adjuntosSolicitud.add(new AdjuntoSolicitudNextDTO(null, FilenameUtils.getBaseName(newFile.getName()), FilenameUtils.getExtension(newFile.getName())));
+//            adjuntosSolicitud.add(new AdjuntoNextDTO(null, FilenameUtils.getBaseName(newFile.getName()), FilenameUtils.getExtension(newFile.getName())));
             log.log(Level.INFO, "Numero de archivos adjuntos: {0}", adjuntosSolicitud.size());
         } catch (IOException e) {
             log.log(Level.SEVERE, "Ocurrio un error al guardar el archivo. ", e);

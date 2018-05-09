@@ -1,5 +1,6 @@
 package co.matisses.web.mbean.ventas;
 
+import co.matisses.persistence.sap.entity.Almacen;
 import co.matisses.persistence.sap.entity.BaruDecoradores;
 import co.matisses.persistence.sap.entity.BaruMunicipios;
 import co.matisses.persistence.sap.entity.BaruSeriesAlmacen;
@@ -15,6 +16,7 @@ import co.matisses.persistence.sap.entity.TarjetaCreditoSAP;
 import co.matisses.persistence.sap.entity.TaxExtension;
 import co.matisses.persistence.sap.entity.UbicacionSAP;
 import co.matisses.persistence.sap.facade.AlmacenFacade;
+import co.matisses.persistence.sap.facade.AsientoContableFacade;
 import co.matisses.persistence.sap.facade.BaruDecoradoresFacade;
 import co.matisses.persistence.sap.facade.BaruMunicipiosFacade;
 import co.matisses.persistence.sap.facade.BaruParametrosWebFacade;
@@ -57,6 +59,7 @@ import co.matisses.web.bcs.client.BinLocationsClient;
 import co.matisses.web.bcs.client.GoodsReceiptClient;
 import co.matisses.web.bcs.client.IncomingPaymentClient;
 import co.matisses.web.bcs.client.InvoicesClient;
+import co.matisses.web.bcs.client.JournalEntryClient;
 import co.matisses.web.bcs.client.OrderClient;
 import co.matisses.web.bcs.client.QuotationsClient;
 import co.matisses.web.bcs.client.SendHtmlEmailClient;
@@ -81,6 +84,8 @@ import co.matisses.web.dto.GoodsReceiptDTO;
 import co.matisses.web.dto.GoodsReceiptDetailDTO;
 import co.matisses.web.dto.GoodsReceiptLocationsDTO;
 import co.matisses.web.dto.InformacionAlmacenDTO;
+import co.matisses.web.dto.JournalEntryDTO;
+import co.matisses.web.dto.JournalEntryLineDTO;
 import co.matisses.web.dto.MailMessageDTO;
 import co.matisses.web.dto.OrderDTO;
 import co.matisses.web.dto.OrderDetailDTO;
@@ -114,6 +119,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -156,7 +162,7 @@ public class VentasMBean implements Serializable {
     private UserSessionInfoMBean userSessionInfoMBean;
     @Inject
     private ClienteSessionMBean clienteSessionMBean;
-    private static final Logger log = Logger.getLogger(VentasMBean.class.getSimpleName());
+    private static final Logger CONSOLE = Logger.getLogger(VentasMBean.class.getSimpleName());
     private int posicionItem = 0;
     private int asesores = 0;
     private Integer medioPago = 0;
@@ -271,6 +277,8 @@ public class VentasMBean implements Serializable {
     private DetalleFacturaSAPFacade detalleFacturaSAPFacade;
     @EJB
     private ProgramacionDescuentoFacade programacionDescuentoFacade;
+    @EJB
+    private AsientoContableFacade asientoContableFacade;
 
     public VentasMBean() {
         cotizacion = new CotizacionWebDTO();
@@ -909,10 +917,10 @@ public class VentasMBean implements Serializable {
     }
 
     private void obtenerVentaPendiente() {
-        log.log(Level.INFO, "El sistema esta verificando si el usuario {0} tiene cotizaciones pendientes", userSessionInfoMBean.getUsuario());
+        CONSOLE.log(Level.INFO, "El sistema esta verificando si el usuario {0} tiene cotizaciones pendientes", userSessionInfoMBean.getUsuario());
         List<CotizacionWeb> cotizaciones = cotizacionWebFacade.obtenerCotizacionesPendientes(Integer.parseInt(userSessionInfoMBean.getCodigoVentas()));
         if (cotizaciones != null && !cotizaciones.isEmpty()) {
-            log.log(Level.INFO, "Se encontraron {0} cotizaciones pendiente para el usuario {1}", new Object[]{cotizaciones.size(), userSessionInfoMBean.getUsuario()});
+            CONSOLE.log(Level.INFO, "Se encontraron {0} cotizaciones pendiente para el usuario {1}", new Object[]{cotizaciones.size(), userSessionInfoMBean.getUsuario()});
 
             if (cotizaciones != null && !cotizaciones.isEmpty()) {
                 if (cotizaciones.size() > 1) {
@@ -923,11 +931,11 @@ public class VentasMBean implements Serializable {
 
                         try {
                             cotizacionWebFacade.edit(cot);
-                            log.log(Level.INFO, "Se marco la cotizacion con id {0} con el estado NO FINALIZADO", cot.getIdCotizacion());
+                            CONSOLE.log(Level.INFO, "Se marco la cotizacion con id {0} con el estado NO FINALIZADO", cot.getIdCotizacion());
                             cotizaciones.remove(i);
                             i--;
                         } catch (Exception e) {
-                            log.log(Level.SEVERE, "Ocurrio un error al marcar la cotizacion con id {0} como NO FINALIZADA. Error {1}", new Object[]{cot.getIdCotizacion(), e.getMessage()});
+                            CONSOLE.log(Level.SEVERE, "Ocurrio un error al marcar la cotizacion con id {0} como NO FINALIZADA. Error {1}", new Object[]{cot.getIdCotizacion(), e.getMessage()});
                             return;
                         }
                     }
@@ -950,7 +958,7 @@ public class VentasMBean implements Serializable {
                 }
             }
         } else {
-            log.log(Level.INFO, "No se encontraron cotizaciones pendiente para el usuario {0}", userSessionInfoMBean.getUsuario());
+            CONSOLE.log(Level.INFO, "No se encontraron cotizaciones pendiente para el usuario {0}", userSessionInfoMBean.getUsuario());
         }
     }
 
@@ -962,14 +970,14 @@ public class VentasMBean implements Serializable {
 
             try {
                 cotizacionWebFacade.edit(cotizacionWeb);
-                log.log(Level.INFO, "Actualizando cotizacion web de la cotizacion numero {0}", cotizacionWeb.getNumeroDocSAP());
+                CONSOLE.log(Level.INFO, "Actualizando cotizacion web de la cotizacion numero {0}", cotizacionWeb.getNumeroDocSAP());
 
                 cotizacion = new CotizacionWebDTO(cotizacionWeb.getIdVendedor(), cotizacionWeb.getIdCotizacion(), cotizacionWeb.getSucursal(),
                         cotizacionWeb.getEstado(), cotizacionWeb.getNitCliente(), cotizacionWeb.getFecha(), new ArrayList<DetalleCotizacionWebDTO>());
                 cotizacion.setDemostracion(cotizacionWeb.getDemostracion() != null ? cotizacionWeb.getDemostracion() : false);
             } catch (Exception e) {
                 mostrarMensaje("Error", "Se detectó un error al actualizar la cotización web.", true, false, false);
-                log.log(Level.SEVERE, "Se detecto un error al actualizar la cotizacion web", e);
+                CONSOLE.log(Level.SEVERE, "Se detecto un error al actualizar la cotizacion web", e);
                 return;
             }
         } else {
@@ -987,13 +995,13 @@ public class VentasMBean implements Serializable {
 
                 try {
                     cotizacionWebFacade.create(cotizacionWeb);
-                    log.log(Level.INFO, "Generando cotizacion web a la cotizacion numero {0}", cotizacionWeb.getNumeroDocSAP());
+                    CONSOLE.log(Level.INFO, "Generando cotizacion web a la cotizacion numero {0}", cotizacionWeb.getNumeroDocSAP());
 
                     cotizacion = new CotizacionWebDTO(cotizacionWeb.getIdVendedor(), cotizacionWeb.getIdCotizacion(), cotizacionWeb.getSucursal(),
                             cotizacionWeb.getEstado(), cotizacionWeb.getNitCliente(), cotizacionWeb.getFecha(), new ArrayList<DetalleCotizacionWebDTO>());
                 } catch (Exception e) {
                     mostrarMensaje("Error", "Se detectó un error al obtener los datos de la cotización a modificar.", true, false, false);
-                    log.log(Level.SEVERE, "Se detecto un error al obtener los datos de la cotizacion a modificar", e);
+                    CONSOLE.log(Level.SEVERE, "Se detecto un error al obtener los datos de la cotizacion a modificar", e);
                     return;
                 }
             }
@@ -1002,9 +1010,9 @@ public class VentasMBean implements Serializable {
         /*Se elimina el detalle actual de la cotizacion web*/
         try {
             detalleCotizacionWebFacade.eliminarDetalleCotizacion(cotizacionWeb.getIdCotizacion());
-            log.log(Level.INFO, "Se eliminaron los datos encontrados en la tabla de DETALLE_COTIZACION_WEB, para la cotizacion con id [{0}]", cotizacionWeb.getIdCotizacion());
+            CONSOLE.log(Level.INFO, "Se eliminaron los datos encontrados en la tabla de DETALLE_COTIZACION_WEB, para la cotizacion con id [{0}]", cotizacionWeb.getIdCotizacion());
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Ocurrio un error al eliminar los datos del detalle de cotizacion", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al eliminar los datos del detalle de cotizacion", e);
             mostrarMensaje("Error", "Ocurrió un error al eliminar los registros actuales de la cotización.", true, false, false);
             return;
         }
@@ -1025,13 +1033,13 @@ public class VentasMBean implements Serializable {
 
                 try {
                     detalleCotizacionWebFacade.create(detWeb);
-                    log.log(Level.INFO, "Se agrego detalle con id [{0}] a la cotizacion con id [{1}]", new Object[]{detWeb.getIdDetalleCotizacion(), cotizacionWeb.getIdCotizacion()});
+                    CONSOLE.log(Level.INFO, "Se agrego detalle con id [{0}] a la cotizacion con id [{1}]", new Object[]{detWeb.getIdDetalleCotizacion(), cotizacionWeb.getIdCotizacion()});
 
                     cotizacion.getDetalle().add(new DetalleCotizacionWebDTO(detWeb.getCantidad(), cotizacion.getIdCotizacion().intValue(), d.getDetalleCotizacionSAPPK().getLineNum(),
                             detWeb.getIdDetalleCotizacion(), detWeb.getReferencia(), detWeb.getBodega(), d.getTaxCode(), d.getLineStatus().toString()));
                     saldosAcumulados.add(0, new SaldoItemDTO(d.getQuantity().intValue(), d.getQuantity().intValue(), getObtenerDescuento(d.getItemCode()), d.getItemCode(), d.getWhsCode()));
                 } catch (Exception e) {
-                    log.log(Level.SEVERE, "", e);
+                    CONSOLE.log(Level.SEVERE, "", e);
                     mostrarMensaje("Error", "No se pudo continuar con la obtención de los datos de la cotización.", true, false, false);
                     return;
                 }
@@ -1045,7 +1053,7 @@ public class VentasMBean implements Serializable {
             if (!userSessionInfoMBean.validarPermisoUsuario(Objetos.DEMOSTRACION, Acciones.MODIFICAR) && ventasSessionMBean.isModificando()
                     && (ventasSessionMBean.getNumeroCotizacion() == null || ventasSessionMBean.getNumeroCotizacion() == 0)) {
                 mostrarMensaje("Error", "Usted no tiene permisos para modificar demostraciones.", true, false, false);
-                log.log(Level.SEVERE, "Usted no tiene permiso para modificar demostraciones");
+                CONSOLE.log(Level.SEVERE, "Usted no tiene permiso para modificar demostraciones");
                 return;
             }
         }
@@ -1053,7 +1061,7 @@ public class VentasMBean implements Serializable {
         saldos = new ArrayList<>();
         if (referencia == null || referencia.isEmpty()) {
             mostrarMensaje("Error", "Debe ingresar la referencia que quiere agregar.", true, false, false);
-            log.log(Level.SEVERE, "Debe ingresar la referencia que quiere agregar");
+            CONSOLE.log(Level.SEVERE, "Debe ingresar la referencia que quiere agregar");
             return;
         }
 
@@ -1061,7 +1069,7 @@ public class VentasMBean implements Serializable {
 
         if (referencia.length() < 20 || referencia.length() > 20) {
             mostrarMensaje("Error", "La referencia ingresada no es valida.", true, false, false);
-            log.log(Level.SEVERE, "La referencia ingresada no es valida");
+            CONSOLE.log(Level.SEVERE, "La referencia ingresada no es valida");
             return;
         }
 
@@ -1088,7 +1096,7 @@ public class VentasMBean implements Serializable {
             dlgSaldos = true;
         } else {
             mostrarMensaje("Error", "No se encontró saldo de la referencia en los almacenes.", true, false, false);
-            log.log(Level.SEVERE, "No se encontro saldo de la referencia en los almacenes");
+            CONSOLE.log(Level.SEVERE, "No se encontro saldo de la referencia en los almacenes");
             dlgSaldos = false;
             return;
         }
@@ -1108,7 +1116,7 @@ public class VentasMBean implements Serializable {
     }
 
     private void obtenerGaleria() {
-        log.log(Level.INFO, "Se estan obteniendo el catalogo de imagenes de la referencia {0} para la venta", referencia);
+        CONSOLE.log(Level.INFO, "Se estan obteniendo el catalogo de imagenes de la referencia {0} para la venta", referencia);
 
         /*1. Se obtiene la galeria de imagenes*/
         imagenes = new ArrayList<>();
@@ -1175,7 +1183,7 @@ public class VentasMBean implements Serializable {
         limpiarDatosSaldo();
         if (!sb.toString().isEmpty()) {
             mostrarMensaje("Error", sb.toString(), true, false, false);
-            log.log(Level.SEVERE, sb.toString());
+            CONSOLE.log(Level.SEVERE, sb.toString());
         }
     }
 
@@ -1183,7 +1191,7 @@ public class VentasMBean implements Serializable {
         referencia = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("referencia");
         almacen = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("almacen");
 
-        log.log(Level.INFO, "Se selecciono la referencia {0} del almacen {1}, para eliminar del proceso de venta", new Object[]{referencia, almacen});
+        CONSOLE.log(Level.INFO, "Se selecciono la referencia {0} del almacen {1}, para eliminar del proceso de venta", new Object[]{referencia, almacen});
         obtenerSaldos();
     }
 
@@ -1200,7 +1208,7 @@ public class VentasMBean implements Serializable {
         }
 
         if (ventasSessionMBean.getNumeroCotizacion() != null && ventasSessionMBean.getNumeroCotizacion() != 0 && !ventaCorrompida) {
-            log.log(Level.SEVERE, "Pidiendo confirmacion al usuario de que quiere dejar de modificar la cotizacion");
+            CONSOLE.log(Level.SEVERE, "Pidiendo confirmacion al usuario de que quiere dejar de modificar la cotizacion");
             dlgConfirmarEliminacion = true;
             return;
         } else if (ventasSessionMBean.getNumeroCotizacion() != null && ventasSessionMBean.getNumeroCotizacion() != 0 && ventaCorrompida) {
@@ -1223,12 +1231,12 @@ public class VentasMBean implements Serializable {
                 if (det != null && det.getIdDetalleCotizacion() != null && det.getIdDetalleCotizacion() != 0) {
                     try {
                         detalleCotizacionWebFacade.remove(det);
-                        log.log(Level.INFO, "Se elimino la referencia [{0}], del almacen [{1}], con id de detalle [{2}]", new Object[]{referencia, almacen, det.getIdDetalleCotizacion()});
+                        CONSOLE.log(Level.INFO, "Se elimino la referencia [{0}], del almacen [{1}], con id de detalle [{2}]", new Object[]{referencia, almacen, det.getIdDetalleCotizacion()});
                         cotizacion.getDetalle().remove(d);
                         break;
                     } catch (Exception e) {
                         mostrarMensaje("Error", "No se pudo eliminar la referencia solicitada.", true, false, false);
-                        log.log(Level.SEVERE, "Ocurrio un error al eliminar la referencia", e);
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al eliminar la referencia", e);
                         return;
                     }
                 }
@@ -1250,10 +1258,10 @@ public class VentasMBean implements Serializable {
 
             try {
                 cotizacionWebFacade.create(cot);
-                log.log(Level.INFO, "Se creo la cotizacion con id {0}", cot.getIdCotizacion());
+                CONSOLE.log(Level.INFO, "Se creo la cotizacion con id {0}", cot.getIdCotizacion());
                 cotizacion = new CotizacionWebDTO(cot.getIdVendedor(), cot.getIdCotizacion(), cot.getSucursal(), cot.getEstado(), cot.getNitCliente(), cot.getFecha(), new ArrayList<DetalleCotizacionWebDTO>());
             } catch (Exception e) {
-                log.log(Level.SEVERE, "Ocurrio un error al crear cotizacion", e);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear cotizacion", e);
                 mostrarMensaje("Error", "Ocurrió un error al registrar los datos de la venta.", true, false, false);
                 return;
             }
@@ -1280,9 +1288,9 @@ public class VentasMBean implements Serializable {
 
                                 try {
                                     detalleCotizacionWebFacade.edit(detalle);
-                                    log.log(Level.INFO, "Se modifico el detalle de id {0} para la cotizacion con id {1}", new Object[]{detalle.getIdDetalleCotizacion(), cotizacion.getIdCotizacion()});
+                                    CONSOLE.log(Level.INFO, "Se modifico el detalle de id {0} para la cotizacion con id {1}", new Object[]{detalle.getIdDetalleCotizacion(), cotizacion.getIdCotizacion()});
                                 } catch (Exception e) {
-                                    log.log(Level.SEVERE, "Ocurrio un error al modificar el detalle de id {0} para la cotizacion con id {1}. Error {2}",
+                                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al modificar el detalle de id {0} para la cotizacion con id {1}. Error {2}",
                                             new Object[]{detalle.getIdDetalleCotizacion(), cotizacion.getIdCotizacion(), e.getMessage()});
                                     return;
                                 }
@@ -1296,11 +1304,11 @@ public class VentasMBean implements Serializable {
 
                                 try {
                                     detalleCotizacionWebFacade.remove(detalle);
-                                    log.log(Level.INFO, "Se elimino el detalle de id [{0}] para la cotizacion con id [{1}]", new Object[]{detalle.getIdDetalleCotizacion(), cotizacion.getIdCotizacion()});
+                                    CONSOLE.log(Level.INFO, "Se elimino el detalle de id [{0}] para la cotizacion con id [{1}]", new Object[]{detalle.getIdDetalleCotizacion(), cotizacion.getIdCotizacion()});
                                     cotizacion.getDetalle().remove(i);
                                     i--;
                                 } catch (Exception e) {
-                                    log.log(Level.SEVERE, "Ocurrio un error al eliminar el detalle de id [{0}] para la cotizacion con id [{1}]. Error [{2}]",
+                                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al eliminar el detalle de id [{0}] para la cotizacion con id [{1}]. Error [{2}]",
                                             new Object[]{detalle.getIdDetalleCotizacion(), cotizacion.getIdCotizacion(), e.getMessage()});
                                     return;
                                 }
@@ -1334,11 +1342,11 @@ public class VentasMBean implements Serializable {
 
         try {
             detalleCotizacionWebFacade.create(detalle);
-            log.log(Level.INFO, "Se creo detalle con el id {0}", detalle.getIdDetalleCotizacion());
+            CONSOLE.log(Level.INFO, "Se creo detalle con el id {0}", detalle.getIdDetalleCotizacion());
             cotizacion.getDetalle().add(new DetalleCotizacionWebDTO(detalle.getCantidad(), cotizacion.getIdCotizacion().intValue(), null, detalle.getIdDetalleCotizacion(),
                     detalle.getReferencia(), detalle.getBodega()));
         } catch (Exception e) {
-            log.log(Level.SEVERE, "", e);
+            CONSOLE.log(Level.SEVERE, "", e);
         }
     }
 
@@ -1351,7 +1359,7 @@ public class VentasMBean implements Serializable {
                 limpiar();
             } catch (Exception e) {
                 mostrarMensaje("Error", "Ocurrió un error al mdodificar la cotización.", true, false, false);
-                log.log(Level.SEVERE, "Ocurrio un error al modificar la cotizacion. Error {0}", e.getMessage());
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al modificar la cotizacion. Error {0}", e.getMessage());
                 return null;
             }
         } else if (cotizacion != null && cotizacion.getIdCotizacion() != null && cotizacion.getIdCotizacion() != 0) {
@@ -1372,11 +1380,11 @@ public class VentasMBean implements Serializable {
 
                 try {
                     cotizacionWebFacade.edit(cot);
-                    log.log(Level.INFO, "Se marco la cotizaicon con id {0}, con el estado CC -> COTIZACION CANCELADA", cotizacion.getIdCotizacion());
+                    CONSOLE.log(Level.INFO, "Se marco la cotizaicon con id {0}, con el estado CC -> COTIZACION CANCELADA", cotizacion.getIdCotizacion());
                     mostrarMensaje("Éxito", "El proceso de creación de la cotización fue cancelado correctamente.", false, true, false);
                     limpiar();
                 } catch (Exception e) {
-                    log.log(Level.SEVERE, "Error al cancelar la cotizacion con id {0}. Error {1}", new Object[]{cotizacion.getIdCotizacion(), e.getMessage()});
+                    CONSOLE.log(Level.SEVERE, "Error al cancelar la cotizacion con id {0}. Error {1}", new Object[]{cotizacion.getIdCotizacion(), e.getMessage()});
                     mostrarMensaje("Error", "No se pudo cancelar el proceso de creación de la cotización.", true, false, false);
                     return;
                 }
@@ -1387,20 +1395,20 @@ public class VentasMBean implements Serializable {
     public void seleccionarImprimir() {
         if (imprimir) {
             imprimir = false;
-            log.log(Level.INFO, "No se imprimira la cotizacion {0}", ventasSessionMBean.getNumeroCotizacion());
+            CONSOLE.log(Level.INFO, "No se imprimira la cotizacion {0}", ventasSessionMBean.getNumeroCotizacion());
         } else {
             imprimir = true;
-            log.log(Level.INFO, "Se imprimira la cotizacion {0}", ventasSessionMBean.getNumeroCotizacion());
+            CONSOLE.log(Level.INFO, "Se imprimira la cotizacion {0}", ventasSessionMBean.getNumeroCotizacion());
         }
     }
 
     public void seleccionarEnivar() {
         if (enviar) {
             enviar = false;
-            log.log(Level.INFO, "No se mandara la cotizacion {0} por correo electronico", ventasSessionMBean.getNumeroCotizacion());
+            CONSOLE.log(Level.INFO, "No se mandara la cotizacion {0} por correo electronico", ventasSessionMBean.getNumeroCotizacion());
         } else {
             enviar = true;
-            log.log(Level.INFO, "Se mandara la cotizacion {0} por correo electronico", ventasSessionMBean.getNumeroCotizacion());
+            CONSOLE.log(Level.INFO, "Se mandara la cotizacion {0} por correo electronico", ventasSessionMBean.getNumeroCotizacion());
         }
     }
 
@@ -1445,7 +1453,7 @@ public class VentasMBean implements Serializable {
                     quotation.getQuotationsDocumentLines().add(line);
                 }
             } else {
-                log.log(Level.SEVERE, "No se puede continuar debido a que no se encontraton items en la cotizacion");
+                CONSOLE.log(Level.SEVERE, "No se puede continuar debido a que no se encontraton items en la cotizacion");
                 mostrarMensaje("Error", "No se puede continuar debido a que no se encontraron ítems en la cotización.", true, false, false);
                 return;
             }
@@ -1493,7 +1501,7 @@ public class VentasMBean implements Serializable {
                 quotation.setAddressExtension(addressExtension);
             } else {
                 mostrarMensaje("Error", "No se encontraron datos necesarios para poder actualizar la cotización.", true, false, false);
-                log.log(Level.SEVERE, "No se encontraron datos necesarios para poder actualizar la cotizacion");
+                CONSOLE.log(Level.SEVERE, "No se encontraron datos necesarios para poder actualizar la cotizacion");
                 return;
             }
 
@@ -1501,16 +1509,16 @@ public class VentasMBean implements Serializable {
                 QuotationsClient client = new QuotationsClient(applicationMBean.obtenerValorPropiedad("url.bcs.rest"));
                 GenericRESTResponseDTO res = client.editQuotation(quotation);
                 if (res.getValor() != null && res.getValor() != 0) {
-                    log.log(Level.INFO, "Se modifico la cotizacion correctamente");
+                    CONSOLE.log(Level.INFO, "Se modifico la cotizacion correctamente");
                     mostrarMensaje("Éxito", "Se modifico la cotización correctamente.", false, true, false);
                 } else {
                     mostrarMensaje("Error", "Ocurrió un error al modificar la cotización. " + res.getMensaje(), true, false, false);
-                    log.log(Level.SEVERE, "Ocurrio un error al modificar la cotizacion. Error {0}", res.getMensaje());
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al modificar la cotizacion. Error {0}", res.getMensaje());
                     return;
                 }
             } catch (Exception e) {
                 mostrarMensaje("Error", "Ocurrió un error al modificar la cotización. " + e.getMessage(), true, false, false);
-                log.log(Level.SEVERE, "Ocurrio un error al modificar la cotizacion. Error {0}", e.getMessage());
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al modificar la cotizacion. Error {0}", e.getMessage());
                 return;
             }
         }
@@ -1541,7 +1549,7 @@ public class VentasMBean implements Serializable {
 
                 try {
                     cotizacionWebFacade.edit(cot);
-                    log.log(Level.INFO, "Se marco la cotizacion con el estado CT, a la cotizacion con id [{0}]", ventasSessionMBean.getCotizacion().getIdCotizacion());
+                    CONSOLE.log(Level.INFO, "Se marco la cotizacion con el estado CT, a la cotizacion con id [{0}]", ventasSessionMBean.getCotizacion().getIdCotizacion());
 
                     s = generarDocumento(ventasSessionMBean.getNumeroCotizacion().intValue(), 1, ventasSessionMBean.getNumeroCotizacion().toString(), "cotizacion",
                             userSessionInfoMBean.getAlmacen(), null, imprimir, null);
@@ -1554,7 +1562,7 @@ public class VentasMBean implements Serializable {
                     ventasSessionMBean.setExitoCotizacion(false);
                     ventasSessionMBean.setNumeroCotizacion(0L);
                 } catch (Exception e) {
-                    log.log(Level.SEVERE, "Ocurrio un error al actualizar el estado de la cotizacion con id [{0}]. Error [{1}].",
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar el estado de la cotizacion con id [{0}]. Error [{1}].",
                             new Object[]{ventasSessionMBean.getCotizacion().getIdCotizacion(), e.getMessage()});
                 }
             }
@@ -1580,7 +1588,7 @@ public class VentasMBean implements Serializable {
 
         if (serie == null || serie.getCode() == null || serie.getCode().isEmpty()) {
             mostrarMensaje("Error", "La sucursal donde inicio sesión no posee serie de numeración por lo que no está permitido factura desde esta.", true, false, false);
-            log.log(Level.SEVERE, "La sucursal donde inicio sesion no posee serie de numeracion por lo que no esta permitido factura desde esta");
+            CONSOLE.log(Level.SEVERE, "La sucursal donde inicio sesion no posee serie de numeracion por lo que no esta permitido factura desde esta");
             return null;
         }
 
@@ -1613,7 +1621,7 @@ public class VentasMBean implements Serializable {
 
         if (!sb.toString().isEmpty()) {
             mostrarMensaje("Error", "No se encontro saldo de los siguientes ítems:" + sb.toString(), true, false, false);
-            log.log(Level.SEVERE, "No se encontro saldo de los siguientes items{0}", sb.toString());
+            CONSOLE.log(Level.SEVERE, "No se encontro saldo de los siguientes items{0}", sb.toString());
             return null;
         }
 
@@ -1639,7 +1647,7 @@ public class VentasMBean implements Serializable {
                 case 1:
                     if (valorPendienteFactura.compareTo(new BigDecimal(0)) > 0) {
                         mostrarMensaje("Error", "No puede continuar, debido a que no se han ingresado los pagos que cubran el valor total de la factura.", true, false, false);
-                        log.log(Level.SEVERE, "No puede continuar, debido a que no se han ingresado los pagos que cubran el valor total de la factura");
+                        CONSOLE.log(Level.SEVERE, "No puede continuar, debido a que no se han ingresado los pagos que cubran el valor total de la factura");
                         return;
                     }
 
@@ -1650,12 +1658,12 @@ public class VentasMBean implements Serializable {
                 case 2:
                     if (detalleVenta.getCantidad() != detalleVenta.getCantidadUsada()) {
                         mostrarMensaje("Error", "Debe seleccionar las ubicaciones de donde se extraerá la mercancía.", true, false, false);
-                        log.log(Level.SEVERE, "Debe seleccionar las ubicaciones de donde se extraera la mercancia");
+                        CONSOLE.log(Level.SEVERE, "Debe seleccionar las ubicaciones de donde se extraera la mercancia");
                         return;
                     }
                     if (detalleVenta.getEstado() == null || detalleVenta.getEstado().isEmpty() || detalleVenta.getEstado().equals("O")) {
                         mostrarMensaje("Error", "Seleccione el estado de la referencia.", true, false, false);
-                        log.log(Level.SEVERE, "Seleccione el estado de la referencia");
+                        CONSOLE.log(Level.SEVERE, "Seleccione el estado de la referencia");
                         return;
                     }
                     if (cotizacion.getDetalle().size() - 1 > posicionItem) {
@@ -1666,7 +1674,7 @@ public class VentasMBean implements Serializable {
                         referencia = null;
                         imagenes = new ArrayList<>();
 
-                        log.log(Level.INFO, "No se encontraron mas referencias para validar, se sigue al siguiente paso");
+                        CONSOLE.log(Level.INFO, "No se encontraron mas referencias para validar, se sigue al siguiente paso");
                         pasosFacturacion++;
                         obtenerAsesoresVenta();
                     }
@@ -1674,7 +1682,7 @@ public class VentasMBean implements Serializable {
                 case 3:
                     if (asesores == 0) {
                         mostrarMensaje("Error", "Debe seleccionar al menos un asesor que comisionara.", true, false, false);
-                        log.log(Level.SEVERE, "Debe seleccionar al menos un asesor que comisionara");
+                        CONSOLE.log(Level.SEVERE, "Debe seleccionar al menos un asesor que comisionara");
                         return;
                     }
                     pasosFacturacion++;
@@ -1693,22 +1701,22 @@ public class VentasMBean implements Serializable {
                     case 2:
                         if (voucher == null || voucher.isEmpty()) {
                             mostrarMensaje("Error", "Ingrese el número del voucher.", true, false, false);
-                            log.log(Level.SEVERE, "Ingrese el numero del voucher");
+                            CONSOLE.log(Level.SEVERE, "Ingrese el numero del voucher");
                             return;
                         }
                         if (digitos == null || digitos.isEmpty()) {
                             mostrarMensaje("Error", "Ingrese los últimos dígitos de la tarjeta.", true, false, false);
-                            log.log(Level.SEVERE, "Ingrese los ultimos digitos de la tarjeta");
+                            CONSOLE.log(Level.SEVERE, "Ingrese los ultimos digitos de la tarjeta");
                             return;
                         }
                         if (valorTarjeta == null || valorTarjeta.equals(0)) {
                             mostrarMensaje("Error", "Ingrese el valor a pagar.", true, false, false);
-                            log.log(Level.SEVERE, "Ingrese el valor a pagar");
+                            CONSOLE.log(Level.SEVERE, "Ingrese el valor a pagar");
                             return;
                         }
                         if (valorTarjeta.compareTo(valorPendienteFactura) > 0) {
                             mostrarMensaje("Error", "El valor que ingreso para el pago es mayor al que se debe.", true, false, false);
-                            log.log(Level.SEVERE, "El valor que ingreso para el pago es mayor al que se debe");
+                            CONSOLE.log(Level.SEVERE, "El valor que ingreso para el pago es mayor al que se debe");
                             return;
                         }
 
@@ -1733,7 +1741,7 @@ public class VentasMBean implements Serializable {
                     obtenerAprobadores();
                     if (autorizadoresPagoFactura == null || autorizadoresPagoFactura.isEmpty()) {
                         mostrarMensaje("Error", "No se encontraron personas con autorización para aprobar la factura por este medio de pago.", true, false, false);
-                        log.log(Level.SEVERE, "No se encontraron personas con autorizacion para aprobar la factura por este medio de pago");
+                        CONSOLE.log(Level.SEVERE, "No se encontraron personas con autorizacion para aprobar la factura por este medio de pago");
                         return;
                     }
                 } else if (pasosPago == 2) {
@@ -1746,7 +1754,7 @@ public class VentasMBean implements Serializable {
 
                     if (aprobadoresSeleccionados == 0) {
                         mostrarMensaje("Error", "Debe seleccionar al menos un aprobador.", true, false, false);
-                        log.log(Level.SEVERE, "Debe seleccionar al menos un aprobador");
+                        CONSOLE.log(Level.SEVERE, "Debe seleccionar al menos un aprobador");
                         return;
                     }
                     obtenerCondicionesPago();
@@ -1760,7 +1768,7 @@ public class VentasMBean implements Serializable {
 
     public void seleccionarMedioPago() {
         medioPago = Integer.parseInt(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("medioPago"));
-        log.log(Level.INFO, "Se selecciono el medio de pago: {0}", medioPago == 1 ? "Efectivo" : medioPago == 2 ? "Tarjetas" : medioPago == 3 ? "Cruces" : "Pendiente");
+        CONSOLE.log(Level.INFO, "Se selecciono el medio de pago: {0}", medioPago == 1 ? "Efectivo" : medioPago == 2 ? "Tarjetas" : medioPago == 3 ? "Cruces" : "Pendiente");
 
         if (autorizaciones == null || autorizaciones.isEmpty()) {
             valorPagoPendiente = new BigDecimal(0);
@@ -1798,14 +1806,14 @@ public class VentasMBean implements Serializable {
             }
         } else {
             mostrarMensaje("Error", "No se encontraron franquicias para los pagos con tarjetas.", true, false, false);
-            log.log(Level.SEVERE, "No se encontraron franquicias para los pagos con tarjetas");
+            CONSOLE.log(Level.SEVERE, "No se encontraron franquicias para los pagos con tarjetas");
             return;
         }
     }
 
     public void seleccionarFranquicia() {
         franquicia = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("franquicia").replace(".png", "");
-        log.log(Level.INFO, "Se selecciono la franquicia {0} para el pago", franquicia);
+        CONSOLE.log(Level.INFO, "Se selecciono la franquicia {0} para el pago", franquicia);
 
         obtenerSiguientePasoPago();
     }
@@ -1821,14 +1829,14 @@ public class VentasMBean implements Serializable {
             }
         } else {
             mostrarMensaje("Error", "No se encontraron bancos para la franquicia seleccionada.", true, false, false);
-            log.log(Level.SEVERE, "No se encontraron bancos para la franquicia seleccionada");
+            CONSOLE.log(Level.SEVERE, "No se encontraron bancos para la franquicia seleccionada");
             return;
         }
     }
 
     public void seleccionarBanco() {
         banco = Integer.parseInt(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("idBanco"));
-        log.log(Level.INFO, "Se selecciono el banco con id {0}", banco);
+        CONSOLE.log(Level.INFO, "Se selecciono el banco con id {0}", banco);
 
         obtenerSiguientePasoPago();
     }
@@ -1838,10 +1846,10 @@ public class VentasMBean implements Serializable {
 
         if (tarjeta == null || tarjeta.isEmpty()) {
             mostrarMensaje("Error", "No se ha seleccionado ningún tipo tarjeta.", true, false, false);
-            log.log(Level.SEVERE, "No se ha seleccionado ningun tipo tarjeta");
+            CONSOLE.log(Level.SEVERE, "No se ha seleccionado ningun tipo tarjeta");
             return;
         }
-        log.log(Level.INFO, "Se selecciono la tarjeta {0}, para el pago de la factura", tarjeta);
+        CONSOLE.log(Level.INFO, "Se selecciono la tarjeta {0}, para el pago de la factura", tarjeta);
 
         obtenerDatafonos();
     }
@@ -1863,7 +1871,7 @@ public class VentasMBean implements Serializable {
             }
         } else {
             mostrarMensaje("Error", "Seleccione uno de los tipos anteriores.", true, false, false);
-            log.log(Level.SEVERE, "Seleccione uno de los tipos anteriores");
+            CONSOLE.log(Level.SEVERE, "Seleccione uno de los tipos anteriores");
             pasosPago--;
             return;
         }
@@ -1871,7 +1879,7 @@ public class VentasMBean implements Serializable {
 
     public void seleccionarDatafono() {
         datafono = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("datafono");
-        log.log(Level.INFO, "Se selecciono el datafono {0} para el pago", datafono);
+        CONSOLE.log(Level.INFO, "Se selecciono el datafono {0} para el pago", datafono);
 
         aplicarPago();
     }
@@ -1881,7 +1889,7 @@ public class VentasMBean implements Serializable {
 
         if (saldoFavor == null || saldoFavor.compareTo(new BigDecimal(0)) <= 0) {
             saldoFavor = new BigDecimal(0);
-            log.log(Level.INFO, "No se encontro saldo a favor para el cliente con nit {0}", clienteSessionMBean.getClienteDto().getNit());
+            CONSOLE.log(Level.INFO, "No se encontro saldo a favor para el cliente con nit {0}", clienteSessionMBean.getClienteDto().getNit());
         }
     }
 
@@ -1891,10 +1899,10 @@ public class VentasMBean implements Serializable {
         for (AutorizadoresPagoFacturaDTO a : autorizadoresPagoFactura) {
             if (a.getCodigoVentas().equals(codigoVentaAprobador)) {
                 if (a.isSeleccionado()) {
-                    log.log(Level.INFO, "Se deselecciono el usuario con cedula #{0} para pedirle autorizacion por pago pendiente", a.getCedula());
+                    CONSOLE.log(Level.INFO, "Se deselecciono el usuario con cedula #{0} para pedirle autorizacion por pago pendiente", a.getCedula());
                     a.setSeleccionado(false);
                 } else {
-                    log.log(Level.INFO, "Se selecciono el usuario con cedula #{0} para pedirle autorizacion por pago pendiente", a.getCedula());
+                    CONSOLE.log(Level.INFO, "Se selecciono el usuario con cedula #{0} para pedirle autorizacion por pago pendiente", a.getCedula());
                     a.setSeleccionado(true);
                 }
             }
@@ -1906,10 +1914,10 @@ public class VentasMBean implements Serializable {
 
         if (id != null && id.equals(pagoTarjeta)) {
             pagoTarjeta = null;
-            log.log(Level.INFO, "Se deselecciono el pago con tarjeta con id {0}", id);
+            CONSOLE.log(Level.INFO, "Se deselecciono el pago con tarjeta con id {0}", id);
         } else {
             pagoTarjeta = id;
-            log.log(Level.INFO, "Se selecciono el pago con tarjeta con id {0}", id);
+            CONSOLE.log(Level.INFO, "Se selecciono el pago con tarjeta con id {0}", id);
         }
     }
 
@@ -1975,7 +1983,7 @@ public class VentasMBean implements Serializable {
                 case 2:
                     valor = valorTarjeta;
                     pagosTarjetas.add(0, new PagoTarjetaDTO(banco, Integer.parseInt(datafono), System.currentTimeMillis(), valorTarjeta, voucher, digitos, franquicia, tarjeta));
-                    log.log(Level.INFO, "Se registro el pago con tarjeta");
+                    CONSOLE.log(Level.INFO, "Se registro el pago con tarjeta");
                     banco = null;
                     valorTarjeta = null;
                     voucher = null;
@@ -1998,7 +2006,7 @@ public class VentasMBean implements Serializable {
         if (valor != null) {
             if (valor.compareTo(valorPendienteFactura) > 0) {
                 mostrarMensaje("Error", "El valor que ingreso para el pago es mayor al que se debe.", true, false, false);
-                log.log(Level.SEVERE, "El valor que ingreso para el pago es mayor al que se debe");
+                CONSOLE.log(Level.SEVERE, "El valor que ingreso para el pago es mayor al que se debe");
                 if (null != medioPago) {
                     switch (medioPago) {
                         case 1:
@@ -2062,18 +2070,18 @@ public class VentasMBean implements Serializable {
 
     public void seleccionarCondicionPago() {
         condicionPago = Integer.parseInt(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("condicionPago"));
-        log.log(Level.INFO, "Se selecciono la condicion de pago {0}", condicionPago);
+        CONSOLE.log(Level.INFO, "Se selecciono la condicion de pago {0}", condicionPago);
     }
 
     public void solicitarAprobacion() {
         if (valorPagoPendiente == null || valorPagoPendiente.equals(0)) {
             mostrarMensaje("Error", "Debe ingresar el valor que solicitara para este pago.", true, false, false);
-            log.log(Level.SEVERE, "Debe ingresar el valor que solicitara para este pago");
+            CONSOLE.log(Level.SEVERE, "Debe ingresar el valor que solicitara para este pago");
             return;
         }
         if (condicionPago == null || condicionPago == 0) {
             mostrarMensaje("Error", "Seleccione una condición de pago.", true, false, false);
-            log.log(Level.SEVERE, "Seleccione una condicion de pago");
+            CONSOLE.log(Level.SEVERE, "Seleccione una condicion de pago");
             return;
         }
 
@@ -2109,7 +2117,7 @@ public class VentasMBean implements Serializable {
                         SendHtmlEmailClient client = new SendHtmlEmailClient(applicationMBean.obtenerValorPropiedad("url.bcs.rest"));
                         client.enviarHtmlEmail("Solicitud aprobación FV", "Solicitud aprobación FV", a.getCorreo(), "autorizacion_pago_factura", null, params);
                     } catch (Exception e) {
-                        log.log(Level.SEVERE, "Ocurrio un error al mandar la solicitud de aprobacion", e);
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al mandar la solicitud de aprobacion", e);
                         mostrarMensaje("Error", "Ocurrión un error al mandar la solicitud de aprobación.", true, false, false);
                         return;
                     }
@@ -2182,7 +2190,7 @@ public class VentasMBean implements Serializable {
                     }
                 } else {
                     mostrarMensaje("Error", "No se encontraron ubicaciones para el ítem.", true, false, false);
-                    log.log(Level.SEVERE, "No se encontraron ubicaciones para el item");
+                    CONSOLE.log(Level.SEVERE, "No se encontraron ubicaciones para el item");
                     return;
                 }
             } else {
@@ -2200,12 +2208,12 @@ public class VentasMBean implements Serializable {
         if (pasosFacturacion == 2) {
             if (detalleVenta.getCantidad() != detalleVenta.getCantidadUsada()) {
                 mostrarMensaje("Error", "Debe seleccionar las ubicaciones de donde se extraerá la mercancía.", true, false, false);
-                log.log(Level.SEVERE, "Debe seleccionar las ubicaciones de donde se extraera la mercancia");
+                CONSOLE.log(Level.SEVERE, "Debe seleccionar las ubicaciones de donde se extraera la mercancia");
                 return;
             }
             if (detalleVenta.getEstado() == null || detalleVenta.getEstado().isEmpty() || detalleVenta.getEstado().equals("O")) {
                 mostrarMensaje("Error", "Seleccione el estado de la referencia.", true, false, false);
-                log.log(Level.SEVERE, "Seleccione el estado de la referencia");
+                CONSOLE.log(Level.SEVERE, "Seleccione el estado de la referencia");
                 return;
             }
 
@@ -2228,18 +2236,18 @@ public class VentasMBean implements Serializable {
                         cotizacion.getDetalle().set(posicionItem, detalleVenta);
                         detalleVenta.setCantidadUsada(detalleVenta.getCantidadUsada() + 1);
 
-                        log.log(Level.INFO, "Se agrego una unidad de la ubicacion {0} del almace {1} para la referencia {2}, en el proceso de facturacion",
+                        CONSOLE.log(Level.INFO, "Se agrego una unidad de la ubicacion {0} del almace {1} para la referencia {2}, en el proceso de facturacion",
                                 new Object[]{ubicacion, detalleVenta.getBodega(), detalleVenta.getReferencia()});
                     } else {
                         mostrarMensaje("Error", "No puede asignar más de la cantidad disponible de la ubicación.", true, false, false);
-                        log.log(Level.SEVERE, "No puede asignar mas de la cantidad disponible de la ubicacion");
+                        CONSOLE.log(Level.SEVERE, "No puede asignar mas de la cantidad disponible de la ubicacion");
                         return;
                     }
                 }
             }
         } else {
             mostrarMensaje("Error", "No puede asignar más de la cantidad necesaria para el ítem.", true, false, false);
-            log.log(Level.SEVERE, "No puede asignar mas de la cantidad necesaria para el item");
+            CONSOLE.log(Level.SEVERE, "No puede asignar mas de la cantidad necesaria para el item");
             return;
         }
     }
@@ -2255,18 +2263,18 @@ public class VentasMBean implements Serializable {
                         cotizacion.getDetalle().set(posicionItem, detalleVenta);
                         detalleVenta.setCantidadUsada(detalleVenta.getCantidadUsada() - 1);
 
-                        log.log(Level.INFO, "Se quito una unidad de la ubicacion {0} del almace {1} para la referencia {2}, en el proceso de facturacion",
+                        CONSOLE.log(Level.INFO, "Se quito una unidad de la ubicacion {0} del almace {1} para la referencia {2}, en el proceso de facturacion",
                                 new Object[]{ubicacion, detalleVenta.getBodega(), detalleVenta.getReferencia()});
                     } else {
                         mostrarMensaje("Error", "No puede quitar más de 0.", true, false, false);
-                        log.log(Level.SEVERE, "No puede asignar mas de 0");
+                        CONSOLE.log(Level.SEVERE, "No puede asignar mas de 0");
                         return;
                     }
                 }
             }
         } else {
             mostrarMensaje("Error", "No puede quitar más de 0.", true, false, false);
-            log.log(Level.SEVERE, "No puede asignar mas de 0");
+            CONSOLE.log(Level.SEVERE, "No puede asignar mas de 0");
             return;
         }
     }
@@ -2279,12 +2287,12 @@ public class VentasMBean implements Serializable {
             if ((userSessionInfoMBean.getAlmacen().equals("0203") && !detalleVenta.getBodega().equals("0821"))
                     || (userSessionInfoMBean.getAlmacen().equals("0301") && !detalleVenta.getBodega().equals("0831"))) {
                 mostrarMensaje("Error", "No puede asignar el estado: Despachado - Entrega inmediata, porque el ítem no sale del mismo almacén donde inicio sesión.", true, false, false);
-                log.log(Level.SEVERE, "No puede asignar el estado: Despachado - Entrega inmediata, porque el item no sale del mismo almacen donde inicio sesion");
+                CONSOLE.log(Level.SEVERE, "No puede asignar el estado: Despachado - Entrega inmediata, porque el item no sale del mismo almacen donde inicio sesion");
                 return;
             }
         }
 
-        log.log(Level.INFO, "Se selecciono el estado {0}, para la referencia {1} del almacen {2}", new Object[]{estado, detalleVenta.getReferencia(), detalleVenta.getBodega()});
+        CONSOLE.log(Level.INFO, "Se selecciono el estado {0}, para la referencia {1} del almacen {2}", new Object[]{estado, detalleVenta.getReferencia(), detalleVenta.getBodega()});
         detalleVenta.setEstado(estado);
         cotizacion.getDetalle().set(posicionItem, detalleVenta);
     }
@@ -2330,7 +2338,7 @@ public class VentasMBean implements Serializable {
     public void cambiarTagAsesor() {
         tabAsesor = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("tabAsesor");
 
-        log.log(Level.INFO, "Se selecciono el tag {0}", tabAsesor);
+        CONSOLE.log(Level.INFO, "Se selecciono el tag {0}", tabAsesor);
     }
 
     public void seleccionarAsesor() {
@@ -2341,14 +2349,14 @@ public class VentasMBean implements Serializable {
                 if (e.isAsesorSeleccionado()) {
                     e.setAsesorSeleccionado(false);
                     asesores--;
-                    log.log(Level.INFO, "Se selecciono el asesor {0}, para no comisionar en la factura que se esta creando", asesor);
+                    CONSOLE.log(Level.INFO, "Se selecciono el asesor {0}, para no comisionar en la factura que se esta creando", asesor);
                 } else if (asesores < 5) {
                     e.setAsesorSeleccionado(true);
                     asesores++;
-                    log.log(Level.INFO, "Se selecciono el asesor {0}, para comisionar en la factura que se esta creando", asesor);
+                    CONSOLE.log(Level.INFO, "Se selecciono el asesor {0}, para comisionar en la factura que se esta creando", asesor);
                 } else {
                     mostrarMensaje("Error", "No puede seleccionar más de 5 asesores para la comisión.", true, false, false);
-                    log.log(Level.SEVERE, "No puede seleccionar mas de 5 asesores para la comision");
+                    CONSOLE.log(Level.SEVERE, "No puede seleccionar mas de 5 asesores para la comision");
                 }
                 break;
             }
@@ -2369,7 +2377,7 @@ public class VentasMBean implements Serializable {
 
     public void seleccionarDecorador() {
         decorador = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("decorador");
-        log.log(Level.SEVERE, "Se selecciono el decorador {0} para la factura", decorador);
+        CONSOLE.log(Level.SEVERE, "Se selecciono el decorador {0} para la factura", decorador);
     }
 
     public void validarFacturar() {
@@ -2387,14 +2395,14 @@ public class VentasMBean implements Serializable {
         dlgCrearFactura = false;
         if (comentarioFactura == null || comentarioFactura.isEmpty()) {
             mostrarMensaje("Error", "Debe ingresar un comentario para poder continuar.", true, false, false);
-            log.log(Level.SEVERE, "Debe ingresar un comentario para poder continuar");
+            CONSOLE.log(Level.SEVERE, "Debe ingresar un comentario para poder continuar");
             ventasSessionMBean.setFacturando(true);
             return;
         }
 
         SesionSAPB1WSDTO sesionSAPDTO = applicationMBean.obtenerSesionSAP(userSessionInfoMBean.getUsuario());
         if (sesionSAPDTO == null) {
-            log.log(Level.SEVERE, "No fue posible iniciar una sesion en SAP B1WS.");
+            CONSOLE.log(Level.SEVERE, "No fue posible iniciar una sesion en SAP B1WS.");
             mostrarMensaje("Error", "No fue posible iniciar una sesión en SAP B1WS.", true, false, false);
             ventasSessionMBean.setFacturando(true);
             return;
@@ -2422,7 +2430,7 @@ public class VentasMBean implements Serializable {
 
         if (parametros == null || parametros.length == 0) {
             mostrarMensaje("Error", "No fue posible obtener los parametros de: Logistica, Ventas, Proyecto, etc...", true, false, false);
-            log.log(Level.SEVERE, "No fue posible obtener los parametro de: Logistica, Ventas, Proyecto, etc...");
+            CONSOLE.log(Level.SEVERE, "No fue posible obtener los parametro de: Logistica, Ventas, Proyecto, etc...");
             ventasSessionMBean.setFacturando(true);
             return;
         }
@@ -2475,7 +2483,7 @@ public class VentasMBean implements Serializable {
 
                     documentLine.setItemCode(d.getReferencia());
                     documentLine.setLineNum(contador);
-                    documentLine.setPrice(baruGenericMBean.obtenerPrecioVenta(d.getReferencia()).doubleValue());
+                    documentLine.setPrice(new BigDecimal(baruGenericMBean.obtenerPrecioVenta(d.getReferencia())));
                     documentLine.setQuantity(d.getCantidad());
                     documentLine.setWhsCode(d.getBodega());
                     documentLine.setShippingStatus(d.getEstado());
@@ -2526,7 +2534,7 @@ public class VentasMBean implements Serializable {
                     }
 
                     if (res.getValor() != null && res.getValor() != 0) {
-                        log.log(Level.INFO, "Se creo la factura con numero: [{0}]", res.getValor());
+                        CONSOLE.log(Level.INFO, "Se creo la factura con numero: [{0}]", res.getValor());
                         FacturaSAP factura = facturaSAPFacade.find(res.getValor());
 
                         /*Se crea el recibo de caja si es necesario*/
@@ -2535,9 +2543,9 @@ public class VentasMBean implements Serializable {
                         Long numeroEntrada = null;
                         if ((reciboCaja == null || reciboCaja == 0) && (valorCruce == null || valorCruce.equals(0))) {
                             mostrarMensaje("Error", "Ocurrió un error al crear el recibo de caja para la factura.", true, false, false);
-                            log.log(Level.SEVERE, "Ocurrio un error al crear el recibo de caja para la factura");
+                            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el recibo de caja para la factura");
                         } else {
-                            log.log(Level.INFO, "Se creo el recibo de caja numero {0}", reciboCaja);
+                            CONSOLE.log(Level.INFO, "Se creo el recibo de caja numero {0}", reciboCaja);
                         }
 
                         ///*Se valida si hay referencias en consignacion - Preguntar si este tipo de factura aplica en el desarrollo*/
@@ -2558,6 +2566,7 @@ public class VentasMBean implements Serializable {
                                 crearOrdenVenta(factura);
                             }
                         }
+                        crearAsiento(factura);
 
                         //TODO: se debe mandar a imprimir los documentos
                         List<String[]> documentosRelacionados = new ArrayList<>();
@@ -2582,7 +2591,7 @@ public class VentasMBean implements Serializable {
                         return;
                     }
                 } catch (Exception e) {
-                    log.log(Level.SEVERE, "", e);
+                    CONSOLE.log(Level.SEVERE, "", e);
                     mostrarMensaje("Error", e.getMessage(), true, false, false);
                     ventasSessionMBean.setFacturando(true);
                     return;
@@ -2652,10 +2661,10 @@ public class VentasMBean implements Serializable {
                         ventasSessionMBean.setFacturando(true);
                         return 0L;
                     }
-                    log.log(Level.INFO, "Se creo el recibo de caja con numero: [{0}]", res.getValor());
+                    CONSOLE.log(Level.INFO, "Se creo el recibo de caja con numero: [{0}]", res.getValor());
                     return res.getValor().longValue();
                 } catch (Exception e) {
-                    log.log(Level.INFO, "No se agregaron pagos a la factura, por lo tanto no se generara recibo de caja ", e);
+                    CONSOLE.log(Level.INFO, "No se agregaron pagos a la factura, por lo tanto no se generara recibo de caja ", e);
                     return 0L;
                 }
             }
@@ -2715,10 +2724,10 @@ public class VentasMBean implements Serializable {
                 ventasSessionMBean.setFacturando(true);
                 return 0L;
             }
-            log.log(Level.INFO, "Se creo la entrada de mercancia con numero: [{0}]", res.getValor());
+            CONSOLE.log(Level.INFO, "Se creo la entrada de mercancia con numero: [{0}]", res.getValor());
             return res.getValor().longValue();
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Error al crear la entrada al almacen de clientes ", e);
+            CONSOLE.log(Level.SEVERE, "Error al crear la entrada al almacen de clientes ", e);
             return 0L;
         }
     }
@@ -2749,7 +2758,26 @@ public class VentasMBean implements Serializable {
                     detail.setItemCode(d.getItemCode());
                     detail.setLineNum(contador.longValue());
                     detail.setQuantity(Double.parseDouble(String.valueOf(d.getQuantity())));
-                    detail.setWarehouseCode(d.getWhsCode().contains("CL") ? d.getWhsCode() : "CL" + d.getWhsCode());
+
+                    Almacen warehouse = almacenFacade.find(d.getWhsCode().contains("CL") ? d.getWhsCode() : "CL" + d.getWhsCode());
+                    if (warehouse != null && warehouse.getWhsCode() != null && !warehouse.getWhsCode().isEmpty()) {
+                        detail.setWarehouseCode(d.getWhsCode().contains("CL") ? d.getWhsCode() : "CL" + d.getWhsCode());
+                    } else {
+                        warehouse = almacenFacade.find(d.getWhsCode());
+
+                        if (warehouse != null && warehouse.getWhsCode() != null && !warehouse.getWhsCode().isEmpty()) {
+                            if (warehouse.getuBodegaClientes() != null && !warehouse.getuBodegaClientes().isEmpty()) {
+                                detail.setWarehouseCode(warehouse.getuBodegaClientes());
+                            } else {
+                                CONSOLE.log(Level.SEVERE, "No se encontro el almacen de clientes para crear la orden de venta");
+                                return 0L;
+                            }
+                        } else {
+                            CONSOLE.log(Level.SEVERE, "No se encontro el almacen de clientes para crear la orden de venta");
+                            return 0L;
+                        }
+                    }
+
                     detail.setuLineNumFv(((Integer) d.getDetalleFacturaSAPPK().getLineNum()).longValue());
 
                     order.addLine(detail);
@@ -2766,15 +2794,59 @@ public class VentasMBean implements Serializable {
                     ventasSessionMBean.setFacturando(true);
                     return 0L;
                 }
-                log.log(Level.INFO, "Se creo la orden de venta con numero: [{0}]", res.getValor());
+                CONSOLE.log(Level.INFO, "Se creo la orden de venta con numero: [{0}]", res.getValor());
                 return res.getValor().longValue();
             } catch (Exception e) {
-                log.log(Level.SEVERE, "Error al crear la orden de venta de la factura ", e);
+                CONSOLE.log(Level.SEVERE, "Error al crear la orden de venta de la factura ", e);
                 return 0L;
             }
         } else {
-            log.log(Level.SEVERE, "No se encontraron datos de detalle para la factura");
+            CONSOLE.log(Level.SEVERE, "No se encontraron datos de detalle para la factura");
             return 0L;
+        }
+    }
+
+    private void crearAsiento(FacturaSAP factura) {
+        List<Object[]> asiento = facturaSAPFacade.consultarDatosAsientoConsignacionFactura(factura.getDocEntry().longValue());
+
+        /*Si hay productos en consignacion, realiza el asiento contable correspondiente*/
+        if (!asiento.isEmpty()) {
+            JournalEntryDTO journalEntryHeader = null;
+            for (Object[] row : asiento) {
+                if (journalEntryHeader == null) {
+                    journalEntryHeader = new JournalEntryDTO();
+                    journalEntryHeader.setDueDate((Date) row[0]);
+                    journalEntryHeader.setTaxDate((Date) row[0]);
+                    journalEntryHeader.setRefDate((Date) row[0]);
+                    journalEntryHeader.setMemo((String) row[1]);
+                    journalEntryHeader.setRef1((String) row[2]);
+                    journalEntryHeader.setRef2((String) row[3]);
+                    journalEntryHeader.setRef3((String) row[4]);
+                    journalEntryHeader.setTransactionCode((String) row[5]);
+                }
+
+                JournalEntryLineDTO line = new JournalEntryLineDTO();
+                line.setRef1((String) row[2]);
+                line.setRef2((String) row[3]);
+                line.setLineId(((BigInteger) row[6]).longValue());
+                line.setShortName((String) row[7]);
+                line.setLineMemo((String) row[8]);
+                line.setOcrCode2((String) row[9]);
+                line.setProject((String) row[10]);
+                line.setInfoCo01((String) row[11]);
+                line.setDebit(((Integer) row[12]).doubleValue());
+                line.setCredit(((Integer) row[13]).doubleValue());
+
+                journalEntryHeader.addLine(line);
+            }
+
+            JournalEntryClient client = new JournalEntryClient(applicationMBean.obtenerValorPropiedad("url.bcs.rest"));
+
+            GenericRESTResponseDTO res = client.crearAsiento(journalEntryHeader);
+
+            if (res.getValor() != null && res.getValor() > 0) {
+                CONSOLE.log(Level.INFO, "Se creo el asiento contable numero {0}", res.getValor());
+            }
         }
     }
 
@@ -2793,9 +2865,9 @@ public class VentasMBean implements Serializable {
 
                 try {
                     cotizacionWebFacade.edit(cot);
-                    log.log(Level.INFO, "Se marco la cotizacion [{0}] con el estado {1}", new Object[]{cotizacion.getIdCotizacion(), estado});
+                    CONSOLE.log(Level.INFO, "Se marco la cotizacion [{0}] con el estado {1}", new Object[]{cotizacion.getIdCotizacion(), estado});
                 } catch (Exception e) {
-                    log.log(Level.SEVERE, "Error al cambiar el estado de la cotizacion. ", e);
+                    CONSOLE.log(Level.SEVERE, "Error al cambiar el estado de la cotizacion. ", e);
                     mostrarMensaje("Error", "No se pudo cambiar el estado a la cotización.", true, false, false);
                     return;
                 }
@@ -2854,7 +2926,7 @@ public class VentasMBean implements Serializable {
             }
             return "clientes";
         } else if (saldosAcumulados != null && !saldosAcumulados.isEmpty()) {
-            log.log(Level.INFO, "Inicia el proceso de creacion de la demostracion");
+            CONSOLE.log(Level.INFO, "Inicia el proceso de creacion de la demostracion");
             /**
              * Se deben seguir los siguientes pasos: 1- Realizar los movimientos
              * pertinentes de la mercancia de ventas a almacenes demo. 2-
@@ -2862,23 +2934,23 @@ public class VentasMBean implements Serializable {
              * ubicaciones no existen se deben crear.
              */
 
-            log.log(Level.INFO, "Primer paso: Se validan los datos de la demostracion, como: Nombre, fecha y factura o comentario");
+            CONSOLE.log(Level.INFO, "Primer paso: Se validan los datos de la demostracion, como: Nombre, fecha y factura o comentario");
             if (nombreDemostracion == null || nombreDemostracion.isEmpty()) {
                 mostrarMensaje("Error", "Debe ingresar un nombre para la demostración.", true, false, false);
-                log.log(Level.SEVERE, "Debe ingresar un nombre para la demostracion");
+                CONSOLE.log(Level.SEVERE, "Debe ingresar un nombre para la demostracion");
                 return null;
             } else if (nombreDemostracion.length() > 20) {
                 mostrarMensaje("Error", "El nombre de la demostración no puede superar los 20 caracteres.", true, false, false);
-                log.log(Level.SEVERE, "El nombre de la demostracion no puede superar los 20 caracteres");
+                CONSOLE.log(Level.SEVERE, "El nombre de la demostracion no puede superar los 20 caracteres");
                 return null;
             }
             if (fechaDemostracion == null) {
                 mostrarMensaje("Error", "Debe ingresar una fecha para la demostración.", true, false, false);
-                log.log(Level.SEVERE, "Debe ingresar una fecha para la demostracion");
+                CONSOLE.log(Level.SEVERE, "Debe ingresar una fecha para la demostracion");
                 return null;
             } else if (fechaDemostracion.before(new SimpleDateFormat("yyyy-MM-dd").parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date())))) {
                 mostrarMensaje("Error", "La fecha de la demostración no puede ser anterior a la actual.", true, false, false);
-                log.log(Level.SEVERE, "La fecha de la demostracion no puede ser anterior a la actual");
+                CONSOLE.log(Level.SEVERE, "La fecha de la demostracion no puede ser anterior a la actual");
                 return null;
             }
 
@@ -2903,16 +2975,16 @@ public class VentasMBean implements Serializable {
 
                 if (sb.length() > 1) {
                     mostrarMensaje("Error", "No se pueden llevar los artículos en consignación para las demostraciones: " + sb.toString(), true, false, false);
-                    log.log(Level.SEVERE, "No se pueden llevar los articulos en consignacion para las demostraciones: {0}", sb.toString());
+                    CONSOLE.log(Level.SEVERE, "No se pueden llevar los articulos en consignacion para las demostraciones: {0}", sb.toString());
                     return null;
                 }
             }
 
             String slotDemo = null;
-            log.log(Level.INFO, "Segundo paso: Se debe validar que slot tiene disponible el usuario. NOTA: Por usuario unicamente hay 5 slots disponibles iniciando del 001 al 005");
+            CONSOLE.log(Level.INFO, "Segundo paso: Se debe validar que slot tiene disponible el usuario. NOTA: Por usuario unicamente hay 5 slots disponibles iniciando del 001 al 005");
             String[] slots = {"001", "002", "003", "004", "005"};
             for (String s : slots) {
-                log.log(Level.INFO, "Tercer paso: Validar si el usuario tiene la ubicacion {0}", s);
+                CONSOLE.log(Level.INFO, "Tercer paso: Validar si el usuario tiene la ubicacion {0}", s);
                 if (!ubicacionSAPFacade.validarUbicacionExiste("DM0101" + userSessionInfoMBean.getCodigoVentas() + s)) {
                     if (!crearUbicacionAsesor(s)) {
                         mostrarMensaje("Error", "No se pudo crear la demostración, comuniquese con el departamento de sistemas.", true, false, false);
@@ -2931,11 +3003,11 @@ public class VentasMBean implements Serializable {
 
             if (slotDemo == null || slotDemo.isEmpty()) {
                 mostrarMensaje("Error", "La demostración no se puede crear, debido a que el asesor no tiene ubicaciones disponibles.", true, false, false);
-                log.log(Level.SEVERE, "La demostracion no se puede crear, debido a que el asesor no tiene ubicaciones disponibles");
+                CONSOLE.log(Level.SEVERE, "La demostracion no se puede crear, debido a que el asesor no tiene ubicaciones disponibles");
                 return null;
             }
 
-            log.log(Level.INFO, "Cuarto paso: Se hace el registro en la base de datos del encabezado de la demostracion");
+            CONSOLE.log(Level.INFO, "Cuarto paso: Se hace el registro en la base de datos del encabezado de la demostracion");
             /**
              * Calcular la fecha fin de la demostracion
              */
@@ -2963,19 +3035,19 @@ public class VentasMBean implements Serializable {
             if (idDemostracion == null || idDemostracion == 0) {
                 try {
                     demostracionFacade.create(demo);
-                    log.log(Level.INFO, "Se creo la demostracion con id {0}", demo.getIdDemostracion());
+                    CONSOLE.log(Level.INFO, "Se creo la demostracion con id {0}", demo.getIdDemostracion());
                     idDemostracion = demo.getIdDemostracion();
                 } catch (Exception e) {
                     mostrarMensaje("Error", "No fue posible crear la demostración, comuniquese con el departamento de sistemas.", true, false, false);
-                    log.log(Level.SEVERE, "No se pudo hacer el registro en la base de datos web para la demostracion, el proceso no puede continuar.", e);
+                    CONSOLE.log(Level.SEVERE, "No se pudo hacer el registro en la base de datos web para la demostracion, el proceso no puede continuar.", e);
                     return null;
                 }
             } else {
-                log.log(Level.INFO, "Se encontro el id de la demostracion {0} y se trabajara sobre esta.", idDemostracion);
+                CONSOLE.log(Level.INFO, "Se encontro el id de la demostracion {0} y se trabajara sobre esta.", idDemostracion);
                 demo.setIdDemostracion(idDemostracion);
             }
 
-            log.log(Level.INFO, "Quinto paso: Se hace el traslado de la mercancia de los almacenes de ventas a los almacenes de demostraciones");
+            CONSOLE.log(Level.INFO, "Quinto paso: Se hace el traslado de la mercancia de los almacenes de ventas a los almacenes de demostraciones");
             asesorDemo = Integer.parseInt(userSessionInfoMBean.getCodigoVentas());
             if (!asignarAtributosDemostracion(idDemostracion, slotDemo, fechaFinDemo)) {
                 mostrarMensaje("Error", "No se pudo procesar los datos de la demostración, comuníquese con el departamento de sistemas.", true, false, false);
@@ -2985,7 +3057,7 @@ public class VentasMBean implements Serializable {
                 return null;
             }
 
-            log.log(Level.INFO, "Sexto paso: Se marca la cotizacion como demostrada");
+            CONSOLE.log(Level.INFO, "Sexto paso: Se marca la cotizacion como demostrada");
             CotizacionWeb cot = cotizacionWebFacade.find(cotizacion.getIdCotizacion());
 
             if (cot != null && cot.getIdCotizacion() != null & cot.getIdCotizacion() != 0) {
@@ -2996,24 +3068,24 @@ public class VentasMBean implements Serializable {
 
                 try {
                     cotizacionWebFacade.edit(cot);
-                    log.log(Level.INFO, "Se marco la cotizacion [{0}] con el estado COTIZACION DEMOSTRADA", cotizacion.getIdCotizacion());
+                    CONSOLE.log(Level.INFO, "Se marco la cotizacion [{0}] con el estado COTIZACION DEMOSTRADA", cotizacion.getIdCotizacion());
                     ventasSessionMBean.setExitoDemostracion(true);
                     dlgDemostracion = false;
 
                     mostrarMensaje("Éxito", "Demostración [" + demo.getIdDemostracion() + "] - " + demo.getAlias() + ", creada correctamente.", false, true, false);
-                    log.log(Level.INFO, "Demostracion {0} - {1}, creada correctamente", new Object[]{idDemostracion, nombreDemostracion});
+                    CONSOLE.log(Level.INFO, "Demostracion {0} - {1}, creada correctamente", new Object[]{idDemostracion, nombreDemostracion});
 
                     String[] s = generarDocumento(idDemostracion, 1, "[" + idDemostracion + "] " + nombreDemostracion.toUpperCase(),
                             "demostracion", userSessionInfoMBean.getAlmacen(), nombreDemostracion.toUpperCase(), imprimir, null);
 
                     notificarProceso(null, "demostracion", "Nueva", false, s);
                 } catch (Exception e) {
-                    log.log(Level.SEVERE, "Error al cambiar la cotizacion al estado COTIZACION DEMOSTRADA. ", e);
+                    CONSOLE.log(Level.SEVERE, "Error al cambiar la cotizacion al estado COTIZACION DEMOSTRADA. ", e);
                     return "";
                 }
             }
         } else {
-            log.log(Level.SEVERE, "No se encontraron datos para la creacion de la demostracion");
+            CONSOLE.log(Level.SEVERE, "No se encontraron datos para la creacion de la demostracion");
             mostrarMensaje("Error", "No se encontraron datos para la creación de la demostración.", true, false, false);
             return "";
         }
@@ -3038,11 +3110,11 @@ public class VentasMBean implements Serializable {
                 GenericRESTResponseDTO res = client.crearSubnivelUbicacion(userSessionInfoMBean.getUsuario(), dto);
 
                 if (res.getEstado() <= 0) {
-                    log.log(Level.SEVERE, "Ocurrio un error al crear la propiedad de ubicacion para el asesor");
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la propiedad de ubicacion para el asesor");
                     return false;
                 }
             } catch (Exception e) {
-                log.log(Level.SEVERE, "Ocurrio un error al crear la propiedad de ubicacion para el asesor. ", e);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la propiedad de ubicacion para el asesor. ", e);
                 return false;
             }
         }
@@ -3066,11 +3138,11 @@ public class VentasMBean implements Serializable {
                     GenericRESTResponseDTO res = client.crearUbicacion(userSessionInfoMBean.getUsuario(), dto);
 
                     if (res.getEstado() <= 0) {
-                        log.log(Level.SEVERE, "Ocurrio un error al crear la ubicacion");
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la ubicacion");
                         return false;
                     }
                 } catch (Exception e) {
-                    log.log(Level.SEVERE, "Ocurrio un error al crear la ubicacion del asesor. ", e);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la ubicacion del asesor. ", e);
                     return false;
                 }
             }
@@ -3081,7 +3153,7 @@ public class VentasMBean implements Serializable {
     private boolean crearTrasladoDemostracion(Integer idDemoWeb, String slot, Date fechaFinDemo, List<DetalleCotizacionWebDTO> detalle) {
         SesionSAPB1WSDTO sesionSAPDTO = applicationMBean.obtenerSesionSAP(userSessionInfoMBean.getUsuario());
         if (sesionSAPDTO == null) {
-            log.log(Level.SEVERE, "No fue posible iniciar una sesion en SAP B1WS.");
+            CONSOLE.log(Level.SEVERE, "No fue posible iniciar una sesion en SAP B1WS.");
             mostrarMensaje("Error", "No fue posible iniciar una sesion en SAP B1WS.", true, false, false);
             return false;
         }
@@ -3156,7 +3228,7 @@ public class VentasMBean implements Serializable {
 
                 if (!cantidadTotal) {
                     mostrarMensaje("Error", "No se encontró saldo suficiente de la referencia: " + d.getReferencia() + ", ubicado para crear la demostración.", true, false, false);
-                    log.log(Level.SEVERE, "No se encontro saldo suficiente de la referencia: [{0}], ubicado para crear la demostracion", d.getReferencia());
+                    CONSOLE.log(Level.SEVERE, "No se encontro saldo suficiente de la referencia: [{0}], ubicado para crear la demostracion", d.getReferencia());
                     return false;
                 }
 
@@ -3177,15 +3249,15 @@ public class VentasMBean implements Serializable {
 
             try {
                 detalleDemostracionFacade.create(det);
-                log.log(Level.INFO, "Se creo detalle demostracion con id {0}", det.getIdDetalleDemo());
+                CONSOLE.log(Level.INFO, "Se creo detalle demostracion con id {0}", det.getIdDetalleDemo());
             } catch (Exception e) {
-                log.log(Level.SEVERE, "No se pudo crear el detalle de demostracion. Error {0}", e.getMessage());
+                CONSOLE.log(Level.SEVERE, "No se pudo crear el detalle de demostracion. Error {0}", e.getMessage());
             }
         }
 
         Integer numeroTraslado = crearTraslado(transfer);
         if (numeroTraslado > 0) {
-            log.log(Level.INFO, "Se creo traslado de demostracion numero {0}", trasladosSAPFacade.find(numeroTraslado).getDocNum());
+            CONSOLE.log(Level.INFO, "Se creo traslado de demostracion numero {0}", trasladosSAPFacade.find(numeroTraslado).getDocNum());
             return true;
         } else {
             return false;
@@ -3242,7 +3314,7 @@ public class VentasMBean implements Serializable {
             traslado = crearTraslado(transfer);
 
             if (traslado != null && traslado > 0) {
-                log.log(Level.INFO, "Se creo traslado con id {0}", traslado);
+                CONSOLE.log(Level.INFO, "Se creo traslado con id {0}", traslado);
                 return true;
             } else {
                 return false;
@@ -3289,12 +3361,12 @@ public class VentasMBean implements Serializable {
                             GenericRESTResponseDTO res = client.crearAtributoUbicacion(userSessionInfoMBean.getUsuario(), dto);
 
                             if (res.getEstado() <= 0) {
-                                log.log(Level.SEVERE, "Ocurrio un error al crear el atributo para la ubicacion");
+                                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el atributo para la ubicacion");
                                 return false;
                             }
                             p[2] = res.getValor();
                         } catch (Exception e) {
-                            log.log(Level.SEVERE, "Ocurrio un error al crear el atributo para la ubicacion. ", e);
+                            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el atributo para la ubicacion. ", e);
                             return false;
                         }
                     }
@@ -3325,11 +3397,11 @@ public class VentasMBean implements Serializable {
 
                         GenericRESTResponseDTO res = client.editarUbicacion(userSessionInfoMBean.getUsuario(), dto);
                         if (res.getEstado() <= 0) {
-                            log.log(Level.SEVERE, "Ocurrio un error al crear la ubicacion del asesor");
+                            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la ubicacion del asesor");
                             return false;
                         }
                     } catch (Exception e) {
-                        log.log(Level.SEVERE, "Ocurrio un error al crear la ubicacion del asesor. ", e);
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la ubicacion del asesor. ", e);
                         return false;
                     }
                 }
@@ -3342,16 +3414,16 @@ public class VentasMBean implements Serializable {
         StockTransferClient client = new StockTransferClient(applicationMBean.obtenerValorPropiedad("url.bcs.rest"));
         GenericRESTResponseDTO res = client.crearStockTransfer(transfer);
         if (res.getEstado() <= 0) {
-            log.log(Level.SEVERE, "Ocurrio un error al crear el traslado para la demostracion");
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el traslado para la demostracion");
             return null;
         }
-        log.log(Level.INFO, "Se creo traslado de demostracion numero {0}", trasladosSAPFacade.find(res.getValor()).getDocNum());
+        CONSOLE.log(Level.INFO, "Se creo traslado de demostracion numero {0}", trasladosSAPFacade.find(res.getValor()).getDocNum());
         return res.getValor();
     }
 
     public void seleccionarFactura() {
         facturaAsociada = Integer.parseInt(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("factura"));
-        log.log(Level.INFO, "Se selecciono la factura asociada {0} para la demostracion", facturaAsociada);
+        CONSOLE.log(Level.INFO, "Se selecciono la factura asociada {0} para la demostracion", facturaAsociada);
     }
 
     public void cancelarProcesoDemo() {
@@ -3412,10 +3484,10 @@ public class VentasMBean implements Serializable {
 
                 try {
                     cotizacionWebFacade.create(cot);
-                    log.log(Level.INFO, "Se creo cotizacion web con id {0} para la demostracion con id {1}", new Object[]{cot.getIdCotizacion(), idDemostracion});
+                    CONSOLE.log(Level.INFO, "Se creo cotizacion web con id {0} para la demostracion con id {1}", new Object[]{cot.getIdCotizacion(), idDemostracion});
                     cotizacion = new CotizacionWebDTO(cot.getIdVendedor(), cot.getIdCotizacion(), cot.getSucursal(), cot.getEstado(), cot.getNitCliente(), cot.getFecha(), new ArrayList<DetalleCotizacionWebDTO>());
                 } catch (Exception e) {
-                    log.log(Level.SEVERE, "No se pudo hacer el registro de la cotizacion web para la demostracion", e);
+                    CONSOLE.log(Level.SEVERE, "No se pudo hacer el registro de la cotizacion web para la demostracion", e);
                     mostrarMensaje("Error", "No se pudieron traer los datos de la demostración seleccionada.", true, false, false);
                     return;
                 }
@@ -3437,11 +3509,11 @@ public class VentasMBean implements Serializable {
 
                     try {
                         detalleCotizacionWebFacade.create(det);
-                        log.log(Level.INFO, "Se creo detalle con id {0} para la cotizacion {1} para la demostracion con id {2}", new Object[]{det.getIdDetalleCotizacion(), cot.getIdCotizacion(), idDemostracion});
+                        CONSOLE.log(Level.INFO, "Se creo detalle con id {0} para la cotizacion {1} para la demostracion con id {2}", new Object[]{det.getIdDetalleCotizacion(), cot.getIdCotizacion(), idDemostracion});
                         cotizacion.getDetalle().add(new DetalleCotizacionWebDTO(det.getCantidad(), cot.getIdCotizacion().intValue(), null, det.getIdDetalleCotizacion(), det.getReferencia(), det.getBodega()));
                         saldosAcumulados.add(0, new SaldoItemDTO(det.getCantidad(), det.getCantidad(), det.getReferencia(), det.getBodega()));
                     } catch (Exception e) {
-                        log.log(Level.SEVERE, "Ocurrio un error al crear el detalle", e);
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el detalle", e);
                         return;
                     }
                 }
@@ -3456,7 +3528,7 @@ public class VentasMBean implements Serializable {
             return;
         }
 
-        log.log(Level.INFO, "Modificando demostacion [{0}] {1}", new Object[]{idDemostracion, nombreDemostracion});
+        CONSOLE.log(Level.INFO, "Modificando demostacion [{0}] {1}", new Object[]{idDemostracion, nombreDemostracion});
         List<SaldoUbicacion> balances = saldoUbicacionFacade.obtenerSaldosDemostracion(asesorDemo.toString(), slot);
 
         if (balances != null && !balances.isEmpty()) {
@@ -3517,32 +3589,32 @@ public class VentasMBean implements Serializable {
             if (agregar != null && !agregar.isEmpty()) {
                 if (!crearTrasladoDemostracion(idDemostracion, slot, fechaDemostracion, agregar)) {
                     mostrarMensaje("Error", "No fue posible crear el traslado con las nuevas referencias para la demostración.", true, false, false);
-                    log.log(Level.SEVERE, "No fue posible crear el traslado con las nuevas referencias para la demostracion");
+                    CONSOLE.log(Level.SEVERE, "No fue posible crear el traslado con las nuevas referencias para la demostracion");
                     return;
                 }
-                log.log(Level.INFO, "Se agregaron {0} referencias a la demostracion", agregar.size());
+                CONSOLE.log(Level.INFO, "Se agregaron {0} referencias a la demostracion", agregar.size());
             } else {
-                log.log(Level.INFO, "No se agregaron nuevas referencias a la demostracion [{0}] {1}", new Object[]{idDemostracion, nombreDemostracion});
+                CONSOLE.log(Level.INFO, "No se agregaron nuevas referencias a la demostracion [{0}] {1}", new Object[]{idDemostracion, nombreDemostracion});
             }
             if (modificar != null && !modificar.isEmpty()) {
                 if (!crearTrasladoVenta(slot, "TM", modificar)) {
                     mostrarMensaje("Error", "No fue posible crear el traslado con las referencias modificadas de la demostración.", true, false, false);
-                    log.log(Level.SEVERE, "No fue posible crear el traslado con las referencias modificadas de la demostracion");
+                    CONSOLE.log(Level.SEVERE, "No fue posible crear el traslado con las referencias modificadas de la demostracion");
                     return;
                 }
-                log.log(Level.INFO, "Se modificaron {0} referencias de la demostracion", modificar.size());
+                CONSOLE.log(Level.INFO, "Se modificaron {0} referencias de la demostracion", modificar.size());
             } else {
-                log.log(Level.INFO, "No se modificaron referencias de la demostracion [{0}] {1}", new Object[]{idDemostracion, nombreDemostracion});
+                CONSOLE.log(Level.INFO, "No se modificaron referencias de la demostracion [{0}] {1}", new Object[]{idDemostracion, nombreDemostracion});
             }
             if (detalles != null && !detalles.isEmpty()) {
                 if (!crearTrasladoVenta(slot, "TM", detalles)) {
                     mostrarMensaje("Error", "No fue posible crear el traslado con las referencias eliminadas de la demostración.", true, false, false);
-                    log.log(Level.SEVERE, "No fue posible crear el traslado con las referencias eliminadas de la demostracion");
+                    CONSOLE.log(Level.SEVERE, "No fue posible crear el traslado con las referencias eliminadas de la demostracion");
                     return;
                 }
-                log.log(Level.INFO, "Se eliminaron {0} referencias de la demostracion", detalles.size());
+                CONSOLE.log(Level.INFO, "Se eliminaron {0} referencias de la demostracion", detalles.size());
             } else {
-                log.log(Level.INFO, "No se eliminaron referencias de la demostracion [{0}] {1}", new Object[]{idDemostracion, nombreDemostracion});
+                CONSOLE.log(Level.INFO, "No se eliminaron referencias de la demostracion [{0}] {1}", new Object[]{idDemostracion, nombreDemostracion});
             }
         }
 
@@ -3575,7 +3647,7 @@ public class VentasMBean implements Serializable {
 
         if (!crearTrasladoVenta(slot, "DEMO", cotizacion.getDetalle())) {
             mostrarMensaje("Error", "No fue posible preparar la demostración para facturarla.", true, false, false);
-            log.log(Level.SEVERE, "No fue posible preparar la demostracion para facturarla");
+            CONSOLE.log(Level.SEVERE, "No fue posible preparar la demostracion para facturarla");
             return;
         } else {
             notificarProceso(null, "demostracion", "Facturando", false, null);
@@ -3604,12 +3676,12 @@ public class VentasMBean implements Serializable {
                     ventasSessionMBean.setNumeroCotizacion(Long.parseLong(cot.getNumeroDocSAP()));
                     cotizacion = new CotizacionWebDTO(cot.getIdVendedor(), cot.getIdCotizacion(), cot.getSucursal(), cot.getEstado(), cot.getNitCliente(), cot.getFecha(), null);
                 } catch (Exception e) {
-                    log.log(Level.SEVERE, "", e);
+                    CONSOLE.log(Level.SEVERE, "", e);
                 }
             }
 
             mostrarMensaje("", "Elimine los ítems y las cantidades que el cliente no dejo y de nuevamente clic en facturar.", false, false, true);
-            log.log(Level.WARNING, "Se deben eliminar los items y las cantidades que el cliente no dejo y de nuevamente clic en facturar");
+            CONSOLE.log(Level.WARNING, "Se deben eliminar los items y las cantidades que el cliente no dejo y de nuevamente clic en facturar");
             return;
         }
     }
@@ -3632,7 +3704,7 @@ public class VentasMBean implements Serializable {
                 quotation.getQuotationsDocumentLines().add(detailLine);
             }
         } else {
-            log.log(Level.SEVERE, "No se puede crear la cotizacion debido a que no se encontraron datos");
+            CONSOLE.log(Level.SEVERE, "No se puede crear la cotizacion debido a que no se encontraron datos");
             mostrarMensaje("Error", "No se puede crear la cotización debido a que no se encontraron datos.", true, false, false);
             return null;
         }
@@ -3643,15 +3715,15 @@ public class VentasMBean implements Serializable {
             GenericRESTResponseDTO res = client.createQuotation(quotation);
 
             if (res.getEstado() > 0) {
-                log.log(Level.INFO, "Se creo la cotizacion con numero: [{0}]", res.getValor());
+                CONSOLE.log(Level.INFO, "Se creo la cotizacion con numero: [{0}]", res.getValor());
                 return res.getValor();
             } else {
                 mostrarMensaje("Error", res.getMensaje(), true, false, false);
-                log.log(Level.SEVERE, res.getMensaje());
+                CONSOLE.log(Level.SEVERE, res.getMensaje());
                 return null;
             }
         } catch (Exception e) {
-            log.log(Level.SEVERE, "", e);
+            CONSOLE.log(Level.SEVERE, "", e);
             return null;
         }
     }
@@ -3754,9 +3826,9 @@ public class VentasMBean implements Serializable {
                     break;
             }
 
-            log.log(Level.INFO, res.getMensaje());
+            CONSOLE.log(Level.INFO, res.getMensaje());
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Ocurrio un error al enviar la notificacion. ", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al enviar la notificacion. ", e);
         }
     }
 
@@ -3779,11 +3851,11 @@ public class VentasMBean implements Serializable {
             if (new File(res.getMensaje()).exists()) {
                 return new String[]{res.getMensaje(), nombreArchivo + ".pdf"};
             } else {
-                log.log(Level.SEVERE, "No se pudo generar el documento");
+                CONSOLE.log(Level.SEVERE, "No se pudo generar el documento");
                 return null;
             }
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Ocurrio un error al generar el documento para {0}. Error {1}", new Object[]{documento.toUpperCase(), e.getMessage()});
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al generar el documento para {0}. Error {1}", new Object[]{documento.toUpperCase(), e.getMessage()});
             mostrarMensaje("Error", "Ocurrió un error al generar el documento.", true, false, false);
             return null;
         }
@@ -3810,19 +3882,19 @@ public class VentasMBean implements Serializable {
                         String url = applicationMBean.obtenerValorPropiedad("url.web.ventas") + documento + "/" + ventasSessionMBean.getNumeroCotizacion();
                         return "openRuta('" + url + ".pdf');";
                     } catch (Exception e) {
-                        log.log(Level.SEVERE, "No se pudo generar la URL para el documento");
+                        CONSOLE.log(Level.SEVERE, "No se pudo generar la URL para el documento");
                         return "";
                     }
                 } else {
-                    log.log(Level.SEVERE, "No se pudo generar el documento");
+                    CONSOLE.log(Level.SEVERE, "No se pudo generar el documento");
                     return "";
                 }
             } else {
-                log.log(Level.SEVERE, "No se pudo generar el documento");
+                CONSOLE.log(Level.SEVERE, "No se pudo generar el documento");
                 return "";
             }
         } else {
-            log.log(Level.SEVERE, "No se pudo generar el documento");
+            CONSOLE.log(Level.SEVERE, "No se pudo generar el documento");
             return "";
         }
     }

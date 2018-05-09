@@ -25,6 +25,11 @@ public class PaisDTO {
     public PaisDTO() {
     }
 
+    public PaisDTO(String code, String name) {
+        this.code = code;
+        this.name = name;
+    }
+
     public PaisDTO(String code, String name, Short addrFormat, Short userSign, Character isEC, String reportCode, Short taxIdDigts, Integer bnkCodDgts, Integer bnkBchDgts,
             Integer bnkActDgts, Integer bnkCtKDgts, String valDomAcct, Character valIban, Character isBlackLst, String uICCode) {
         this.code = code;

@@ -31,6 +31,7 @@ public class SalesDocumentDTO {
     private String creditNoteType;
     private String prestashopOrderID;
     private String designerCode;
+    private String taxCode;
     private Date docDate;
     private List<SalesDocumentLineDTO> documentLines;
     private List<SalesEmployeeDTO> salesEmployees;
@@ -126,6 +127,14 @@ public class SalesDocumentDTO {
 
     public void setDesignerCode(String designerCode) {
         this.designerCode = designerCode;
+    }
+
+    public String getTaxCode() {
+        return taxCode;
+    }
+
+    public void setTaxCode(String taxCode) {
+        this.taxCode = taxCode;
     }
 
     public Date getDocDate() {

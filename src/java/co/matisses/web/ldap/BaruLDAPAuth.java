@@ -34,8 +34,8 @@ public class BaruLDAPAuth {
 
     public BaruLDAPAuth() {
     }
-    
-    private String getProp(String key){
+
+    private String getProp(String key) {
         return aplicacionBean.obtenerValorPropiedad(key);
     }
 
@@ -169,6 +169,48 @@ public class BaruLDAPAuth {
                     //}
                 }
                 ctx1.close();
+            }
+            Collections.sort(usuarios);
+        } catch (NamingException nex) {
+            log.log(Level.SEVERE, "Ocurrio un error al iniciar la conexion LDAP. ", nex);
+        }
+
+        return usuarios;
+    }
+
+    public List<String> listAdminUsers() {
+        List<String> usuarios = new ArrayList<>();
+
+        Hashtable<String, Object> auth = new Hashtable<>();
+        auth.put(Context.INITIAL_CONTEXT_FACTORY, getProp("initial.context.factory"));
+        auth.put(Context.PROVIDER_URL, getProp("provider.url"));
+        auth.put(Context.SECURITY_AUTHENTICATION, getProp("security.authentication"));
+        auth.put(Context.SECURITY_PRINCIPAL, getProp("security.principal.domain") + getProp("ldap.query.user"));
+        auth.put(Context.SECURITY_CREDENTIALS, getProp("ldap.query.password"));
+
+        try {
+            LdapContext ctx = new InitialLdapContext(auth, null);
+
+            DirContext ctxl = new InitialDirContext(auth);
+            SearchControls ctls = new SearchControls();
+            String[] attrIDs = {"distinguishedName", "cn", "name", "uid", "sn", "givenname", "memberOf", "samaccountname", "userPrincipalName", "description", "sAMAccountName"};
+
+            ctls.setReturningAttributes(attrIDs);
+            ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
+            String filter = "(&(memberof=CN=adminsolicitudweb,CN=Users,DC=baru,DC=local))";
+            String base = "dc=baru,dc=local";
+            NamingEnumeration<SearchResult> answer = ctx.search(base, filter, ctls);
+
+            while (answer.hasMoreElements()) {
+                SearchResult sr = (SearchResult) answer.next();
+                Attributes attrs = sr.getAttributes();
+                Attribute usuario = attrs.get("sAMAccountName");
+
+                if (usuario != null) {
+                    usuarios.add((String) usuario.get());
+                }
+                ctxl.close();
             }
             Collections.sort(usuarios);
         } catch (NamingException nex) {

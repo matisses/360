@@ -78,6 +78,29 @@ public class ImagenProductoMBean implements Serializable {
         }
     }
 
+    public String obtenerUrlLocalProducto(String referencia, boolean mini) {
+        String sufijoMini = "";
+        if (mini) {
+            sufijoMini = ".mini";
+        }
+
+        String url = aplicacionBean.obtenerValorPropiedad("url.local.images" + sufijoMini);
+        if (url != null) {
+            url = String.format(url, referencia);
+        } else {
+            log.log(Level.SEVERE, "No se encontro el valor de [url.local.images[{0}]] en baru.properties", sufijoMini);
+            return aplicacionBean.obtenerValorPropiedad(mini ? "url.web.noimage.mini" : "url.web.noimage");
+        }
+
+        File f = new File(url);
+        if (f.exists()) {
+            return url;
+        } else {
+            log.log(Level.SEVERE, "No se encontro la imagen en la ruta [{0}]", url);
+            return aplicacionBean.obtenerValorPropiedad(mini ? "url.web.noimage.mini" : "url.web.noimage");
+        }
+    }
+
     public String obtenerUrlFotoZona(String nombreFoto) {
         String urlWeb = aplicacionBean.obtenerValorPropiedad("url.web.fotoZona");
         if (urlWeb != null) {
@@ -264,7 +287,7 @@ public class ImagenProductoMBean implements Serializable {
             urlWeb = String.format(urlWeb, referencia);
         } else {
             log.log(Level.SEVERE, "No se encontro el valor de [url.web.parrilla] en baru.properties");
-            return aplicacionBean.obtenerValorPropiedad("url.web.noimage");
+            return aplicacionBean.obtenerValorPropiedad("url.web.noimage.parrilla");
         }
 
         String url = aplicacionBean.obtenerValorPropiedad("url.local.parrilla");
@@ -272,7 +295,7 @@ public class ImagenProductoMBean implements Serializable {
             url = String.format(url, referencia);
         } else {
             log.log(Level.SEVERE, "No se encontro el valor de [url.local.parrilla] en baru.properties");
-            return aplicacionBean.obtenerValorPropiedad("url.web.noimage");
+            return aplicacionBean.obtenerValorPropiedad("url.web.noimage.parrilla");
         }
 
         File f = new File(url);
@@ -280,7 +303,7 @@ public class ImagenProductoMBean implements Serializable {
             return urlWeb;
         } else {
             log.log(Level.SEVERE, "No se encontro la imagen en la ruta [{0}]", url);
-            return aplicacionBean.obtenerValorPropiedad("url.web.noimage");
+            return aplicacionBean.obtenerValorPropiedad("url.web.noimage.parrilla");
         }
     }
 }

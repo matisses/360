@@ -143,15 +143,15 @@ public class EnviarSMSMBean implements Serializable {
         if (mensaje.length() > 0) {
             for (String item : s) {
                 if (mensajes.isEmpty()) {
-                    mensajes.add(new String(item + " "));
+                    mensajes.add((item + " "));
                 } else if (mensajes.get(mensajes.size() - 1).length() <= longitudMensaje) {
                     if ((item.length() + mensajes.get(mensajes.size() - 1).length()) >= longitudMensaje) {
-                        mensajes.add(new String(item + " "));
+                        mensajes.add((item + " "));
                     } else {
                         mensajes.set(mensajes.size() - 1, mensajes.get(mensajes.size() - 1) + item + " ");
                     }
                 } else {
-                    mensajes.add(new String(item + " "));
+                    mensajes.add((item + " "));
                 }
             }
         } else {
@@ -199,7 +199,7 @@ public class EnviarSMSMBean implements Serializable {
         for (String s : mensajes) {
             MensajeTextoDTO sms = new MensajeTextoDTO();
             try {
-                client = new SMSServiceClient(applicationMBean.obtenerValorPropiedad("url.servicio.bcs"));
+                client = new SMSServiceClient(applicationMBean.obtenerValorPropiedad("url.bcs.rest"));
                 sms.setCodigoPais("57");
                 sms.setDestino(num);
                 sms.setMensaje(s);

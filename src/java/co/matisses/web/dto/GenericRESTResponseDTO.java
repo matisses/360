@@ -1,14 +1,18 @@
 package co.matisses.web.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  *
  * @author ygil
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GenericRESTResponseDTO {
 
     private int estado;
     private Integer valor;
     private String mensaje;
+    private Object content;
 
     public GenericRESTResponseDTO() {
     }
@@ -45,6 +49,14 @@ public class GenericRESTResponseDTO {
 
     public void setMensaje(String mensaje) {
         this.mensaje = mensaje;
+    }
+
+    public Object getContent() {
+        return content;
+    }
+
+    public void setContent(Object content) {
+        this.content = content;
     }
 
     @Override

@@ -65,7 +65,7 @@ public class ExcelReaderDeclaracion {
                 int contadorFila = sheet.getLastRowNum();
                 for (int a = 0; a <= contadorFila; a++) {
                     XSSFRow row = sheet.getRow(a);
-                    if (row != null) {
+                    if (row != null) { 
                         if (row.getLastCellNum() > 0) {
                             Object[] object = new Object[row.getLastCellNum()];
                             for (int i = 0; i < row.getLastCellNum(); i++) {

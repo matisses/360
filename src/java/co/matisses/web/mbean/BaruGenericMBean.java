@@ -188,10 +188,14 @@ public class BaruGenericMBean implements Serializable {
                     return new SimpleDateFormat("yyyy-MM-dd").format(valor);
                 case "Time":
                     return new SimpleDateFormat("HH:mm:ss.SSS").format(valor);
+                case "Time2":
+                    return new SimpleDateFormat("HH:mm:ss").format(valor);
                 case "Datetime":
                     return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(valor);
                 case "DateSimple":
                     return new SimpleDateFormat("dd-MMMMM").format(valor);
+                case "DateShort":
+                    return new SimpleDateFormat("dd-MM-yy").format(valor);
                 default:
             }
         }
@@ -335,7 +339,7 @@ public class BaruGenericMBean implements Serializable {
 
             if (emp != null && emp.getEmpID() != null && emp.getEmpID() != 0) {
                 if (emp.getMiddleName() != null && !emp.getMiddleName().isEmpty()) {
-                    return emp.getLastName() + " " + emp.getMiddleName() + " " + emp.getFirstName();
+                    return emp.getLastName() + " " + emp.getFirstName() + " " + emp.getMiddleName();
                 } else {
                     return emp.getLastName() + " " + emp.getFirstName();
                 }
@@ -351,6 +355,22 @@ public class BaruGenericMBean implements Serializable {
 
             if (empleado != null && empleado.getEmpID() != null && empleado.getEmpID() != 0) {
                 return empleado.getLastName() + " " + empleado.getFirstName();
+            }
+        }
+
+        return "";
+    }
+
+    public String obtenerNombreEmpleado(String cedula) {
+        if (cedula != null && !cedula.isEmpty()) {
+            Empleado emp = empleadoFacade.obtenerEmpleadoDocumento(cedula.replace("PR", ""));
+
+            if (emp != null && emp.getEmpID() != null && emp.getEmpID() != 0) {
+                if (emp.getMiddleName() != null && !emp.getMiddleName().isEmpty()) {
+                    return emp.getFirstName() + " " + emp.getMiddleName();
+                } else {
+                    return emp.getFirstName();
+                }
             }
         }
 
