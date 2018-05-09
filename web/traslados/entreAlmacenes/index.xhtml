@@ -320,9 +320,9 @@
                                         <div class="row">
                                             <div class="col-xs-12 right-component">
                                                 <p:remoteCommand name="limpiarBasico" actionListener="#{trasladoEntreAlmacenesMBean.limpiarBasico}" update=":panelComentarioLinea :formTrasladoEntreAlmacenes"/>
-                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal"
-                                                        onclick="document.getElementById('formTrasladoEntreAlmacenes:referencia').focus(); limpiarBasico();">
-                                                    Cancelar
+                                                <p:remoteCommand name="cerrar" oncomplete="cerrarModalComentarioLinea()" update=":panelComentarioLinea" />
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                    Cerrar
                                                 </button>
                                                 <button type="button" class="btn btn-primary btn-lg noround" onclick="agregarReferencia();">
                                                     Agregar

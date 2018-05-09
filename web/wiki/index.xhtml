@@ -1,0 +1,426 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script src="/360/js/arriba.js"></script>
+        <script type="text/javascript">
+            function abrirModalLink() {
+                $('#modalLink').modal('show');
+            }
+
+            function cerrarModalLink() {
+                $('modalLink').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalImagen() {
+                $('#modalImagen').modal('show');
+            }
+
+            function cerrarModalImagen() {
+                $('modalImagen').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Wiki</title>
+    </h:head>
+
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <span class="ir-arriba hidden-sm hidden-xs">
+                <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+            </span>
+
+            <h:panelGroup id="panelLink">
+                <h:form id="formLink">
+                    <div id="modalLink" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-sm" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <label>Texto mostrar:</label>
+                                            <h:inputText class="form-control noround" value="#{wikiMBean.textMostrar}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                        return false;
+                                                    }"/>
+                                        </div>
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <label>Link:</label>
+                                            <h:inputText class="form-control noround" value="#{wikiMBean.link}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                        return false;
+                                                    }"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <p:remoteCommand name="guardarLink" actionListener="#{wikiMBean.guardarLink}" update=":formWiki:lbl_codigo :formWiki:txa_texto :formWiki:msg :panelLink"/>
+
+                                    <button type="button" class="btn btn-default noround" data-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-primary noround" data-dismiss="modal" onclick="guardarLink(); cerrarModalLink();">Aplicar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelImagen">
+                <div id="modalImagen" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-sm" role="document">
+                        <div class="modal-content dialog-content noround">
+                            <div class="modal-body">
+                                <h:form id="formImagen" enctype="multipart/form-data">
+                                    <div class="row">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <div class="form-group">
+                                                <div class="input-group file-caption-main">
+                                                    <div class="form-control noround" tabindex="500">
+                                                        <h:panelGroup id="imagen">
+                                                            <div class="file-caption-name">
+                                                                <i class="glyphicon glyphicon-file"></i>
+                                                                #{wikiMBean.fileName(wikiMBean.file)}
+                                                            </div>
+                                                        </h:panelGroup>
+                                                    </div>
+                                                    <div class="input-group-btn">
+                                                        <div class="btn btn-primary btn-file noround" tabindex="500">
+                                                            <i class="glyphicon glyphicon-folder-open"></i>
+                                                            &nbsp;
+                                                            <span>Navegar</span>
+                                                            <h:inputFile class="file" value="#{wikiMBean.file}">
+                                                                <f:ajax event="change" render=":formImagen:imagen :formImagen:img" listener="#{wikiMBean.subirImagen}"/>
+                                                            </h:inputFile>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h:panelGroup id="img">
+                                                <img class="img-responsive" src="#{wikiMBean.imagen}"/>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                </h:form>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <h:form id="formBtn">
+                                    <p:remoteCommand name="aplicarImagen" actionListener="#{wikiMBean.aplicarImagen}" update=":formWiki:lbl_codigo :formWiki:txa_texto :formWiki:msg :panelLink"/>
+
+                                    <button type="button" class="btn btn-default noround" data-dismiss="modal">Cerrar</button>
+                                    <button type="button" class="btn btn-primary noround" data-dismiss="modal" onclick="aplicarImagen(); cerrarModalImagen();">Aplicar</button>
+                                </h:form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+            <h:form id="formWiki">
+                <p:remoteCommand name="obtenerPaso" actionListener="#{wikiMBean.obtenerPaso}" update=":formWiki" oncomplete="cerrarModalEspera();"/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>
+                                    Wiki
+                                </a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                <ui:fragment rendered="#{wikiMBean.paso == 1}">
+                    <p:remoteCommand name="seleccionarFragmentoWiki" actionListener="#{wikiMBean.seleccionarFragmentoWiki}" update=":formWiki:fragmento" oncomplete="cerrarModalEspera();"/>
+
+                    <div class="row hidden-md hidden-lg">
+                        <div class="col-xs-12 margin-bottom-10">
+                            <div class="row">
+                                <div class="col-xs-12 margin-bottom-10">
+                                    <p:remoteCommand name="mostrarIndex" actionListener="#{wikiMBean.mostrarIndex}" update=":formWiki:index :formWiki:indexMobile"/>
+
+                                    <h:panelGroup id="indexMobile">
+                                        <button type="button" class="btn btn-default form-control noround" data-toggle="collapse" data-target="#collapseIndexMobile" onclick="mostrarIndex();">
+                                            <div class="col-xs-10">
+                                                Index
+                                            </div>
+                                            <div class="col-xs-2 right-component">
+                                                <span class="glyphicon #{wikiMBean.mostrarIndex ? 'glyphicon-triangle-top' : 'glyphicon-triangle-bottom'}"></span>
+                                            </div>
+                                        </button>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+
+                            <div class="collapse" id="collapseIndexMobile">
+                                <div class="row">
+                                    <div class="col-xs-12 margin-bottom-10">
+                                        <ui:repeat value="#{wikiMBean.index}" var="index">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <div style="margin: 0px 0px 0px 15px">
+                                                    <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFragmentoWiki([{name: 'id', value: '#{index.idWiki}'}]);">#{index.titulo}</a>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <ui:fragment rendered="#{userSessionInfoMBean.validarPermisoUsuario('WIKI', 'ADMINISTRAR')}">
+                            <div class="col-xs-12 right-component margin-bottom-10">
+                                <button type="button" class="btn btn-default noround" onclick="abrirModalEspera(); obtenerPaso();">
+                                    Agregar
+                                </button>
+                            </div>
+                        </ui:fragment>
+                        <div class="col-xs-12 col-md-8">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6 col-sm-offset-3 margin-bottom-10">
+                                    <p:remoteCommand name="buscarWiki" actionListener="#{wikiMBean.buscarWiki}" update=":formWiki:resultados :formWiki:fragmento" oncomplete="cerrarModalEspera();"/>
+
+                                    <p:focus context="formWiki" for="txt_parametro"/>
+                                    <label>Parámetro búsqueda:</label>
+                                    <div class="input-group">
+                                        <h:inputText id="txt_parametro" class="form-control input-lg noround" value="#{wikiMBean.parametroBusqueda}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                    abrirModalEspera();
+                                                    buscarWiki();
+                                                    return false;
+                                                }"/>
+                                        <div class="input-group-btn">
+                                            <button class="btn btn-primary btn-lg noround" type="button" style="font-size: 23px; padding: 9.5px 10px 4.5px 10px" onclick="abrirModalEspera(); buscarWiki();">
+                                                <span class="glyphicon glyphicon-search"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr/>
+                            <h:panelGroup id="resultados">
+                                <ui:fragment rendered="#{wikiMBean.resultadoBusqueda ne null and not empty wikiMBean.resultadoBusqueda}">
+                                    <div class="row">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <ui:repeat value="#{wikiMBean.resultadoBusqueda}" var="resultado">
+                                                <div class="col-xs-12 margin-bottom-10">
+                                                    <div style="margin: 0px 0px 0px 15px">
+                                                        <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFragmentoWiki([{name: 'id', value: '#{resultado.idWiki}'}]);">#{resultado.titulo}</a>
+                                                    </div>
+                                                </div>
+                                            </ui:repeat>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                </ui:fragment>
+                            </h:panelGroup>
+                            <div class="row">
+                                <div class="col-xs-12 margin-bottom-10">
+                                    <h:panelGroup id="fragmento">
+                                        <div class="row">
+                                            <div class="#{wikiMBean.fragmentoWiki.idSolicitud ne null and wikiMBean.fragmentoWiki.idSolicitud gt 0 ? 'col-xs-9 col-md-10' : 'col-xs-12'}">
+                                                <h1 class="color-360-original margin-bottom-10">#{wikiMBean.fragmentoWiki.titulo}</h1>
+                                            </div>
+                                            <div class="#{wikiMBean.fragmentoWiki.idSolicitud ne null and wikiMBean.fragmentoWiki.idSolicitud gt 0 ? 'col-xs-3 col-md-2' : 'hidden-xs hidden-sm hidden-md hidden-lg'}">
+                                                <div style="position: relative; top: 18px">
+                                                    <span style="transform: rotate(180deg); color: #DDDDDD; position: absolute; left: -11px; top: 10px" class="glyphicon glyphicon-play"></span>
+                                                    <div class="right-component" style="border: 1px solid #DDDDDD; padding: 5px; border-radius: 5px; background-color: #DDDDDD">
+                                                        #{wikiMBean.fragmentoWiki.idSolicitud}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <p class="justify-component">
+                                                    <h:outputText escape="false" value="#{wikiMBean.fragmentoWiki.texto}"/>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hidden-xs hidden-sm col-md-4">
+                            <div class="row">
+                                <div class="col-xs-12 margin-bottom-10">
+                                    <p:remoteCommand name="mostrarIndex" actionListener="#{wikiMBean.mostrarIndex}" update=":formWiki:index :formWiki:indexMobile"/>
+
+                                    <h:panelGroup id="index">
+                                        <button type="button" class="btn btn-default form-control noround" data-toggle="collapse" data-target="#collapseIndex" onclick="mostrarIndex();">
+                                            <div class="col-xs-10">
+                                                Index
+                                            </div>
+                                            <div class="col-xs-2 right-component">
+                                                <span class="glyphicon #{wikiMBean.mostrarIndex ? 'glyphicon-triangle-top' : 'glyphicon-triangle-bottom'}"></span>
+                                            </div>
+                                        </button>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+
+                            <div class="collapse" id="collapseIndex">
+                                <div class="row">
+                                    <div class="col-xs-12 margin-bottom-10">
+                                        <ui:repeat value="#{wikiMBean.index}" var="index">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <div style="margin: 0px 0px 0px 15px">
+                                                    <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFragmentoWiki([{name: 'id', value: '#{index.idWiki}'}]);">#{index.titulo}</a>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-xs-12 margin-bottom-10">
+                                    <hr/>
+                                    <h3 class="color-360-original">Más vistos</h3>
+                                    <hr/>
+                                </div>
+                                <ui:repeat value="#{wikiMBean.registros}" var="registro">
+                                    <div class="col-xs-12 margin-bottom-10">
+                                        <div style="margin: 0px 0px 0px 15px">
+                                            <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarFragmentoWiki([{name: 'id', value: '#{registro.idWiki}'}]);">#{registro.titulo}</a>
+                                            <span class="color-360-original" style="font-size: 10px; position: relative; top: -2px"> (#{baruGenericMBean.getValorFormateado('Date', registro.fecha, 0)})</span>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </div>
+                </ui:fragment>
+
+                <ui:fragment rendered="#{wikiMBean.paso == 2}">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-8 col-sm-offset-2 margin-bottom-10">
+                            <div class="row">
+                                <div class="col-xs-8">
+                                    <label>Título:</label>
+                                    <h:inputText class="form-control noround" value="#{wikiMBean.titulo}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                return false;
+                                            }">
+                                        <f:ajax event="keyup" render=":formWiki:codigo" listener="#{wikiMBean.convertirTitulo}"/>
+                                    </h:inputText>
+                                </div>
+                                <div class="col-xs-4">
+                                    <label>Id soporte:</label>
+                                    <h:inputText class="form-control noround" value="#{wikiMBean.idSoporte}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                return false;
+                                            }"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-8 col-sm-offset-2 margin-bottom-10">
+                            <p:remoteCommand name="seleccionarPropiedad" actionListener="#{wikiMBean.seleccionarPropiedad}" update=":formWiki:btns :formWiki:lbl_codigo :formWiki:txa_texto"
+                                             oncomplete="cerrarModalEspera();"/>
+
+                            <h:panelGroup id="btns">
+                                <button type="button" class="btn #{wikiMBean.bold ? 'btn-primary' : 'btn-default'} noround" onclick="abrirModalEspera(); seleccionarPropiedad([{name: 'tipo', value: 'bold'}]);">
+                                    <span class="glyphicon glyphicon-bold"></span>
+                                </button>
+                                <button type="button" class="btn #{wikiMBean.italic ? 'btn-primary' : 'btn-default'} noround" onclick="abrirModalEspera(); seleccionarPropiedad([{name: 'tipo', value: 'italic'}]);">
+                                    <span class="glyphicon glyphicon-italic"></span>
+                                </button>
+                                <button type="button" class="btn btn-default noround" style="margin-left: 30px" data-toggle="modal" data-target="#modalImagen">
+                                    <span class="glyphicon glyphicon-picture"></span>
+                                </button>
+                                <button type="button" class="btn btn-default noround" onclick="abrirModalLink();">
+                                    <span class="glyphicon glyphicon-link"></span>
+                                </button>
+                                <button type="button" class="btn #{wikiMBean.html ? 'btn-primary' : 'btn-default'} noround" onclick="abrirModalEspera(); seleccionarPropiedad([{name: 'tipo', value: 'html'}]);">
+                                    html
+                                </button>
+                                <button type="button" class="btn btn-default noround" onclick="abrirModalEspera(); seleccionarPropiedad([{name: 'tipo', value: 'enter'}]);">
+                                    Enter
+                                </button>
+                                <button type="button" class="btn #{wikiMBean.list ? 'btn-primary' : 'btn-default'} noround" onclick="abrirModalEspera(); seleccionarPropiedad([{name: 'tipo', value: 'list'}]);"
+                                        style="margin-left: 30px">
+                                    <span class="glyphicon glyphicon-list"></span>
+                                </button>
+                                <!--
+                                <button type="button" class="btn #{wikiMBean.left ? 'btn-primary' : 'btn-default'} noround disabled btn-deshabilitado"
+                                        onclick="abrirModalEspera(); seleccionarPropiedad([{name: 'tipo', value: 'left'}]);">
+                                    <span class="glyphicon glyphicon-align-left"></span>
+                                </button>
+                                <button type="button" class="btn #{wikiMBean.center ? 'btn-primary' : 'btn-default'} noround disabled btn-deshabilitado"
+                                        onclick="abrirModalEspera(); seleccionarPropiedad([{name: 'tipo', value: 'center'}]);">
+                                    <span class="glyphicon glyphicon-align-center"></span>
+                                </button>
+                                <button type="button" class="btn #{wikiMBean.right ? 'btn-primary' : 'btn-default'} noround disabled btn-deshabilitado"
+                                        onclick="abrirModalEspera(); seleccionarPropiedad([{name: 'tipo', value: 'right'}]);">
+                                    <span class="glyphicon glyphicon-align-right"></span>
+                                </button>
+                                <button type="button" class="btn #{wikiMBean.right ? 'btn-primary' : 'btn-default'} noround disabled btn-deshabilitado"
+                                        onclick="abrirModalEspera(); seleccionarPropiedad([{name: 'tipo', value: 'right'}]);">
+                                    <span class="glyphicon glyphicon-align-justify"></span>
+                                </button>-->
+                            </h:panelGroup>
+                        </div>
+                        <div class="col-xs-12 col-sm-8 col-sm-offset-2 margin-bottom-10">
+                            <h:inputTextarea id="txa_texto" class="form-control noround" value="#{wikiMBean.texto}" style="resize: vertical; min-height: 250px">
+                                <f:ajax event="keyup" render=":formWiki:lbl_codigo" listener="#{wikiMBean.convertirTexto}"/>
+                            </h:inputTextarea>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div class="row">
+                        <h:panelGroup id="codigo">
+                            <div class="col-xs-12 margin-bottom-10">
+                                <h1 class="color-360-original">#{wikiMBean.titulo}</h1>
+                            </div>
+                            <div class="col-xs-12 margin-bottom-10">
+                                <h:outputText id="lbl_codigo" escape="false" value="#{wikiMBean.codigo}"/>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col-xs-12 right-component margin-bottom-10">
+                            <p:remoteCommand name="limpiarRegistroWiki" actionListener="#{wikiMBean.limpiarRegistroWiki}" update=":formWiki" oncomplete="cerrarModalEspera();"/>
+                            <p:remoteCommand name="guardarWiki" actionListener="#{wikiMBean.guardarWiki}" update=":formWiki" oncomplete="cerrarModalEspera();"/>
+
+                            <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); obtenerPaso();">
+                                <span class="glyphicon glyphicon-arrow-left"></span>
+                            </button>
+                            <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); limpiarRegistroWiki();">Cancelar</button>
+                            <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); guardarWiki();">Guardar</button>
+                        </div>
+                    </div>
+                </ui:fragment>
+            </h:form>
+        </div>
+        <br/>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+        <script src="/360/js/ventas.js"></script>
+    </h:body>
+</html>

@@ -1,0 +1,309 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <script src="/360/js/arriba.js"></script>
+        <script type="text/javascript">
+            function openRuta(window_src) {
+                ruta = window.open(window_src, '_blank');
+            }
+
+            function closeWindow() {
+                window.close();
+            }
+
+            function abrirModalDocumentacion() {
+                $('#modalDocumentacion').modal('show');
+            }
+
+            function cerrarModalDocumentacion() {
+                $('modalDocumentacion').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Saldos asesores externos</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <span class="hidden-xs ir-arriba">
+            <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+        </span>
+
+        <div class="container">
+            <h:panelGroup id="panelDocumentacion">
+                <div id="modalDocumentacion" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-conten dialog-content noround">
+                            <div class="modal-header dialog-header">
+                                <h4 class="modal-title">Documentacion</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-12 center-component">
+                                        <table class="table table-bordered table-responsive table-striped">
+                                            <tr>
+                                                <th class="head-tabla">Archivo</th>
+                                                <th class="head-tabla"></th>
+                                            </tr>
+                                            <ui:repeat value="#{saldosExternosMBean.documentacion}" var="documento">
+                                                <tr>
+                                                    <td>#{documento}</td>
+                                                    <td><span class="glyphicon glyphicon-save pointer-cursor" onclick="#{saldosExternosMBean.visualizarDocumento(documento)}"></span></td>
+                                                </tr>
+                                            </ui:repeat>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+            <h:form id="formSaldos">
+                <p:remoteCommand name="obtenerDocumentacion" actionListener="#{saldosExternosMBean.obtenerDocumentacion}" oncomplete="cerrarModalEspera(); abrirModalDocumentacion();"
+                                 update=":panelDocumentacion :formSaldos:msg"/>
+                <p:remoteCommand name="aplicar" actionListener="#{saldosExternosMBean.aplicar}" oncomplete="cerrarModalEspera();" update=":formSaldos:panelW :formSaldos:panelD :formSaldos:msg"/>
+                <p:remoteCommand name="cancelarSolicitud" actionListener="#{saldosExternosMBean.cancelarSolicitud}" oncomplete="cerrarModalEspera();" update=":formSaldos:panelW :formSaldos:panelD :formSaldos:msg"/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>
+                                    Saldos asesores exteriores
+                                </a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10">
+                        <ul class="nav nav-tabs margin-bottom-10">
+                            <li class="active"><a data-toggle="tab" href="#wp">Wedding planner</a></li>
+                            <li><a data-toggle="tab" href="#decorador">Decorador</a></li>
+                            <li><a data-toggle="tab" href="#consultar"><span class="glyphicon glyphicon-search" style="font-size: 15px"></span></a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="tab-content">
+                    <div id="wp" class="tab-pane fade in active">
+                        <div class="row">
+                            <h:panelGroup id="panelW">
+                                <ui:repeat value="#{saldosExternosMBean.redencionWedding}" var="wedding">
+                                    <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                        <div style="border: 1px solid #DDDDDD; padding: 10px; height: 234px">
+                                            <div class="row">
+                                                <div class="col-xs-12 margin-bottom-10 center-component">
+                                                    <b>#{wedding.usuarioPagina.nombre}</b>
+                                                </div>
+                                            </div>
+                                            <hr/>
+                                            <div class="row">
+                                                <ui:fragment rendered="#{wedding.modo eq 'BN'}">
+                                                    <div class="col-xs-offset-3 col-xs-6 margin-bottom-10 center-component">
+                                                        <div style="#{wedding.modo eq 'BN' ? 'border: 1px solid #BF0039; padding: 10px' : 'border: 1px solid #DDDDDD; padding: 10px'}">
+                                                            <div class="row">
+                                                                <div class="col-xs-12 margin-bottom-10">
+                                                                    <span class="glyphicon glyphicon-credit-card" style="font-size: 30px; color: #{wedding.modo eq 'BN' ? '#BF0039' : '#000000'}"></span>
+                                                                </div>
+                                                                <div class="col-xs-12 margin-bottom-10">
+                                                                    #{baruGenericMBean.getValorFormateado('Double', wedding.monto, 2)}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{wedding.modo eq 'EF'}">
+                                                    <div class="col-xs-offset-3 col-xs-6 margin-bottom-10 center-component">
+                                                        <div style="#{wedding.modo eq 'EF' ? 'border: 1px solid #BF0039; padding: 10px' : 'border: 1px solid #DDDDDD; padding: 10px'}">
+                                                            <div class="row">
+                                                                <div class="col-xs-12 margin-bottom-10">
+                                                                    <span class="glyphicon glyphicon-usd" style="font-size: 30px; color: #{wedding.modo eq 'EF' ? '#BF0039' : '#000000'}"></span>
+                                                                </div>
+                                                                <div class="col-xs-12 margin-bottom-10">
+                                                                    #{baruGenericMBean.getValorFormateado('Double', wedding.monto, 2)}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 center-component">
+                                                    <button type="button" class="btn btn-default noround"
+                                                            onclick="abrirModalEspera(); obtenerDocumentacion([{name: 'id', value: '#{wedding.idRedencion}'}, {name: 'tipo', value: 'WP'}]);">
+                                                        <span class="glyphicon glyphicon-save"></span>
+                                                    </button>
+                                                    <button type="button" class="btn btn-default noround"
+                                                            onclick="abrirModalEspera(); cancelarSolicitud([{name: 'id', value: '#{wedding.idRedencion}'}, {name: 'tipo', value: 'WP'}]);">Cancelar</button>
+                                                    <button type="button" class="btn btn-default noround"
+                                                            onclick="abrirModalEspera(); aplicar([{name: 'id', value: '#{wedding.idRedencion}'}, {name: 'tipo', value: 'WP'}]);">Aplicar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div id="decorador" class="tab-pane">
+                        <div class="row">
+                            <h:panelGroup id="panelD">
+                                <ui:repeat value="#{saldosExternosMBean.redencionDecorador}" var="decorador">
+                                    <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                        <div style="border: 1px solid #DDDDDD; padding: 10px; height: 234px">
+                                            <div class="row">
+                                                <div class="col-xs-12 margin-bottom-10 center-component">
+                                                    <b>#{decorador.usuarioPagina.nombre}</b>
+                                                </div>
+                                            </div>
+                                            <hr/>
+                                            <div class="row">
+                                                <ui:fragment rendered="#{decorador.modo eq 'BN'}">
+                                                    <div class="col-xs-offset-3 col-xs-6 margin-bottom-10 center-component">
+                                                        <div style="#{decorador.modo eq 'BN' ? 'border: 1px solid #BF0039; padding: 10px' : 'border: 1px solid #DDDDDD; padding: 10px'}">
+                                                            <div class="row">
+                                                                <div class="col-xs-12 margin-bottom-10">
+                                                                    <span class="glyphicon glyphicon-credit-card" style="font-size: 30px; color: #{decorador.modo eq 'BN' ? '#BF0039' : '#000000'}"></span>
+                                                                </div>
+                                                                <div class="col-xs-12 margin-bottom-10">
+                                                                    #{baruGenericMBean.getValorFormateado('Double', decorador.monto, 2)}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{decorador.modo eq 'EF'}">
+                                                    <div class="col-xs-offset-3 col-xs-6 margin-bottom-10 center-component">
+                                                        <div style="#{decorador.modo eq 'EF' ? 'border: 1px solid #BF0039; padding: 10px' : 'border: 1px solid #DDDDDD; padding: 10px'}">
+                                                            <div class="row">
+                                                                <div class="col-xs-12 margin-bottom-10">
+                                                                    <span class="glyphicon glyphicon-usd" style="font-size: 30px; color: #{decorador.modo eq 'EF' ? '#BF0039' : '#000000'}"></span>
+                                                                </div>
+                                                                <div class="col-xs-12 margin-bottom-10">
+                                                                    #{baruGenericMBean.getValorFormateado('Double', decorador.monto, 2)}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ui:fragment>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 center-component">
+                                                    <button type="button" class="btn btn-default noround"
+                                                            onclick="abrirModalEspera(); obtenerDocumentacion([{name: 'id', value: '#{decorador.idRedencion}'}, {name: 'tipo', value: 'DC'}]);">
+                                                        <span class="glyphicon glyphicon-save"></span>
+                                                    </button>
+                                                    <button type="button" class="btn btn-default noround"
+                                                            onclick="abrirModalEspera(); cancelarSolicitud([{name: 'id', value: '#{decorador.idRedencion}'}, {name: 'tipo', value: 'DC'}]);">Cancelar</button>
+                                                    <button type="button" class="btn btn-default noround"
+                                                            onclick="abrirModalEspera(); aplicar([{name: 'id', value: '#{decorador.idRedencion}'}, {name: 'tipo', value: 'DC'}]);">Aplicar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div id="consultar" class="tab-pane">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-4 col-sm-offset-4 margin-bottom-10">
+                                <p:focus context="formSaldos" for="txt_parametro"/>
+                                <label>Parámetro búsqueda:</label>
+                                <div class="input-group">
+                                    <h:inputText id="txt_parametro" class="form-control input-lg noround" value="#{externosMBean.parametro}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                abrirModalEspera();
+                                                obtenerUsuarios();
+                                                return false;
+                                            }">
+                                        <f:ajax event="change"/>
+                                    </h:inputText>
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-primary btn-lg noround" type="button" style="font-size: 23px; padding: 9.5px 10px 4.5px 10px">
+                                            <span class="glyphicon glyphicon-search"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="row">
+                            <h:panelGroup id="panelConsulta">
+                                <ui:repeat value="#{saldosExternosMBean.usuariosEspeciales}" var="especial">
+                                    <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                        <div style="border: 1px solid #DDDDDD; padding: 10px; height: 208px">
+                                            <div class="row">
+                                                <div class="col-xs-12 margin-bottom-10 center-component">
+                                                    <b>#{especial.nombre}</b>
+                                                </div>
+                                                <div class="col-xs-12 margin-bottom-10 right-component">
+                                                    <ui:fragment rendered="#{especial.esPlanificador}">
+                                                        Wedding planner
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{especial.esDecorador}">
+                                                        Decorador
+                                                    </ui:fragment>
+                                                </div>
+                                            </div>
+                                            <hr/>
+                                            <div class="row">
+                                                <div class="col-xs-6 margin-bottom-10 center-component">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 margin-bottom-10">
+                                                            <span class="glyphicon glyphicon-credit-card" style="font-size: 30px"></span>
+                                                        </div>
+                                                        <div class="col-xs-12 margin-bottom-10">
+                                                            #{baruGenericMBean.getValorFormateado('Double', especial.puntos.redimeBono, 2)}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-6 margin-bottom-10 center-component">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 margin-bottom-10">
+                                                            <span class="glyphicon glyphicon-usd" style="font-size: 30px"></span>
+                                                        </div>
+                                                        <div class="col-xs-12 margin-bottom-10">
+                                                            #{baruGenericMBean.getValorFormateado('Double', especial.puntos.redimeEfectivo, 2)}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+        <br/>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

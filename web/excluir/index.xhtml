@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <title>360 - Excluir documento</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <span class="ir-arriba">
+            <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+        </span>
+
+        <div class="container">
+            <h:form id="formExcluir">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Excluir documentos</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+                        <p:remoteCommand name="consultarDocumento" actionListener="#{excluirDocumentosMBean.consultarDocumento}" update=":formExcluir:saldos" oncomplete="cerrarModalEspera();"/>
+
+                        <label>Documento:</label>
+                        <div class="input-group">
+                            <div class="input-group-btn">
+                                <h:selectOneMenu class="input-lg noround" value="#{excluirDocumentosMBean.tipo}" style="border-right: none; border-color: #CCCCCC; font-size: 14px">
+                                    <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                    <f:selectItem itemLabel="Factura" itemValue="factura"/>
+                                    <f:selectItem itemLabel="Devolución" itemValue="devolucion"/>
+                                </h:selectOneMenu>
+                            </div>
+                            <h:inputText class="form-control input-lg noround" value="#{excluirDocumentosMBean.documento}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                        abrirModalEspera();
+                                        consultarDocumento();
+                                        return false;
+                                    }"/>
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary btn-lg noround" type="button" style="font-size: 23px; padding: 8.5px 10px 4.5px 10px; height: 46px" onclick="abrirModalEspera(); consultarDocumento();">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                <hr/>
+                <h:panelGroup id="saldos">
+                    <ui:fragment rendered="#{excluirDocumentosMBean.saldos ne null and not empty excluirDocumentosMBean.saldos}">
+                        <div class="row">
+                            <ui:repeat value="#{excluirDocumentosMBean.saldos}" var="saldo">
+                                <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                    <div style="border: 1px solid #CCCCCC; padding: 10px; height: 145px">
+                                        <div class="row">
+                                            <div class="col-xs-5">
+                                                <img src="#{imagenProductoMBean.obtenerUrlProducto(saldo.referencia, true)}"/>
+                                            </div>
+                                            <div class="col-xs-7">
+                                                <div class="row">
+                                                    <div class="col-xs-12 right-component" style="font-size: 30px">
+                                                        #{baruGenericMBean.convertirARefCorta(saldo.referencia)}
+                                                    </div>
+                                                    <div class="col-xs-12 right-component">
+                                                        <span class="badge badge-360-original">#{saldo.cantidad}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 justify-component">
+                                                #{baruGenericMBean.obtenerNombreReferencia(saldo.referencia)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 right-component">
+                                <p:remoteCommand name="limpiar" actionListener="#{excluirDocumentosMBean.limpiar}" update=":formExcluir" oncomplete="cerrarModalEspera();"/>
+                                <p:remoteCommand name="excluirDocumento" actionListener="#{excluirDocumentosMBean.excluirDocumento}" update=":formExcluir" oncomplete="cerrarModalEspera();"/>
+
+                                <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); limpiar();">
+                                    Cancelar
+                                </button>
+                                <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); excluirDocumento();">
+                                    Excluir
+                                </button>
+                            </div>
+                        </div>
+                    </ui:fragment>
+                </h:panelGroup>
+            </h:form>
+            <br/>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

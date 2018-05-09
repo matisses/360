@@ -106,6 +106,11 @@
                                     </li>
                                 </ui:fragment>
                             </ui:fragment>
+                            <ui:fragment rendered="#{informesMBean.proceso == 4}">
+                                <li class="active">
+                                    <a>Informe ventas Juan Camilo</a>
+                                </li>
+                            </ui:fragment>
                         </ol>
                     </div>
                 </div>
@@ -116,6 +121,9 @@
 
                         <ul class="nav nav-tabs margin-bottom-10">
                             <li class="#{informesMBean.proceso == 1 ? 'active' : ''}" onclick="cambiarProceso([{name: 'proceso', value: '1'}]);"><a data-toggle="tab" href="#ventas">Ventas</a></li>
+                            <ui:fragment rendered="#{informesMBean.juanCamilo}">
+                                <li class="#{informesMBean.proceso == 4 ? 'active' : ''}" onclick="cambiarProceso([{name: 'proceso', value: '4'}]);"><a data-toggle="tab" href="#juan">Juan B</a></li>
+                            </ui:fragment>
                             <li class="#{informesMBean.proceso == 2 ? 'active' : ''}" onclick="cambiarProceso([{name: 'proceso', value: '2'}]);"><a data-toggle="tab" href="#rutas">Rutas</a></li>
                             <li class="#{informesMBean.proceso == 3 ? 'active' : ''}" onclick="cambiarProceso([{name: 'proceso', value: '3'}]);"><a data-toggle="tab" href="#taller">Ccyga</a></li>
                         </ul>
@@ -433,6 +441,112 @@
                                     </div>
                                 </ui:fragment>
                             </div>
+                            <ui:fragment rendered="#{informesMBean.juanCamilo}">
+                                <div id="juan" class="tab-pane #{informesMBean.proceso == 4 ? 'fade in active' : ''}">
+                                    <div class="row">
+                                        <div class="hidden-xs hidden-sm col-md-offset-3 col-md-3 margin-bottom-10">
+                                            <label>Fecha inicio:</label>
+                                            <p:calendar id="fechaInicioJuan" pattern="yyyy-MM-dd" class="input-lg mask" value="#{informesMBean.startDateJuan}">
+                                                <p:ajax event="dateSelect" rendered=":formInformes:fechaInicio"/>
+                                            </p:calendar>
+                                        </div>
+                                        <div class="hidden-xs hidden-sm col-md-3 margin-bottom-10">
+                                            <label>Fecha fin:</label>
+                                            <p:calendar id="fechaFinJuan" pattern="yyyy-MM-dd" class="input-lg mask" value="#{informesMBean.endDateJuan}">
+                                                <p:ajax event="dateSelect" rendered=":formInformes:fechaFin"/>
+                                            </p:calendar>
+                                        </div>
+                                        <div class="hidden-md hidden-lg col-xs-12 col-sm-6 margin-bottom-10">
+                                            <label>Fecha inicio:</label>
+                                            <br/>
+                                            <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{informesMBean.startYearJuan}" style="width: 30%; display: inline-block">
+                                                <f:selectItem itemLabel="Año" itemValue=""/>
+                                                <f:selectItems value="#{informesMBean.years}" var="year" itemLabel="#{year}" itemValue="#{year}"/>
+                                                <f:ajax listener="#{informesMBean.cargarDays(true)}" render=":formInformes:startDays"/>
+                                            </h:selectOneMenu>
+
+                                            <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{informesMBean.startMonthJuan}" style="width: 45%; display: inline-block">
+                                                <f:selectItem itemLabel="Mes" itemValue=""/>
+                                                <f:selectItems value="#{informesMBean.months}" var="month" itemLabel="#{month[1]}" itemValue="#{month[0]}"/>
+                                                <f:ajax listener="#{informesMBean.cargarDays(true)}" render=":formInformes:startDays"/>
+                                            </h:selectOneMenu>
+
+                                            <h:selectOneMenu id="startDaysJuan" class="form-control input-lg noround pointer-cursor" value="#{informesMBean.startDayJuan}" style="width: 25%; display: inline-block">
+                                                <f:selectItem itemLabel="Día" itemValue=""/>
+                                                <f:selectItems value="#{informesMBean.startDaysJuan}" var="startDayJuan" itemLabel="#{startDayJuan}" itemValue="#{startDayJuan}"/>
+                                            </h:selectOneMenu>
+                                        </div>
+                                        <div class="hidden-md hidden-lg col-xs-12 col-sm-6 margin-bottom-10">
+                                            <label>Fecha fin:</label>
+                                            <br/>
+                                            <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{informesMBean.endYearJuan}" style="width: 30%; display: inline-block">
+                                                <f:selectItem itemLabel="Año" itemValue=""/>
+                                                <f:selectItems value="#{informesMBean.years}" var="year" itemLabel="#{year}" itemValue="#{year}"/>
+                                                <f:ajax listener="#{informesMBean.cargarDays(false)}" render=":formInformes:endDays"/>
+                                            </h:selectOneMenu>
+
+                                            <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{informesMBean.endMonthJuan}" style="width: 45%; display: inline-block">
+                                                <f:selectItem itemLabel="Mes" itemValue=""/>
+                                                <f:selectItems value="#{informesMBean.months}" var="month" itemLabel="#{month[1]}" itemValue="#{month[0]}"/>
+                                                <f:ajax listener="#{informesMBean.cargarDays(false)}" render=":formInformes:endDays"/>
+                                            </h:selectOneMenu>
+
+                                            <h:selectOneMenu id="endDaysJuan" class="form-control input-lg noround pointer-cursor" value="#{informesMBean.endDayJuan}" style="width: 25%; display: inline-block">
+                                                <f:selectItem itemLabel="Día" itemValue=""/>
+                                                <f:selectItems value="#{informesMBean.endDaysJuan}" var="endDayJuan" itemLabel="#{endDayJuan}" itemValue="#{endDayJuan}"/>
+                                            </h:selectOneMenu>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-md-offset-3 col-md-6 margin-bottom-10 right-component">
+                                            <p:remoteCommand name="mostrarHoyJuan" actionListener="#{informesMBean.mostrarHoyJuan}" update=":formInformes" oncomplete="cerrarModalEspera();"/>
+                                            <p:remoteCommand name="mostrarMesJuan" actionListener="#{informesMBean.mostrarMesJuan}" update=":formInformes" oncomplete="cerrarModalEspera();"/>
+                                            <p:remoteCommand name="mostrarVentasJuanDesktop" actionListener="#{informesMBean.mostrarVentasJuanDesktop}" update=":formInformes" oncomplete="cerrarModalEspera();"/>
+                                            <p:remoteCommand name="mostrarVentasJuanMobile" actionListener="#{informesMBean.mostrarVentasJuanMobile}" update=":formInformes" oncomplete="cerrarModalEspera();"/>
+
+                                            <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarHoyJuan();">
+                                                Hoy
+                                            </button>
+                                            <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); mostrarMesJuan();">
+                                                Mes
+                                            </button>
+                                            <button type="button" class="hidden-xs hidden-sm btn btn-primary btn-lg noround" onclick="abrirModalEspera(); mostrarVentasJuanDesktop();">
+                                                <span class="glyphicon glyphicon-search"></span>
+                                            </button>
+                                            <button type="button" class="hidden-md hidden-lg btn btn-primary btn-lg noround" onclick="abrirModalEspera(); mostrarVentasJuanMobile();">
+                                                <span class="glyphicon glyphicon-search"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-md-offset-3 col-md-6">
+                                            <p:messages id="msgJuan" showDetail="true" showSummary="true"/>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-md-offset-3 col-md-6 margin-bottom-10">
+                                            <table class="table table-bordered table-responsive table-striped">
+                                                <tr>
+                                                    <th class="head-tabla">Sucursal</th>
+                                                    <th class="head-tabla">Ventas</th>
+                                                </tr>
+                                                <ui:repeat value="#{informesMBean.ventasJuan}" var="ventaJuan">
+                                                    <tr class="tr-tabla pointer-cursor" onclick="abrirModalEspera(); seleccionarOpcion([{name: 'tienda', value: '#{ventaJuan[0]}'}]);">
+                                                        <td>#{informesMBean.getObtenerNombreTienda(ventaJuan[0])}</td>
+                                                        <td class="right-component">$ #{baruGenericMBean.getValorFormateado('Integer', ventaJuan[1], 0)}</td>
+                                                    </tr>
+                                                </ui:repeat>
+                                                <tr class="tr-tabla pointer-cursor" style="border-top: 3px solid #BF0039"
+                                                    onclick="abrirModalEspera(); seleccionarOpcion([{name: 'tienda', value: '#{ventaJuan[0]}'}]);">
+                                                    <td class="right-component"><b>Total</b></td>
+                                                    <td class="right-component"><b>$ #{baruGenericMBean.getValorFormateado('Integer', informesMBean.totalVentasJuan, 0)}</b></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:fragment>
                             <div id="rutas" class="tab-pane #{informesMBean.proceso == 2 ? 'fade in active' : ''}">
                                 <div class="row">
                                     <div class="hidden-xs hidden-sm col-md-offset-3 col-md-3 margin-bottom-10">

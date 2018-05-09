@@ -1,0 +1,549 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <script type="text/javascript">
+            $(window).load(function () {
+                this.abrirModalSolicitud();
+            });
+
+            function abrirModalAdvertencia() {
+                $('#modalAdvertencia').modal('show');
+            }
+
+            function cerrarModalAdvertencia() {
+                $('modalAdvertencia').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalCrear() {
+                $('#modalCrear').modal('show');
+            }
+
+            function cerrarModalCrear() {
+                $('modalCrear').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalSolicitud() {
+                $('#modalSolicitud').modal('show');
+
+                this.scrollHistorico();
+            }
+
+            function scrollHistorico() {
+                setTimeout(function () {
+                    $("#historico").animate({scrollTop: $('#historico').prop("scrollHeight")}, 600);
+                }, 1000);
+            }
+
+            function cerrarModalSolicitud() {
+                $('modalSolicitud').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Soporte</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <div class="container">
+            <h:panelGroup id="panelAdvertencia">
+                <h:panelGroup rendered="#{soportesMBean.dlgAdvertencia}">
+                    <h:form id="formAdvertencia">
+                        <div id="modalAdvertencia" class="modal fade" tabindex="-1" role="dialog">
+                            <div class="modal-dialog modal-sm" role="document">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-body">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+                                        <div class="row">
+                                            <div class="col-xs-12 justify-component">
+                                                <p>
+                                                    Actualmente ha superado el número máximo de solicitudes resueltas sin <b>aprobar</b>/<b>rechazar</b> (5).
+                                                </p>
+                                                <p>
+                                                    Por favor apruebe o rechace estas solicitudes para poder seguir registrando nuevas.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelCrear">
+                <h:panelGroup rendered="#{soportesMBean.dlgCrear}">
+                    <div id="modalCrear" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <h4 class="modal-title">Crear solicitud</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-7 margin-bottom-10">
+                                            <h:form id="formDatos">
+                                                <div class="row">
+                                                    <div class="col-xs-12 margin-bottom-10">
+                                                        <p:focus context="formDatos" for="txt_asunto"/>
+
+                                                        <label>Asunto*</label>
+                                                        <h:inputText id="txt_asunto" class="form-control noround" value="#{soportesMBean.asunto}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                                    return false;
+                                                                }">
+                                                            <f:ajax event="change"/>
+                                                        </h:inputText>
+                                                    </div>
+                                                    <div class="col-xs-12 margin-bottom-10">
+                                                        <label>Tipo solicitud*</label>
+                                                        <h:selectOneMenu class="form-control noround pointer-cursor" value="#{soportesMBean.idTipoSolicitud}" style="height: 34px">
+                                                            <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                            <f:selectItems value="#{soportesMBean.tiposSolicitud}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo.idTipoSolicitud}"/>
+                                                            <f:ajax event="change"/>
+                                                        </h:selectOneMenu>
+                                                    </div>
+                                                    <div class="col-xs-12 margin-bottom-10">
+                                                        <label>Describa su solicitud*</label>
+                                                        <h:inputTextarea class="form-control noround" value="#{soportesMBean.solicitud}" style="resize: none; height: 130px">
+                                                            <f:ajax event="change"/>
+                                                        </h:inputTextarea>
+                                                    </div>
+                                                </div>
+                                            </h:form>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-5">
+                                            <h:form enctype="multipart/form-data">
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <label>Adjunto</label>
+                                                        <br/>
+                                                        <label class="form-control btn btn-default btn-file noround">
+                                                            Cargar archivo
+                                                            <h:inputFile value="#{soportesMBean.adjunto}" style="display: none">
+                                                                <f:ajax listener="#{soportesMBean.agregarAdjunto}" render=":formAdjuntos:adjuntos"/>
+                                                            </h:inputFile>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </h:form>
+                                            <hr/>
+                                            <h:form id="formAdjuntos">
+                                                <div class="row">
+                                                    <p:remoteCommand name="eliminarAdjunto" actionListener="#{soportesMBean.eliminarAdjunto}" update=":formAdjuntos:adjuntos"/>
+
+                                                    <h:panelGroup id="adjuntos">
+                                                        <ui:repeat value="#{soportesMBean.adjuntos}" var="adjunto">
+                                                            <div class="col-xs-12 margin-bottom-10">
+                                                                <div style="border: 1px solid #DDDDDD; padding: 10px">
+                                                                    <div class="row">
+                                                                        <div class="col-xs-12 center-component">
+                                                                            #{adjunto.nombre}
+                                                                        </div>
+                                                                        <div class="col-xs-12 right-component">
+                                                                            <span class="glyphicon glyphicon-trash pointer-cursor" onclick="eliminarAdjunto([{name: 'nombre', value: '#{adjunto.nombre}'}]);"></span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </ui:repeat>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </h:form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <h:form>
+                                        <p:remoteCommand name="modal" update=":panelCrear" oncomplete="guardarSolicitud(); abrirModalEspera();"/>
+                                        <p:remoteCommand name="guardarSolicitud" actionListener="#{soportesMBean.guardarSolicitud}" update=":formAdjuntos :formDatos :formInformes :panelCrear"
+                                                         oncomplete="cerrarModalEspera(); abrirModalCrear();"/>
+
+                                        <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cancelar</button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="modal();">Guardar</button>
+                                    </h:form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelSolicitud">
+                <h:panelGroup rendered="#{soportesMBean.soporte ne null and soportesMBean.soporte.idSolicitud ne null and soportesMBean.soporte.idSolicitud gt 0}">
+                    <div id="modalSolicitud" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <h4 class="modal-title">Solicitud #{soportesMBean.soporte.idSolicitud}</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <h:form id="formDatosSoporte">
+                                            <div class="col-xs-12 col-sm-7 margin-bottom-10">
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <b>Asunto</b>: #{soportesMBean.soporte.asunto}
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <b>Solicita</b>: #{baruGenericMBean.obtenerNombreEmpleado(soportesMBean.soporte.empleado)}
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <b>Solicitud</b>: #{soportesMBean.soporte.idTipoSolicitud.nombre}
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12 margin-bottom-10">
+                                                        <div class="row">
+                                                            <div class="col-xs-6">
+                                                                <label>Historico:</label>
+                                                            </div>
+                                                            <div class="col-xs-6">
+                                                                <label>Estado:</label> <span style="color: #BF0039">#{soportesMBean.soporte.estado.nombreEstado}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div id="historico" style="width: 100%; height: 200px; border-radius: 10px; border: 1px solid #DDDDDD; overflow-y: auto; overflow-x: hidden">
+                                                            <div class="row">
+                                                                <ui:repeat value="#{soportesMBean.soporte.comentarios}" var="comentario">
+                                                                    <ui:fragment rendered="#{comentario.usuario eq soportesMBean.soporte.usuario}">
+                                                                        <div class="col-xs-12">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-2">
+                                                                                    <div>
+                                                                                        <div class="row">
+                                                                                            <div class="col-xs-12">
+                                                                                                <img class="img-responsive" src="#{baruGenericMBean.obtenerRutaFotoEmpleadoComision(soportesMBean.soporte.empleado)}"
+                                                                                                     style="border-radius: 100%; border: 1px solid #000000; margin: 5px"/>
+                                                                                            </div>
+                                                                                            <div class="col-xs-12 center-component" style="font-size: 12px; padding-left: 24px">
+                                                                                                #{comentario.usuario}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-xs-9 margin-bottom-10">
+                                                                                    <div class="globo-comentario-creador">
+                                                                                        <div class="row">
+                                                                                            <div class="col-xs-12">
+                                                                                                #{baruGenericMBean.getValorFormateado('DateTime', comentario.fecha, 0)}
+                                                                                                <br/>
+                                                                                                #{comentario.comentario}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{comentario.usuario ne soportesMBean.soporte.usuario}">
+                                                                        <div class="col-xs-9 margin-bottom-10">
+                                                                            <div class="globo-comentario-otro">
+                                                                                <div class="row">
+                                                                                    <div class="col-xs-12">
+                                                                                        #{baruGenericMBean.getValorFormateado('DateTime', comentario.fecha, 0)}
+                                                                                        <br/>
+                                                                                        #{comentario.comentario}
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-xs-2" style="margin-left: 34px">
+                                                                            <div>
+                                                                                <div class="row">
+                                                                                    <div class="col-xs-12">
+                                                                                        <img class="img-responsive" style="border-radius: 100%; border: 1px solid #000000; margin: 5px"
+                                                                                             src="#{baruGenericMBean.obtenerRutaFotoEmpleadoComision(soportesMBean.obtenerDocumentoUsuario(comentario.usuario))}"/>
+                                                                                    </div>
+                                                                                    <div class="col-xs-12 center-component" style="font-size: 12px; padding-left: 20px">
+                                                                                        #{comentario.usuario}
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                </ui:repeat>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12 margin-bottom-10">
+                                                        <label>Comentario:</label>
+                                                        <h:inputTextarea id="txt_comentario" class="form-control noround" value="#{soportesMBean.comentario}" style="resize: none; height: 90px"
+                                                                         disabled="#{!soportesMBean.editable}">
+                                                            <f:ajax event="change"/>
+                                                        </h:inputTextarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </h:form>
+                                        <div class="col-xs-12 col-sm-5 margin-bottom-10">
+                                            <div class="row">
+                                                <h:form id="formResponsable">
+                                                    <div class="col-xs-6">
+                                                        <label>Resuelve:</label>
+                                                        <h:selectOneMenu class="form-control noround pointer-cursor" value="#{soportesMBean.soporte.encargado}" style="height: 34px"
+                                                                         disabled="#{(soportesMBean.soporte.encargado ne null and not empty soportesMBean.soporte.encargado)
+                                                                                     or !soportesMBean.editable ? 'true' : 'false'}">
+                                                            <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                            <f:selectItems value="#{soportesMBean.administradores}" var="administrador" itemValue="#{administrador}"
+                                                                           itemLabel="#{baruGenericMBean.obtenerNombreEmpleado(soportesMBean.obtenerDocumentoUsuario(administrador))}"/>
+                                                            <f:ajax event="change"/>
+                                                        </h:selectOneMenu>
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <label>Prioridad:</label>
+                                                        <h:selectOneMenu class="form-control noround pointer-cursor" value="#{soportesMBean.soporte.idPrioridad.idPrioridad}" style="height: 34px"
+                                                                         disabled="#{soportesMBean.soporte.idPrioridad.prioridad ne 'SIN DEFINIR' or !soportesMBean.editable ? 'true' : 'false'}">
+                                                            <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                            <f:selectItems value="#{soportesMBean.prioridades}" var="prioridad" itemLabel="#{prioridad.prioridad}" itemValue="#{prioridad.idPrioridad}"/>
+                                                            <f:ajax event="change"/>
+                                                        </h:selectOneMenu>
+                                                    </div>
+                                                </h:form>
+                                            </div>
+                                            <hr/>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <h:form id="formAdjuntar" enctype="multipart/form-data">
+                                                        <div class="row">
+                                                            <div class="col-xs-12">
+                                                                <label>Adjunto</label>
+                                                                <br/>
+                                                                <label class="form-control btn btn-default btn-file noround #{!soportesMBean.editable ? 'disabled' : ''}">
+                                                                    Cargar archivo
+                                                                    <h:inputFile value="#{soportesMBean.adjunto}" style="display: none" disabled="#{!soportesMBean.editable}">
+                                                                        <f:ajax listener="#{soportesMBean.agregarAdjunto}" render=":formAdjuntosSoporte"/>
+                                                                    </h:inputFile>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </h:form>
+                                                    <hr/>
+                                                    <h:form id="formAdjuntosSoporte">
+                                                        <p:remoteCommand name="eliminarAdjunto" actionListener="#{soportesMBean.eliminarAdjunto}" update=":formAdjuntosSoporte"/>
+
+                                                        <div class="row">
+                                                            <ui:repeat value="#{soportesMBean.soporte.adjuntos}" var="adjunto">
+                                                                <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                                    <div style="border: 1px solid #DDDDDD; padding: 10px">
+                                                                        <div class="row">
+                                                                            <div class="col-xs-12 center-component margin-bottom-10">
+                                                                                #{adjunto.nombre}
+                                                                            </div>
+                                                                            <div class="col-xs-12 right-component">
+                                                                                <ui:fragment rendered="#{adjunto.idAdjunto ne null and adjunto.idAdjunto gt 0}">
+                                                                                    <h:commandButton id="input01" class="btn btn-default noround" value="Descargar">
+                                                                                        <p:fileDownload value="#{soportesMBean.getFile(adjunto)}"/>
+                                                                                    </h:commandButton>
+                                                                                </ui:fragment>
+                                                                                <ui:fragment rendered="#{adjunto.idAdjunto eq null or adjunto.idAdjunto eq 0}">
+                                                                                    <span class="glyphicon glyphicon-trash pointer-cursor" onclick="eliminarAdjunto([{name: 'nombre', value: '#{adjunto.nombre}'}]);">
+                                                                                    </span>
+                                                                                </ui:fragment>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </ui:repeat>
+                                                        </div>
+                                                    </h:form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <h:form id="btnsSoporte">
+                                        <p:remoteCommand name="limpiarSoporte" actionListener="#{soportesMBean.limpiarSoporte}"/>
+                                        <p:remoteCommand name="guardarCambiosSoporte" actionListener="#{soportesMBean.guardarCambiosSoporte}" oncomplete="scrollHistorico();"
+                                                         update=":btnsSoporte:msg :formDatosSoporte :formAdjuntosSoporte :btnsSoporte :formInformes :formAdjuntar :formResponsable"/>
+
+                                        <p:messages class="left-component" id="msg" showDetail="true" showSummary="true"/>
+
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal" onclick="limpiarSoporte();">Cerrar</button>
+
+                                        <ui:fragment rendered="#{soportesMBean.responsable}">
+                                            <p:remoteCommand name="solucionarSoporte" actionListener="#{soportesMBean.solucionarSoporte}" oncomplete="scrollHistorico();"
+                                                             update=":btnsSoporte:msg :formDatosSoporte :formAdjuntosSoporte :btnsSoporte :formInformes :formAdjuntar :formResponsable"/>
+
+                                            <ui:fragment rendered="#{soportesMBean.soporte.estado.nombreEstado eq 'Asignado' || soportesMBean.soporte.estado.nombreEstado eq 'No Aprobado'}">
+                                                <button type="button" class="btn btn-lg btn-default noround" onclick="solucionarSoporte([{name: 'resuelto', value: '#{false}'}]);" style="margin-left: 5px">
+                                                    Rechazar
+                                                </button>
+                                                <button type="button" class="btn btn-lg btn-primary noround" onclick="solucionarSoporte([{name: 'resuelto', value: '#{true}'}]);">
+                                                    Resolver
+                                                </button>
+                                            </ui:fragment>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{soportesMBean.soporte.estado.nombreEstado eq 'Resuelto' and userSessionInfoMBean.usuario eq soportesMBean.soporte.usuario}">
+                                            <p:remoteCommand name="aprobarSoporte" actionListener="#{soportesMBean.aprobarSoporte}" oncomplete="scrollHistorico();"
+                                                             update=":btnsSoporte:msg :formDatosSoporte :formAdjuntosSoporte :btnsSoporte :formInformes :formAdjuntar :formResponsable"/>
+
+                                            <button type="button" class="btn btn-lg btn-default noround" onclick="aprobarSoporte([{name: 'aprobado', value: '#{false}'}]);" style="margin-left: 5px">
+                                                No aprobar
+                                            </button>
+                                            <button type="button" class="btn btn-lg btn-primary noround" onclick="aprobarSoporte([{name: 'aprobado', value: '#{true}'}]);">
+                                                Aprobar
+                                            </button>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{(soportesMBean.responsable or soportesMBean.soporte.usuario eq userSessionInfoMBean.usuario or soportesMBean.soporte.estado.nombreEstado eq 'Resuelto'
+                                                                 or userSessionInfoMBean.validarPermisoUsuario('SOLICITUD_SISTEMAS', 'ADMINISTRAR')) and (soportesMBean.soporte.estado.nombreEstado ne 'Aprobado'
+                                                                 and soportesMBean.soporte.estado.nombreEstado ne 'Resuelto' and soportesMBean.soporte.estado.nombreEstado ne 'Cancelado')}">
+                                            <button type="button" class="btn btn-lg btn-default noround" onclick="guardarCambiosSoporte();" style="margin-left: 5px">
+                                                Guardar
+                                            </button>
+                                        </ui:fragment>
+                                    </h:form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:form id="formInformes">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>
+                                    Solicitudes de servicio
+                                </a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-sm-offset-6 col-md-4 col-md-offset-8">
+                        <p:remoteCommand name="obtenerSoportes" actionListener="#{soportesMBean.obtenerSoportes}" update=":formInformes:paginador :formInformes:datos" oncomplete="cerrarModalEspera();"/>
+                        <p:focus context="formInformes" for="txt_parametro"/>
+
+                        <label>Parametro busqueda</label>
+                        <div class="input-group">
+                            <h:inputText id="txt_parametro" class="form-control input-lg noround" value="#{soportesMBean.parametro}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                        abrirModalEspera();
+                                        obtenerSoportes();
+                                        return false;
+                                    }"/>
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary btn-lg noround" type="button" style="font-size: 23px; padding: 9.5px 10px 4.5px 10px" onclick="abrirModalEspera(); obtenerSoportes();">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <p:remoteCommand name="paginar" actionListener="#{soportesMBean.mostrarPaginaEspecifica}" update=":formInformes" oncomplete="cerrarModalEspera();"/>
+                    <p:remoteCommand name="anteriorPagina" actionListener="#{soportesMBean.mostrarPaginaAnterior}" update=":formInformes" oncomplete="cerrarModalEspera();"/>
+                    <p:remoteCommand name="siguientePagina" actionListener="#{soportesMBean.mostrarPaginaSiguiente}" update=":formInformes" oncomplete="cerrarModalEspera();"/>
+
+                    <div class="col-xs-12">
+                        <h:panelGroup id="paginador">
+                            <nav class="nav-paginator-center">
+                                <ul class="pagination pagination-lg">
+                                    <li class="#{soportesMBean.pagina == 1 ? 'disabled' : ''}" style="cursor: pointer">
+                                        <a aria-label="Previus" onclick="abrirModalEspera();
+                                                anteriorPagina();">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    <ui:repeat var="pagina" value="#{soportesMBean.paginas}">
+                                        <li class="#{soportesMBean.pagina == pagina ? 'active' : ''}" style="cursor: pointer">
+                                            <a onclick="abrirModalEspera(); paginar([{name: 'pagina', value: '#{pagina}'}]);">
+                                                #{pagina}
+                                            </a>
+                                        </li>
+                                    </ui:repeat>
+                                    <li class="#{soportesMBean.pagina == soportesMBean.totalPaginas ? 'disabled' : ''}" style="cursor: pointer">
+                                        <a aria-label="Next" onclick="abrirModalEspera(); siguientePagina();">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </h:panelGroup>
+                    </div>
+                </div>
+                <div class="row">
+                    <p:remoteCommand name="abrirSolicitud" actionListener="#{soportesMBean.abrirSolicitud}" oncomplete="cerrarModalEspera(); abrirModalSolicitud();" update=":panelSolicitud"/>
+
+                    <div class="col-xs-12 col-sm-12 col-md-11 margin-bottom-10">
+                        <h:panelGroup id="datos">
+                            <table class="table table-bordered table-responsive table-striped">
+                                <tr>
+                                    <th class="head-tabla">#</th>
+                                    <th class="head-tabla">Creador</th>
+                                    <th class="head-tabla">Solicitud</th>
+                                    <th class="head-tabla">Pr</th>
+                                    <th class="head-tabla">Estado</th>
+                                    <th class="head-tabla">Encargado</th>
+                                    <th class="head-tabla">Asunto</th>
+                                    <th class="head-tabla"></th>
+                                </tr>
+                                <ui:repeat value="#{soportesMBean.solicitudes}" var="solicitud">
+                                    <tr class="tr-tabla pointer-cursor">
+                                        <td class="center-component" onclick="abrirModalEspera(); abrirSolicitud([{name: 'idSolicitud', value: '#{solicitud.idSolicitud}'}]);"><b>#{solicitud.idSolicitud}</b></td>
+                                        <td class="center-component" onclick="abrirModalEspera(); abrirSolicitud([{name: 'idSolicitud', value: '#{solicitud.idSolicitud}'}]);">#{solicitud.usuario}</td>
+                                        <td class="center-component" onclick="abrirModalEspera(); abrirSolicitud([{name: 'idSolicitud', value: '#{solicitud.idSolicitud}'}]);">#{solicitud.idTipoSolicitud.nombre}</td>
+                                        <td class="center-component" onclick="abrirModalEspera(); abrirSolicitud([{name: 'idSolicitud', value: '#{solicitud.idSolicitud}'}]);">
+                                            <span class="glyphicon #{solicitud.idPrioridad.prioridad eq 'ALTA' ? 'glyphicon-arrow-up' : solicitud.idPrioridad.prioridad eq 'MEDIA' ? 'glyphicon-minus' :
+                                                                     solicitud.idPrioridad.prioridad eq 'BAJA' ? 'glyphicon-arrow-down' : solicitud.idPrioridad.prioridad eq 'SIN DEFINIR' ? 'glyphicon-ban-circle' : ''}"
+                                                  style="color: #{solicitud.idPrioridad.prioridad eq 'ALTA' ? '#BF0039' : solicitud.idPrioridad.prioridad eq 'MEDIA' ? '#F0AD4E' :
+                                                                  solicitud.idPrioridad.prioridad eq 'BAJA' ? '#4E9D4E' : solicitud.idPrioridad.prioridad eq 'SIN DEFINIR' ? '#767676' : ''}"></span>
+                                        </td>
+                                        <td class="center-component" onclick="abrirModalEspera(); abrirSolicitud([{name: 'idSolicitud', value: '#{solicitud.idSolicitud}'}]);">#{solicitud.estado.nombreEstado}</td>
+                                        <td class="center-component" onclick="abrirModalEspera(); abrirSolicitud([{name: 'idSolicitud', value: '#{solicitud.idSolicitud}'}]);">
+                                            #{baruGenericMBean.obtenerNombreEmpleado(soportesMBean.obtenerDocumentoUsuario(solicitud.encargado))}
+                                        </td>
+                                        <td class="center-component" onclick="abrirModalEspera(); abrirSolicitud([{name: 'idSolicitud', value: '#{solicitud.idSolicitud}'}]);">#{solicitud.asunto}</td>
+                                        <td class="center-component">
+                                            <ui:fragment rendered="#{solicitud.estado.nombreEstado eq 'Pendiente'}">
+                                                <span class="glyphicon glyphicon-print pointer-cursor"></span>
+                                            </ui:fragment>
+                                        </td>
+                                    </tr>
+                                </ui:repeat>
+                            </table>
+                        </h:panelGroup>
+                    </div>
+                    <div class="hidden-xs hidden-sm col-md-1 margin-bottom-10">
+                        <p:remoteCommand name="abrirDlgCrear" actionListener="#{soportesMBean.abrirDlgCrear}" update=":panelCrear :panelAdvertencia"
+                                         oncomplete="cerrarModalEspera(); abrirModalCrear(); abrirModalAdvertencia();"/>
+
+                        <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera();
+                                abrirDlgCrear();">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

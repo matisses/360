@@ -1,0 +1,325 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script>
+            function abrirModalDevolucion() {
+                $('#modalDevolucion').modal('show');
+            }
+
+            function cerrarModalDevolucion() {
+                $('modalDevolucion').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <script src="/360/js/arriba.js"></script>
+        <title>360 - Historico clientes</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <span class="ir-arriba">
+            <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+        </span>
+
+        <div class="container">
+            <h:panelGroup id="panelDevolucion">
+                <div id="modalDevolucion" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content dialog-content noround">
+                            <div class="modal-header dialog-header">
+                                <h4 class="modal-title">Detalle devolución</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-12 center-component">
+                                        <img src="#{imagenProductoMBean.obtenerParrilla(historicoClienteMBean.referencia)}"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <ui:repeat value="#{historicoClienteMBean.detalle}" var="detalle">
+                                        <div class="col-xs-12 col-sm-6 col-md-4">
+                                            <div style="border: 1px solid #DDDDDD; padding: 10px">
+                                                <div class="row">
+                                                    <div class="col-xs-12 center-component">
+                                                        <p style="font-size: 20px">#{detalle.devolucion}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <b>Fecha</b>: #{detalle.fechaDevolucion}
+                                                    </div>
+                                                    <div class="col-xs-12">
+                                                        <b>Cantidad</b>: #{detalle.cantidadDevolucion}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ui:repeat>
+                                </div>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+            <h:form id="formHistorico">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Historico clientes</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+                        <p:remoteCommand name="obtenerHistorico" actionListener="#{historicoClienteMBean.obtenerHistorico}" update=":formHistorico:paginador :formHistorico:historicos :formHistorico:detalle"
+                                         oncomplete="cerrarModalEspera();"/>
+                        <p:focus context="formHistorico" for="txt_parametro"/>
+
+                        <label>Parámetro búsqueda</label>
+                        <div class="input-group">
+                            <h:inputText id="txt_parametro" class="form-control input-lg noround" value="#{historicoClienteMBean.parametroBusqueda}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                    abrirModalEspera();
+                    obtenerHistorico();
+                    return false;
+                }"/>
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary btn-lg noround" type="button" onclick="abrirModalEspera(); obtenerHistorico();" style="font-size: 23px; padding: 8.5px 10px 5.5px 10px">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row">
+                    <div class="col-xs-12 col-md-offset-7 col-md-5">
+                        <h:panelGroup id="paginador">
+                            <ui:fragment rendered="#{historicoClienteMBean.historicosVisibles ne null and not empty historicoClienteMBean.historicosVisibles}">
+                                <p:remoteCommand name="paginar" actionListener="#{historicoClienteMBean.mostrarPaginaEspecifica}" update=":formHistorico:paginador :formHistorico:historicos"/>
+                                <p:remoteCommand name="anteriorPagina" actionListener="#{historicoClienteMBean.mostrarPaginaAnterior}" update=":formHistorico:paginador :formHistorico:historicos"/>
+                                <p:remoteCommand name="siguientePagina" actionListener="#{historicoClienteMBean.mostrarPaginaSiguiente}" update=":formHistorico:paginador :formHistorico:historicos"/>
+
+                                <nav class="nav-paginator-center">
+                                    <ul class="pagination pagination-lg">
+                                        <li class="#{historicoClienteMBean.pagina == 1 ? 'disabled' : ''}" style="cursor: pointer">
+                                            <a aria-label="Previus" onclick="anteriorPagina();">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <ui:repeat var="pagina" value="#{historicoClienteMBean.paginas}">
+                                            <li class="#{historicoClienteMBean.pagina == pagina ? 'active' : ''}" style="cursor: pointer">
+                                                <a onclick="paginar([{name: 'pagina', value: '#{pagina}'}]);">
+                                                    #{pagina}
+                                                </a>
+                                            </li>
+                                        </ui:repeat>
+                                        <li class="#{historicoClienteMBean.pagina == historicoClienteMBean.totalPaginas ? 'disabled' : ''}" style="cursor: pointer">
+                                            <a aria-label="Next" onclick="siguientePagina();">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </ui:fragment>
+                        </h:panelGroup>
+                    </div>
+                </div>
+                <h:panelGroup id="historicos">
+                    <ui:fragment rendered="#{historicoClienteMBean.historicosVisibles ne null and not empty historicoClienteMBean.historicosVisibles}">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <p:remoteCommand name="seleccionarDocumento" actionListener="#{historicoClienteMBean.seleccionarDocumento}" update=":formHistorico:detalle :formHistorico:historicos"
+                                                 oncomplete="cerrarModalEspera();"/>
+
+                                <table class="table table-bordered table-responsive table-striped">
+                                    <tr>
+                                        <th class="head-tabla">Fuente</th>
+                                        <th class="head-tabla">Nit</th>
+                                        <th class="head-tabla">Documento</th>
+                                        <th class="head-tabla" style="width: 100px">Fecha</th>
+                                        <th class="head-tabla">Referencia</th>
+                                        <th class="head-tabla">Descripción</th>
+                                        <th class="head-tabla">RefProv</th>
+                                    </tr>
+                                    <ui:repeat value="#{historicoClienteMBean.historicosVisibles}" var="historico">
+                                        <tr class="#{historicoClienteMBean.id eq historico.id ? 'tr-tabla-active' : 'tr-tabla'} pointer-cursor"
+                                            onclick="abrirModalEspera(); seleccionarDocumento([{name: 'documento', value: '#{historico.nit}'}, {name: 'id', value: '#{historico.id}'},
+                                                        {name: 'fuente', value: '#{historico.fuente}'}, {name: 'factura', value: '#{historico.factura}'}, {name: 'fecha', value: '#{historico.fechaFactura}'}]);">
+                                            <td class="center-component">#{historico.fuente}</td>
+                                            <td class="center-component">#{historico.nit}</td>
+                                            <td class="center-component">#{historico.factura}</td>
+                                            <td class="center-component">#{historico.fechaFactura}</td>
+                                            <td class="center-component">#{historico.refCorta}</td>
+                                            <td class="justify-component">#{historico.descripcion}</td>
+                                            <td class="center-component">#{historico.refProv}</td>
+                                        </tr>
+                                    </ui:repeat>
+                                </table>
+                            </div>
+                        </div>
+                    </ui:fragment>
+                </h:panelGroup>
+                <h:panelGroup id="detalle">
+                    <ui:fragment rendered="#{historicoClienteMBean.datos ne null and not empty historicoClienteMBean.datos}">
+                        <hr/>
+                        <div class="row">
+                            <div class="col-xs-8 margin-bottom-10">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <b>Nit</b>: #{historicoClienteMBean.cliente.nit}
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <b>Razón social</b>: #{historicoClienteMBean.cliente.razonSocial}
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <b>Correo</b>: #{historicoClienteMBean.cliente.email}
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <b>Teléfonos</b>: #{historicoClienteMBean.cliente.celular}
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <b>Dirección</b>: #{historicoClienteMBean.cliente.direccion}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-4 margin-bottom-10">
+                                <div class="row">
+                                    <div class="col-xs-12 center-component" style="font-size: 16px">
+                                        <b>Total vendido sin IVA</b>: #{baruGenericMBean.getValorFormateado('Double', historicoClienteMBean.totalVentasSinIVA, 2)}
+                                    </div>
+                                    <div class="col-xs-12 center-component" style="font-size: 16px">
+                                        <b>Total vendido con IVA</b>: #{baruGenericMBean.getValorFormateado('Double', historicoClienteMBean.totalVentasConIVA, 2)}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 center-component" style="font-size: 16px">
+                                        <b>Fuente</b>
+                                        <br/>
+                                        #{historicoClienteMBean.fuente}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6 center-component" style="font-size: 16px">
+                                        <b>Factura</b>
+                                        <br/>
+                                        #{historicoClienteMBean.factura}
+                                    </div>
+                                    <div class="col-xs-6 center-component" style="font-size: 16px">
+                                        <b>Fecha</b>
+                                        <br/>
+                                        #{historicoClienteMBean.fecha}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <ul class="nav nav-tabs margin-bottom-10">
+                                    <li class="active"><a data-toggle="tab" href="#items">Ítems <span class="badge">#{fn:length(historicoClienteMBean.datos)}</span></a></li>
+                                    <li><a data-toggle="tab" href="#info">Info</a></li>
+                                </ul>
+
+                                <div class="tab-content">
+                                    <div id="items" class="tab-pane fade in active">
+                                        <div class="row">
+                                            <p:remoteCommand name="mostrarDetalleDevolucion" actionListener="#{historicoClienteMBean.mostrarDetalleDevolucion}" update=":panelDevolucion"
+                                                             oncomplete="cerrarModalEspera(); abrirModalDevolucion();"/>
+
+                                            <ui:repeat value="#{historicoClienteMBean.datos}" var="dato">
+                                                <div class="col-xs-4 margin-bottom-10">
+                                                    <div style="border: 1px solid #DDDDDD; padding: 10px; height: 145px">
+                                                        <div class="row">
+                                                            <div class="col-xs-6 center-component">
+                                                                <img class="img-mini" src="#{imagenProductoMBean.obtenerUrlProducto(dato.referencia, true)}"/>
+                                                            </div>
+                                                            <div class="col-xs-6">
+                                                                <div class="row">
+                                                                    <div class="col-xs-12 margin-bottom-10 right-component" style="font-size: 20px">
+                                                                        <b>#{dato.refCorta}</b>
+                                                                    </div>
+                                                                    <div class="col-xs-12 right-component">
+                                                                        <span class="badge badge-360-original">#{dato.cantidadVenta}</span>
+                                                                    </div>
+                                                                    <ui:fragment rendered="#{dato.devolucion ne null and not empty dato.devolucion}">
+                                                                        <div class="col-xs-12 right-component">
+                                                                            <span class="glyphicon glyphicon-retweet pointer-cursor" style="font-size: 20px"
+                                                                                  onclick="abrirModalEspera(); mostrarDetalleDevolucion([{name: 'referencia', value: '#{dato.referencia}'}]);"></span>
+                                                                        </div>
+                                                                    </ui:fragment>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-xs-12 justify-component">
+                                                                #{baruGenericMBean.obtenerNombreReferencia(dato.referencia)}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ui:repeat>
+                                        </div>
+                                    </div>
+                                    <div id="info" class="tab-pane">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10 center-component" style="font-size: 20px">
+                                                Total compras: #{baruGenericMBean.getValorFormateado('Double', historicoClienteMBean.obtenerTotalCompras, 2)}
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <table class="table table-bordered table-responsive table-striped">
+                                                    <tr>
+                                                        <th class="head-tabla">Referencia</th>
+                                                        <ui:repeat value="#{historicoClienteMBean.almacenes}" var="almacen">
+                                                            <th class="head-tabla">#{almacen}</th>
+                                                        </ui:repeat>
+                                                    </tr>
+                                                    <ui:repeat value="#{historicoClienteMBean.datos}" var="det">
+                                                        <tr>
+                                                            <td class="center-component">#{det.refCorta}</td>
+                                                            <ui:repeat value="#{historicoClienteMBean.almacenes}" var="alm">
+                                                                <td class="right-component">#{historicoClienteMBean.getObtenerSaldoAlmacen(det.referencia, alm)}</td>
+                                                            </ui:repeat>
+                                                        </tr>
+                                                    </ui:repeat>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ui:fragment>
+                </h:panelGroup>
+            </h:form>
+            <br/>
+        </div>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

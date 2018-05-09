@@ -24,7 +24,9 @@ body {
 }
 
 .home1 {
-    background-image: url('/360/images/fondos/fondo1.jpg');
+    background-image: url('https://360.matisses.co:8443/shared/fondos/fondo4.jpg');
+    background-repeat: no-repeat;
+    /*background-size: cover;*/
 }
 
 .home2 {
@@ -2393,7 +2395,7 @@ option:disabled {
 /*Se alteran los estilos de primefaces para el calendario*/
 .ui-corner-all .ui-datepicker-prev{
     background-image: url("/360/images/miniflechita.png") !important;
-    left: 0px !important;
+    left: 4px !important;
     top: 3px !important;
     cursor: pointer !important;
 }
@@ -2406,7 +2408,7 @@ option:disabled {
 .ui-corner-all .ui-datepicker-next{
     background-image: url("/360/images/miniflechita.png") !important;
     transform: rotate(180deg) !important;
-    right: 0px !important;
+    right: 4px !important;
     top: 3px !important;
     cursor: pointer !important;
 }
@@ -2535,7 +2537,7 @@ option:disabled {
     padding: 10px;
     margin: 10px;
     border: 1px solid #DDDDDD;
-    height: 350px;
+    height: 400px;
 }
 
 .producto-item{
@@ -3742,4 +3744,167 @@ option:disabled {
 
 .contenedor-comparativos:hover {
     border: 1px solid #BF0039;
+}
+
+.panel-default .heading {
+    width: 19%;
+    display: inline-block;
+}
+
+.panel-default .panel-body {
+    border-top: 1px solid #DDDDDD;
+}
+
+@media screen and (max-width: 768px) {
+    .panel-default .heading {
+        width: 100%;
+    }
+
+    .panel-default .panel-mobile {
+        border-top: 1px solid #DDDDDD;
+    }
+}
+
+@media screen and (min-width: 769px) {
+    .panel-default .panel-mobile {
+        border-left: 1px solid #DDDDDD;
+    }
+}
+/*
+@media screen and (max-width: 768px) {
+    .home1 {
+        background-image: url('https://360.matisses.co:8443/shared/fondos/fondo4_mobile.jpg');
+    }
+}
+*/
+.globo-comentario-creador {
+    width: 110%;
+    padding: 7px;
+    border-radius: 10px;
+    background-color: #000000;
+    position: relative;
+    color: #FFFFFF;
+    margin: 5px;
+}
+
+.globo-comentario-creador:before {
+    content: "";
+    width: 0;
+    position: absolute;
+    border-style: solid;
+    border-width: 10px 10px 10px 0px;
+    border-color: transparent #000000;
+    left: -10px;
+}
+
+.globo-comentario-otro {
+    width: 110%;
+    padding: 7px;
+    border-radius: 10px;
+    background-color: #F1F0F0;
+    position: relative;
+    color: #000000;
+    margin: 5px;
+}
+
+.globo-comentario-otro:before {
+    content: "";
+    width: 0;
+    position: absolute;
+    border-style: solid;
+    border-width: 10px 0px 10px 10px;
+    border-color: transparent #F1F0F0;
+    right: -10px;
+}
+
+.hidden-input {
+    display: none;
+}
+
+.input-calendar  .ui-inputfield{
+    text-align: center;
+    margin-left: 0px;
+    height: 34px;
+    padding: 10px 16px;
+    font-size: 15px !important;
+    line-height: 1.3333333;
+    width: 100%;
+    color: #555555;
+    border: 1px solid #cccccc;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+
+.input-calendar .ui-inputfield:focus{
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+}
+
+.input-calendar .ui-inputfield::-moz-placeholder{
+    color: #999999;
+    opacity: 1;
+}
+
+.input-calendar-time  .ui-inputfield{
+    text-align: center;
+    margin-left: 0px;
+    height: 34px;
+    padding: 10px 16px;
+    font-size: 15px !important;
+    line-height: 1.3333333;
+    width: 60%;
+    color: #555555;
+    border: 1px solid #cccccc;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+
+.input-calendar-time .ui-inputfield:focus{
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+}
+
+.input-calendar-time .ui-inputfield::-moz-placeholder{
+    color: #999999;
+    opacity: 1;
+}
+
+.select-34 {
+    height: 34px !important;
+}
+
+.open-folder {
+    font-size: 30px;
+    padding: 20px;
+    background-color: #BBBBBB;
+    color: #FFFFFF;
+    cursor: pointer;
+    right: 0px;
+    position: fixed;
+    border-radius: 10px 0px 0px 10px;
+    top: 60px;
+    height: 70px;
+    box-shadow: 3px 3px 10px gray;
+}
+
+.open-folder:hover {
+    background-color: #BF0039;
+}
+
+.contenedor-externo {
+    border: 1px solid #DDDDDD;
+    padding: 10px;
+}
+
+.contenedor-externo-activo, .contenedor-externo:hover {
+    border: 1px solid #BF0039;
+    padding: 10px;
 }

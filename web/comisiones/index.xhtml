@@ -353,11 +353,11 @@
                                 </div>
                             </div>
                             <div class="modal-footer dialog-footer">
-                                <p:remoteCommand name="modal" update=":panelAgregarDocumento" oncomplete="agregarDocumento(); abrirModalEspera();"/>
+                                <p:remoteCommand name="modal1" update=":panelAgregarDocumento" oncomplete="agregarDocumento(); abrirModalEspera();"/>
                                 <p:remoteCommand name="agregarDocumento" actionListener="#{comisionesMBean.agregarDocumento}" update=":formComisiones" oncomplete="cerrarModalEspera();"/>
 
                                 <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
-                                <button type="button" class="btn btn-primary btn-lg noround" onclick="modal();">Aplicar</button>
+                                <button type="button" class="btn btn-primary btn-lg noround" onclick="modal1();">Aplicar</button>
                             </div>
                         </div>
                     </div>
@@ -549,33 +549,28 @@
                                                     <tr class="pointer-cursor tr-tabla" style="color: #FFFFFF; #{dato.nuevo ? 'background-color: #F8A602' : dato.documentoCerrado == false ?
                                                                                                                  'background-color: #Bf0039' : dato.aplicarDV == false ? 'background-color: #8A6D3B' :
                                                                                                                  'color: #000000 !important'}">
-                                                        <td class="center-component" onclick="abrirModalEspera();
-                                                                seleccionarDocumento();">
+                                                        <td class="center-component"
+                                                            onclick="abrirModalEspera(); seleccionarDocumento([{name: 'documento', value: '#{dato.documento}'}, {name: 'tipo', value: '#{dato.tipo}'}]););">
                                                             #{dato.fecha}
                                                         </td>
                                                         <td class="right-component"
-                                                            onclick="abrirModalEspera();
-                                                                    seleccionarDocumento([{name: 'documento', value: '#{dato.documento}'}, {name: 'tipo', value: '#{dato.tipo}'}]);">
+                                                            onclick="abrirModalEspera(); seleccionarDocumento([{name: 'documento', value: '#{dato.documento}'}, {name: 'tipo', value: '#{dato.tipo}'}]);">
                                                             #{dato.documento}
                                                         </td>
                                                         <td class="center-component"
-                                                            onclick="abrirModalEspera();
-                                                                    seleccionarDocumento([{name: 'documento', value: '#{dato.documento}'}, {name: 'tipo', value: '#{dato.tipo}'}]);">
+                                                            onclick="abrirModalEspera(); seleccionarDocumento([{name: 'documento', value: '#{dato.documento}'}, {name: 'tipo', value: '#{dato.tipo}'}]);">
                                                             #{dato.tipo}
                                                         </td>
                                                         <td class="center-component"
-                                                            onclick="abrirModalEspera();
-                                                                    seleccionarDocumento([{name: 'documento', value: '#{dato.documento}'}, {name: 'tipo', value: '#{dato.tipo}'}]);">
+                                                            onclick="abrirModalEspera(); seleccionarDocumento([{name: 'documento', value: '#{dato.documento}'}, {name: 'tipo', value: '#{dato.tipo}'}]);">
                                                             #{baruGenericMBean.getValorFormateado('Double', (dato.porcentajeComision * 100), 2)}%
                                                         </td>
                                                         <td class="right-component"
-                                                            onclick="abrirModalEspera();
-                                                                    seleccionarDocumento([{name: 'documento', value: '#{dato.documento}'}, {name: 'tipo', value: '#{dato.tipo}'}]);">
+                                                            onclick="abrirModalEspera(); seleccionarDocumento([{name: 'documento', value: '#{dato.documento}'}, {name: 'tipo', value: '#{dato.tipo}'}]);">
                                                             #{baruGenericMBean.getValorFormateado('Double', dato.valorDocumento, 2)}
                                                         </td>
                                                         <td class="right-component"
-                                                            onclick="abrirModalEspera();
-                                                                    seleccionarDocumento([{name: 'documento', value: '#{dato.documento}'}, {name: 'tipo', value: '#{dato.tipo}'}]);">
+                                                            onclick="abrirModalEspera(); seleccionarDocumento([{name: 'documento', value: '#{dato.documento}'}, {name: 'tipo', value: '#{dato.tipo}'}]);">
                                                             <div class="row">
                                                                 <div class="col-xs-3 center-component">
                                                                     <span class="#{dato.documentoCerrado == false || dato.incluir == false ? 'glyphicon glyphicon-remove' :
@@ -725,8 +720,7 @@
                                                             <ul class="dropdown-menu dropdown-menu-size" aria-labelledby="selYear">
                                                                 <ui:repeat value="#{comisionesMBean.years}" var="year">
                                                                     <li>
-                                                                        <a class="pointer-cursor" onclick="abrirModalEspera();
-                                                                                seleccionarYear([{name: 'year', value: '#{year}'}]);">
+                                                                        <a class="pointer-cursor" onclick="abrirModalEspera(); seleccionarYear([{name: 'year', value: '#{year}'}]);">
                                                                             #{year}
                                                                         </a>
                                                                     </li>

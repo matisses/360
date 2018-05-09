@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" http-equiv="Content-Type"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script src="/360/js/arriba.js"></script>
+        <script type="text/javascript">
+            function openRuta(window_src) {
+                ruta = window.open(window_src, '_blank');
+            }
+
+            function closeWindow() {
+                window.close();
+            }
+        </script>
+        <title>360 - Certificados retencion</title>
+    </h:head>
+
+    <h:body>
+
+        <m:navbarNormal/>
+
+        <span class="ir-arriba">
+            <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+        </span>
+
+        <div class="container">
+            <h:form id="formCertificados" style="overflow: hidden">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>Certificados retención</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 col-sm-offset-2 margin-bottom-10">
+                        <p:focus context="formCertificados" for="txt_nit"/>
+
+                        <label>Nit</label>
+                        <h:inputText id="txt_nit" class="form-control input-lg noround" value="#{certificadosRetencionMBean.nit}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                    return false;
+                                }"/>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 margin-bottom-10">
+                        <label>Correo</label>
+                        <h:inputText class="form-control input-lg noround" value="#{certificadosRetencionMBean.correo}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                    return false;
+                                }"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 col-sm-offset-2 margin-bottom-10">
+                        <label>Tipo</label>
+                        <h:selectOneMenu class="form-control input-lg noround pointer-cursor" value="#{certificadosRetencionMBean.tipo}">
+                            <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                            <f:selectItem itemLabel="Retención fuente renta" itemValue="RF"/>
+                            <f:selectItem itemLabel="Retención fuente iva" itemValue="RI"/>
+                            <f:selectItem itemLabel="Retención ica" itemValue="ICA"/>
+                            <f:ajax event="change" render=":formCertificados:slc_year"/>
+                        </h:selectOneMenu>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 margin-bottom-10">
+                        <label>Año</label>
+                        <h:selectOneMenu id="slc_year" class="form-control input-lg noround pointer-cursor" value="#{certificadosRetencionMBean.year}"
+                                         disabled="#{certificadosRetencionMBean.tipo eq null or empty certificadosRetencionMBean.tipo}">
+                            <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                            <f:selectItems value="#{certificadosRetencionMBean.years}" var="year" itemLabel="#{year}" itemValue="#{year}"/>
+                        </h:selectOneMenu>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-8 col-sm-offset-2 right-component">
+                        <p:remoteCommand name="limpiar" actionListener="#{certificadosRetencionMBean.limpiar}" oncomplete="cerrarModalEspera();" update=":formCertificados"/>
+
+                        <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); limpiar();">
+                            Cancelar
+                        </button>
+                        <h:commandButton value="Descargar" class="btn btn-primary btn-lg noround" style="margin-left: 6px">
+                            <p:fileDownload value="#{certificadosRetencionMBean.descargarCertificado}"/>
+                        </h:commandButton>
+                    </div>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+                <hr/>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-8 col-sm-offset-2 justify-component margin-bottom-10">
+                        <p>
+                            Dando cumplimiento al artículo 381 del Estatuto Tributario y acogiendo el concepto
+                            <i style="color: #BF0039"> DIAN No. 105489 de Diciembre 24 de 2007</i>
+                            , en esta página se podrá solicitar el certificado de retención en la fuente desde el año 2014 para que puedan se impresos.
+                        </p>
+                        <p>
+                            Por favor ingrese su número de identificación (<i style="color: #BF0039">No use puntos, comas, guiones ni dígito de verificación</i>)
+                            y correo electrónico.
+                        </p>
+                        <p>
+                            Seleccione el tipo de certificado requerido, el año, el bimestre si aplica y luego haga clic en el botón <i style="color: #BF0039">Descargar</i>.
+                        </p>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+
+        <br/>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

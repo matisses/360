@@ -1,0 +1,192 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <script src="/360/js/arriba.js"></script>
+        <script type="text/javascript">
+            function openRuta(window_src) {
+                ruta = window.open(window_src, '_blank');
+            }
+
+            function closeWindow() {
+                window.close();
+            }
+
+            function abrirModalAdvertencia() {
+                $('#modalAdvertencia').modal('show');
+            }
+
+            function cerrarModalAdvertencia() {
+                $('modalAdvertencia').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Asesores externos</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <span class="hidden-xs ir-arriba">
+            <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+        </span>
+
+        <div class="container">
+            <h:panelGroup id="panelAdvertencia">
+                <h:form id="formAdvertencia">
+                    <div id="modalAdvertencia" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header-advertencia">
+                                    <h4 class="modal-title">Advertencia</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 margin-bottom-10 center-component">
+                                            <p>¿Esta segur@ que desea #{externosMBean.estado} la solicitud?</p>
+                                        </div>
+                                    </div>
+                                    <ui:fragment rendered="#{externosMBean.estado eq 'No aprobado'}">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <label>Comentario:</label>
+                                                <h:inputTextarea class="form-control input-lg noround" style="resize: none; height: 100px" value="#{externosMBean.comentario}"/>
+                                            </div>
+                                        </div>
+                                    </ui:fragment>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <p:remoteCommand name="modal" oncomplete="continuar(); abrirModalEspera();" update=":panelAdvertencia"/>
+                                    <p:remoteCommand name="continuar" actionListener="#{externosMBean.continuar}" oncomplete="cerrarModalEspera();" update=":formExterno"/>
+
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="modal();">Continuar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:form id="formExterno">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>
+                                    Asesores exteriores
+                                </a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 col-sm-offset-4 margin-bottom-10">
+                        <p:remoteCommand name="obtenerUsuarios" actionListener="#{externosMBean.obtenerUsuarios}" update=":formExterno:panelUsuarios" oncomplete="cerrarModalEspera();"/>
+
+                        <p:focus context="formExterno" for="txt_parametro"/>
+                        <label>Parámetro búsqueda:</label>
+                        <div class="input-group">
+                            <h:inputText id="txt_parametro" class="form-control input-lg noround" value="#{externosMBean.parametro}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                        abrirModalEspera();
+                                        obtenerUsuarios();
+                                        return false;
+                                    }">
+                                <f:ajax event="change"/>
+                            </h:inputText>
+                            <div class="input-group-btn">
+                                <button class="btn btn-primary btn-lg noround" type="button" style="font-size: 23px; padding: 9.5px 10px 4.5px 10px" onclick="abrirModalEspera(); obtenerUsuarios();">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row">
+                    <div class="col-xs-8">
+                        <div class="row">
+                            <p:remoteCommand name="seleccionarUsuario" actionListener="#{externosMBean.seleccionarUsuario}" update=":formExterno:panelUsuarios :formExterno:panelDocumentacion"
+                                             oncomplete="cerrarModalEspera();"/>
+
+                            <h:panelGroup id="panelUsuarios">
+                                <ui:repeat value="#{externosMBean.usuarios}" var="usuario">
+                                    <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                        <div class="#{externosMBean.usuario.id eq usuario.id ? 'contenedor-externo-activo' : 'contenedor-externo'} pointer-cursor"
+                                             onclick="abrirModalEspera(); seleccionarUsuario([{name: 'id', value: '#{usuario.id}'}]);">
+                                            <div class="row">
+                                                <div class="col-xs-12 center-component margin-bottom-10" style="font-size: 20px">
+                                                    #{usuario.esDecorador ? 'Decorador' : usuario.esPlanificador ? 'Wedding planner' : ''}
+                                                </div>
+                                                <div class="col-xs-12 center-component margin-bottom-10">
+                                                    #{usuario.nombre}
+                                                </div>
+                                                <div class="col-xs-12 center-component color-360-original">
+                                                    #{baruGenericMBean.getValorFormateado('Datetime', usuario.fechaRegistro, 0)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="col-xs-4" style="border-left: 1px solid #DDDDDD">
+                        <h:panelGroup id="panelDocumentacion">
+                            <ui:fragment rendered="#{externosMBean.usuario ne null and externosMBean.usuario.id ne null and externosMBean.usuario.id gt 0}">
+                                <div class="row">
+                                    <ui:repeat value="#{externosMBean.documentacion}" var="documentacion">
+                                        <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                            <div style="border: 1px solid #DDDDDD">
+                                                <div class="row">
+                                                    <div class="col-xs-12 margin-bottom-10 center-component">
+                                                        #{documentacion}
+                                                    </div>
+                                                    <div class="col-xs-12 margin-bottom-10 center-component">
+                                                        <span class="glyphicon glyphicon-eye-open pointer-cursor" style="font-size: 20px"
+                                                              onclick="#{externosMBean.visualizarDocumento(documentacion)}"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ui:repeat>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 margin-bottom-10 right-component">
+                                        <p:remoteCommand name="aprobarUsuario" actionListener="#{externosMBean.aprobarUsuario}" update=":panelAdvertencia"
+                                                         oncomplete="cerrarModalEspera(); abrirModalAdvertencia();"/>
+
+                                        <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera(); aprobarUsuario([{name: 'estado', value: 'No aprobado'}]);">
+                                            No aprobar
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); aprobarUsuario([{name: 'estado', value: 'Aprobado'}]);">
+                                            Aprobar
+                                        </button>
+                                    </div>
+                                </div>
+                            </ui:fragment>
+                        </h:panelGroup>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+        <br/>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+

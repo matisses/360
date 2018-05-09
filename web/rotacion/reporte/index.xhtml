@@ -1,0 +1,873 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet"/>
+        <!--[if lt IE 9]>
+                <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet"/>
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet"/>
+        <script src="/360/js/arriba.js"></script>
+        <title>360 - Rotacion</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <span class="hidden-xs ir-arriba">
+            <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+        </span>
+
+        <div class="container">
+            <h:panelGroup id="panelImagen">
+                <h:panelGroup>
+                    <div id="modalImagen" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <ul class="nav nav-tabs margin-bottom-10">
+                                                <li class="active"><a data-toggle="tab" href="#imagen">Imagen</a></li>
+                                                <li><a data-toggle="tab" href="#plantilla">Plantilla</a></li>
+                                            </ul>
+                                            <div class="tab-content">
+                                                <div id="imagen" class="tab-pane fade in active">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <img class="img-responsive" src="#{imagenProductoMBean.obtenerUrlProducto(rotacionMBean.referencia, false)}"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="plantilla" class="tab-pane">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <img class="img-responsive" src="#{imagenProductoMBean.obtenerPlantilla(rotacionMBean.referencia)}"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelDetalle">
+                <h:panelGroup rendered="#{rotacionMBean.detalle ne null and not empty rotacionMBean.detalle}">
+                    <div id="modalDetalle" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <h4 class="modal-title">Detalle rotación</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <img class="img-responsive" src="#{imagenProductoMBean.obtenerParrilla(rotacionMBean.detalle.get(0).referencia)}"/>
+                                        </div>
+                                        <div class="col-xs-9">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <b>Nombre</b>: #{baruGenericMBean.obtenerNombreReferencia(rotacionMBean.detalle.get(0).referencia)}
+                                                </div>
+                                                <div class="col-xs-12">
+                                                    <b>Ref. proveedor</b>: #{baruGenericMBean.obtenerReferenciaProveedor(rotacionMBean.detalle.get(0).referencia)}
+                                                </div>
+                                                <div class="col-xs-12">
+                                                    <b>Modelo</b>: #{baruGenericMBean.obtenerModelo(rotacionMBean.detalle.get(0).referencia)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <ul class="nav nav-tabs margin-bottom-10">
+                                                <li class="active"><a data-toggle="tab" href="#importaciones">Importaciones</a></li>
+                                                <li><a data-toggle="tab" href="#ventas">Ventas</a></li>
+                                            </ul>
+                                            <div class="tab-content">
+                                                <div id="importaciones" class="tab-pane fade in active">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <table class="table table-bordered table-responsive table-striped">
+                                                                <tr>
+                                                                    <th class="head-tabla">Fecha compra</th>
+                                                                    <th class="head-tabla">Fecha cierre</th>
+                                                                    <th class="head-tabla">Cant compra</th>
+                                                                    <th class="head-tabla">Cant venta</th>
+                                                                    <th class="head-tabla">Cant baja</th>
+                                                                    <th class="head-tabla">Saldo pend</th>
+                                                                    <th class="head-tabla">Días stock</th>
+                                                                    <th class="head-tabla">Última venta</th>
+                                                                    <th class="head-tabla">Utl prom</th>
+                                                                    <th class="head-tabla">Utl mín</th>
+                                                                    <th class="head-tabla">Tipo</th>
+                                                                </tr>
+                                                                <ui:repeat value="#{rotacionMBean.detalle}" var="detalle">
+                                                                    <tr>
+                                                                        <td class="center-component">#{detalle.fechaCompra}</td>
+                                                                        <td class="center-component">#{detalle.fechaCierre}</td>
+                                                                        <td class="right-component">#{detalle.cantidadCompra}</td>
+                                                                        <td class="right-component">#{detalle.cantidadVenta}</td>
+                                                                        <td class="right-component">#{detalle.cantidadBaja}</td>
+                                                                        <td class="right-component">#{detalle.saldoPendiente}</td>
+                                                                        <td class="right-component">#{detalle.diasStock}</td>
+                                                                        <td class="center-component">#{detalle.fechaUltimaVenta}</td>
+                                                                        <td class="right-component">#{detalle.utilidadPromedio}</td>
+                                                                        <td class="right-component">#{detalle.utilidadMinima}</td>
+                                                                        <td class="center-component">#{detalle.tipo}</td>
+                                                                    </tr>
+                                                                </ui:repeat>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="ventas" class="tab-pane">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <div style="max-height: 200px; overflow: auto">
+                                                                <table class="table table-bordered table-responsive table-striped">
+                                                                    <tr>
+                                                                        <th class="head-tabla"># Factura</th>
+                                                                        <th class="head-tabla">Fecha</th>
+                                                                        <th class="head-tabla">Cantidad</th>
+                                                                        <th class="head-tabla">% Utilidad</th>
+                                                                    </tr>
+                                                                    <ui:repeat value="#{rotacionMBean.ventas}" var="venta">
+                                                                        <tr>
+                                                                            <td class="center-component">#{venta.factura}</td>
+                                                                            <td class="center-component">#{baruGenericMBean.getValorFormateado('Date', venta.fecha, 0)}</td>
+                                                                            <td class="right-component">#{baruGenericMBean.getValorFormateado('Double', venta.cantidad, 0)}</td>
+                                                                            <td class="right-component">#{baruGenericMBean.getValorFormateado('Double', venta.porcentajeUtilidad, 0)}</td>
+                                                                        </tr>
+                                                                    </ui:repeat>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelVentas">
+                <h:panelGroup rendered="#{rotacionMBean.saldos ne null and not empty rotacionMBean.saldos}">
+                    <div id="modalVentas" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <h4 class="modal-title">Saldo actual</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <table class="table table-bordered table-responsive table-striped">
+                                                <tr>
+                                                    <th class="head-tabla">Almacén</th>
+                                                    <th class="head-tabla">Nombre</th>
+                                                    <th class="head-tabla">Cantidad</th>
+                                                    <th class="head-tabla">Días almacén</th>
+                                                </tr>
+                                                <ui:repeat value="#{rotacionMBean.saldos}" var="saldo">
+                                                    <tr>
+                                                        <td class="center-component">#{saldo[0]}</td>
+                                                        <td class="center-component">#{saldo[1]}</td>
+                                                        <td class="right-component">#{baruGenericMBean.getValorFormateado('Double', saldo[2], 0)}</td>
+                                                        <td class="right-component">#{baruGenericMBean.getValorFormateado('Double', rotacionMBean.getDiasAlmacen(saldo[0]), 0)}</td>
+                                                    </tr>
+                                                </ui:repeat>
+                                                <tr>
+                                                    <th colspan="3" class="head-tabla" style="text-align: right !important">Total: #{baruGenericMBean.getValorFormateado('Double', rotacionMBean.totalSaldo, 0)}</th>
+                                                    <th class="head-tabla"></th>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelMovimientos">
+                <h:panelGroup rendered="#{rotacionMBean.movimientos ne null and not empty rotacionMBean.movimientos}">
+                    <div id="modalMovimientos" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <h4 class="modal-title">Movimientos</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <table class="table table-bordered table-responsive table-striped">
+                                                <tr>
+                                                    <th class="head-tabla">Número traslado</th>
+                                                    <th class="head-tabla" style="width: 100px">Fecha</th>
+                                                    <th class="head-tabla">Comentario</th>
+                                                    <th class="head-tabla">Origen</th>
+                                                    <th class="head-tabla">Destino</th>
+                                                    <th class="head-tabla">Cantidad</th>
+                                                </tr>
+                                                <ui:repeat value="#{rotacionMBean.movimientos}" var="movimiento">
+                                                    <tr>
+                                                        <td class="center-component">#{movimiento[1]}</td>
+                                                        <td class="center-component">#{movimiento[2]}</td>
+                                                        <td>#{movimiento[3]}</td>
+                                                        <td class="center-component">#{movimiento[4]}</td>
+                                                        <td class="center-component">#{movimiento[5]}</td>
+                                                        <td class="center-component">#{movimiento[6]}</td>
+                                                    </tr>
+                                                </ui:repeat>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:form id="formRotacion">
+                <p:remoteCommand name="limpiarFiltros" actionListener="#{filtrosRotacionMBean.limpiar}" update=":formRotacion:filtro :formRotacion:poll"/>
+                <p:remoteCommand name="limpiarCrearReporte" actionListener="#{crearReporteRotacionMBean.limpiarCrear}" update=":formRotacion:filtro :formRotacion:poll"/>
+                <p:remoteCommand name="limpiarRotacion" actionListener="#{rotacionMBean.limpiar}" update=":formRotacion:poll"/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ul class="nav nav-tabs margin-bottom-10">
+                            <ui:fragment rendered="#{userSessionInfoMBean.validarPermisoUsuario('FILTRO_ROTACIÓN', 'CREAR')}">
+                                <li onclick="limpiarFiltros(); limpiarCrearReporte(); limpiarRotacion();">
+                                    <a data-toggle="tab" href="#filtros">Filtros</a>
+                                </li>
+                            </ui:fragment>
+                            <li onclick="limpiarFiltros(); limpiarCrearReporte(); limpiarRotacion();"><a data-toggle="tab" href="#crear">Crear</a></li>
+                            <li onclick="limpiarFiltros(); limpiarCrearReporte(); limpiarRotacion();" class="#{rotacionMBean.idInforme eq null or rotacionMBean.idInforme eq 0 ? 'active' : ''}">
+                                <a data-toggle="tab" href="#lista">Lista</a>
+                            </li>
+                            <li onclick="limpiarFiltros(); limpiarCrearReporte(); limpiarRotacion();" class="disabled #{rotacionMBean.idInforme ne null and rotacionMBean.idInforme gt 0 ? 'active' : ''}">
+                                <a>Informes</a>
+                            </li>
+                            <li onclick="limpiarFiltros(); limpiarCrearReporte(); limpiarRotacion();"><a data-toggle="tab" href="#proveedores">Proveedores</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="filtros" class="tab-pane">
+                                <h:panelGroup id="datosFiltro">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-4 col-sm-offset-2 margin-bottom-10">
+                                            <label>Nombre:</label>
+                                            <h:inputText class="form-control input-lg noround" value="#{filtrosRotacionMBean.nombre}"/>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-4 margin-bottom-10">
+                                            <label>Columna:</label>
+                                            <h:inputText class="form-control input-lg noround" value="#{filtrosRotacionMBean.columna}"/>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-4 col-sm-offset-2 margin-bottom-10">
+                                            <label>Tipo dato:</label>
+                                            <h:selectOneMenu class="form-control input-lg noround" value="#{filtrosRotacionMBean.tipoDato}" style="font-size: 13px">
+                                                <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                <f:selectItem itemLabel="Boolean" itemValue="Boolean"/>
+                                                <f:selectItem itemLabel="Date" itemValue="Date"/>
+                                                <f:selectItem itemLabel="Double" itemValue="Double"/>
+                                                <f:selectItem itemLabel="Integer" itemValue="Integer"/>
+                                                <f:selectItem itemLabel="String" itemValue="String"/>
+                                            </h:selectOneMenu>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-4 margin-bottom-10">
+                                            <label>Sufijo:</label>
+                                            <h:inputText class="form-control input-lg noround" value="#{filtrosRotacionMBean.sufijo}"/>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-4 col-sm-offset-2 margin-bottom-10 center-component">
+                                            <p:remoteCommand name="seleccionarTipoReferencia" actionListener="#{filtrosRotacionMBean.seleccionarTipoReferencia}" update=":formRotacion:chk_tipoReferencia"/>
+
+                                            <h:panelGroup id="chk_tipoReferencia">
+                                                <span class="glyphicon #{filtrosRotacionMBean.tipoReferencia ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                      onclick="seleccionarTipoReferencia();"></span>
+                                                <label onclick="seleccionarTipoReferencia();">Tipo referencia</label>
+                                            </h:panelGroup>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-4 margin-bottom-10 center-component">
+                                            <p:remoteCommand name="seleccionarValoresMultiples" actionListener="#{filtrosRotacionMBean.seleccionarValoresMultiples}" update=":formRotacion:chk_valoresMultiples"/>
+
+                                            <h:panelGroup id="chk_valoresMultiples">
+                                                <span class="glyphicon #{filtrosRotacionMBean.valoresMultiples ? 'glyphicon-check' : 'glyphicon-unchecked'} margin-bottom-10 checkbox-proforma"
+                                                      onclick="seleccionarValoresMultiples();"></span>
+                                                <label onclick="seleccionarValoresMultiples();">Valores multiples</label>
+                                            </h:panelGroup>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-8 col-sm-offset-2 margin-bottom-10 right-component">
+                                            <p:remoteCommand name="agregarNuevoFiltro" actionListener="#{filtrosRotacionMBean.agregarFiltro}" update=":formRotacion:datosFiltro" oncomplete="cerrarModalEspera();"/>
+
+                                            <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); agregarNuevoFiltro();">
+                                                Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <p:messages id="msgFiltros" showDetail="true" showSummary="true"/>
+
+                                    <hr/>
+                                    <h:panelGroup id="filtros">
+                                        <p:remoteCommand name="eliminarNuevoFiltro" actionListener="#{filtrosRotacionMBean.eliminarFiltro}" update=":formRotacion:filtros" oncomplete="cerrarModalEspera();"/>
+
+                                        <div class="row">
+                                            <ui:repeat value="#{filtrosRotacionMBean.filtros}" var="filtro">
+                                                <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                                    <div style="border: 1px solid #DDDDDD; padding: 10px">
+                                                        <div class="row">
+                                                            <div class="col-xs-12 center-component margin-bottom-10">
+                                                                <b style="font-size: 18px">#{filtro.nombre}</b>
+                                                            </div>
+                                                            <div class="col-xs-12 center-component">
+                                                                <b>Columna</b>: #{filtro.codigoColumna}
+                                                            </div>
+                                                            <div class="col-xs-12 center-component">
+                                                                <b>Tipo dato</b>: #{filtro.tipo}
+                                                            </div>
+                                                            <div class="col-xs-12 center-component">
+                                                                <b>Sufijo</b>: #{filtro.sufijo}
+                                                            </div>
+                                                            <div class="col-xs-12 center-component">
+                                                                <b>Tipo referencia</b>: <span class="glyphicon #{filtro.tipoReferencia ? 'glyphicon-ok' : 'glyphicon-remove'}"></span>
+                                                            </div>
+                                                            <div class="col-xs-12 center-component">
+                                                                <b>Valores multiples</b>: <span class="glyphicon #{filtro.multiplesValores ? 'glyphicon-ok' : 'glyphicon-remove'}"></span>
+                                                            </div>
+                                                            <div class="col-xs-12 right-component">
+                                                                <span class="glyphicon glyphicon-trash pointer-cursor" style="color: #BF0039"
+                                                                      onclick="abrirModalEspera(); eliminarNuevoFiltro([{name: 'idFiltro', value: '#{filtro.idFiltro}'}]);"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ui:repeat>
+                                        </div>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                            </div>
+
+                            <div id="crear" class="tab-pane">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-6 col-sm-offset-3 margin-bottom-10">
+                                        <label>Nombre informe:</label>
+                                        <h:inputText class="form-control input-lg noround" value="#{crearReporteRotacionMBean.nombre}"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-3 col-sm-offset-3 margin-bottom-10">
+                                        <label>Filtro:</label>
+                                        <h:selectOneMenu id="filtro" class="form-control input-lg noround" value="#{crearReporteRotacionMBean.idFiltro}" style="font-size: 13px">
+                                            <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                            <f:selectItems value="#{crearReporteRotacionMBean.filtros}" var="filtro" itemLabel="#{filtro.nombre}" itemValue="#{filtro.idFiltro}"/>
+                                            <f:ajax event="change" listener="#{crearReporteRotacionMBean.seleccionarFiltro}" render="formRotacion:valor"/>
+                                        </h:selectOneMenu>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-3 margin-bottom-10">
+                                        <h:panelGroup id="valor">
+                                            <label>Valor:</label>
+                                            <ui:fragment rendered="#{crearReporteRotacionMBean.filtro.tipo eq 'Date'}">
+                                                <p:calendar id="valorDate" pattern="dd-MM-yyyy" class="input-lg mask" value="#{crearReporteRotacionMBean.valorDate}">
+                                                    <p:ajax event="dateSelect" rendered=":formRotacion:valorDate"/>
+                                                </p:calendar>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{crearReporteRotacionMBean.valores ne null and not empty crearReporteRotacionMBean.valores}">
+                                                <h:selectOneMenu class="form-control input-lg noround" style="font-size: 13px" value="#{crearReporteRotacionMBean.valor}">
+                                                    <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                    <f:selectItems value="#{crearReporteRotacionMBean.valores}"/>
+                                                </h:selectOneMenu>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{crearReporteRotacionMBean.filtro.tipo ne 'Date' and (crearReporteRotacionMBean.valores eq null or empty crearReporteRotacionMBean.valores)}">
+                                                <h:inputText class="form-control input-lg noround" value="#{crearReporteRotacionMBean.valor}"/>
+                                            </ui:fragment>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-6 col-sm-offset-3 margin-bottom-10 right-component">
+                                        <p:remoteCommand name="agregarFiltro" actionListener="#{crearReporteRotacionMBean.agregarFiltro}" oncomplete="cerrarModalEspera();"
+                                                         update=":formRotacion:filtro :formRotacion:valor :formRotacion:datos :formRotacion:msgCrear"/>
+
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); agregarFiltro();">
+                                            Agregar
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <p:messages id="msgCrear" showDetail="true" showSummary="true"/>
+
+                                <hr/>
+                                <h:panelGroup id="datos">
+                                    <p:remoteCommand name="eliminarFiltro" actionListener="#{crearReporteRotacionMBean.eliminarFiltro}" update=":formRotacion:datos" oncomplete="cerrarModalEspera();"/>
+
+                                    <div class="row">
+                                        <ui:repeat value="#{crearReporteRotacionMBean.filtrosInforme}" var="filtroInforme">
+                                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                                <div style="border: 1px solid #DDDDDD; padding: 10px">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component margin-bottom-10">
+                                                            <b style="font-size: 18px">#{filtroInforme.filtro.nombre}</b>
+                                                        </div>
+                                                        <div class="col-xs-12 center-component margin-bottom-10">
+                                                            #{filtroInforme.nombreValor}
+                                                        </div>
+                                                        <div class="col-xs-12 right-component">
+                                                            <span class="glyphicon glyphicon-trash pointer-cursor" style="color: #BF0039"
+                                                                  onclick="abrirModalEspera(); eliminarFiltro([{name: 'idFiltro', value: '#{filtroInforme.filtro.idFiltro}'},
+                                                                              {name: 'valor', value: '#{filtroInforme.valor}'}]);"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                    </div>
+                                    <ui:fragment rendered="#{crearReporteRotacionMBean.filtrosInforme ne null and not empty crearReporteRotacionMBean.filtrosInforme}">
+                                        <div class="row">
+                                            <div class="col-xs-12 right-component">
+                                                <p:remoteCommand name="generarInforme" actionListener="#{crearReporteRotacionMBean.generarInforme}" update=":formRotacion" oncomplete="cerrarModalEspera();"/>
+
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera(); generarInforme();">
+                                                    Generar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </ui:fragment>
+                                </h:panelGroup>
+                            </div>
+
+                            <div id="lista" class="tab-pane #{rotacionMBean.idInforme eq null or rotacionMBean.idInforme eq 0 ? 'fade in active' : ''}">
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-offset-7 col-md-5">
+                                        <p:remoteCommand name="paginar" actionListener="#{informesRotacionMBean.mostrarPaginaEspecifica}" update=":formRotacion:paginador :formRotacion:tablaInformes"
+                                                         oncomplete="cerrarModalEspera();"/>
+                                        <p:remoteCommand name="anteriorPagina" actionListener="#{informesRotacionMBean.mostrarPaginaAnterior}" update=":formRotacion:paginador :formRotacion:tablaInformes"
+                                                         oncomplete="cerrarModalEspera();"/>
+                                        <p:remoteCommand name="siguientePagina" actionListener="#{informesRotacionMBean.mostrarPaginaSiguiente}" update=":formRotacion:paginador :formRotacion:tablaInformes"
+                                                         oncomplete="cerrarModalEspera();"/>
+
+                                        <h:panelGroup id="paginador">
+                                            <nav class="nav-paginator-center">
+                                                <ul class="pagination pagination-lg">
+                                                    <li class="#{informesRotacionMBean.pagina == 1 ? 'disabled' : ''}" style="cursor: pointer">
+                                                        <a aria-label="Previus" onclick="anteriorPagina([{name: 'tipo', value: 1}]);">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
+                                                    <ui:repeat var="pagina" value="#{informesRotacionMBean.paginas}">
+                                                        <li class="#{informesRotacionMBean.pagina == pagina ? 'active' : ''}" style="cursor: pointer">
+                                                            <a onclick="paginar([{name: 'pagina', value: '#{pagina}'}, {name: 'tipo', value: 1}]);">
+                                                                #{pagina}
+                                                            </a>
+                                                        </li>
+                                                    </ui:repeat>
+                                                    <li class="#{informesRotacionMBean.pagina == informesRotacionMBean.totalPaginas ? 'disabled' : ''}" style="cursor: pointer">
+                                                        <a aria-label="Next" onclick="siguientePagina([{name: 'tipo', value: 1}]);">
+                                                            <span aria-hidden="true">&raquo;</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <p:remoteCommand name="obtenerDatosInforme" actionListener="#{rotacionMBean.obtenerDatosInforme}" update=":formRotacion" oncomplete="cerrarModalEspera();"/>
+                                        <p:remoteCommand name="eliminarInforme" actionListener="#{informesRotacionMBean.eliminarInforme}" update=":formRotacion:tablaInformes" oncomplete="cerrarModalEspera();"/>
+                                        <h:panelGroup id="poll">
+                                            <p:poll interval="10" listener="#{informesRotacionMBean.cargarInformes}" update="formRotacion:tablaInformes"
+                                                    rendered="#{rotacionMBean.idInforme eq null or rotacionMBean.idInforme eq 0}"/>
+                                        </h:panelGroup>
+
+                                        <h:panelGroup id="tablaInformes">
+                                            <table class="table table-bordered table-responsive table-striped">
+                                                <tr>
+                                                    <th class="head-tabla">#</th>
+                                                    <th class="head-tabla">Fecha</th>
+                                                    <th class="head-tabla">Autor</th>
+                                                    <th class="head-tabla">Nombre</th>
+                                                    <th class="head-tabla">Estado</th>
+                                                    <th class="head-tabla"></th>
+                                                    <th class="head-tabla"></th>
+                                                    <th class="head-tabla"></th>
+                                                </tr>
+                                                <ui:repeat value="#{informesRotacionMBean.informes}" var="informe">
+                                                    <tr>
+                                                        <td class="center-component">#{informe.idInforme}</td>
+                                                        <td class="center-component">#{baruGenericMBean.getValorFormateado('Date', informe.fecha, 0)}</td>
+                                                        <td class="center-component">#{informe.autor}</td>
+                                                        <td class="center-component">#{informe.nombre}</td>
+                                                        <td class="center-component">#{informe.estado.nombre}</td>
+                                                        <td class="center-component">
+                                                            <span class="#{informe.estado.idEstadoInforme == 3 ? 'pointer-cursor' : 'pointer-not-allowed'} glyphicon
+                                                                  #{informe.estado.idEstadoInforme == 3 ? 'glyphicon-eye-open' : 'glyphicon-eye-close'}"
+                                                                  onclick="abrirModalEspera(); obtenerDatosInforme([{name: 'idInforme', value: '#{informe.idInforme}'},
+                                                                              {name: 'estado', value:#{informe.estado.idEstadoInforme}}]);"
+                                                                  style="color: #{informe.estado.idEstadoInforme == 3 ? '#BF0039' : '#808080'}"></span>
+                                                        </td>
+                                                        <td class="center-component">
+                                                            <ui:fragment rendered="#{informe.documentoExiste}">
+                                                                <span class="pointer-cursor glyphicon glyphicon-save" onclick="#{informesRotacionMBean.descargarDocumento(informe.idInforme)}"></span>
+                                                            </ui:fragment>
+                                                        </td>
+                                                        <td class="center-component">
+                                                            <span class="glyphicon glyphicon-trash #{informe.autor eq userSessionInfoMBean.usuario ? 'pointer-cursor' : 'pointer-not-allowed'}"
+                                                                  onclick="abrirModalEspera(); eliminarInforme([{name: 'idInforme', value: '#{informe.idInforme}'}]);"
+                                                                  style="color: #{informe.autor eq userSessionInfoMBean.usuario ? '#BF0039' : '#000000'}"></span>
+                                                        </td>
+                                                    </tr>
+                                                </ui:repeat>
+                                            </table>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="informe" class="tab-pane #{rotacionMBean.idInforme ne null and rotacionMBean.idInforme gt 0 ? 'fade in active' : ''}">
+                                <p:remoteCommand name="mostrarImagenes" actionListener="#{rotacionMBean.mostrarImagenes}" update=":panelImagen" oncomplete="cerrarModalEspera(); abrirModalImagen();"/>
+                                <p:remoteCommand name="mostrarDetalleRotacion" actionListener="#{rotacionMBean.mostrarDetalleRotacion}" update=":panelDetalle" oncomplete="cerrarModalEspera(); abrirModalDetalle();"/>
+                                <p:remoteCommand name="mostrarSaldos" actionListener="#{rotacionMBean.mostrarSaldos}" update=":panelVentas" oncomplete="cerrarModalEspera(); abrirModalVentas();"/>
+                                <p:remoteCommand name="mostrarMovimientos" actionListener="#{rotacionMBean.mostrarMovimientos}" update=":panelMovimientos" oncomplete="cerrarModalEspera(); abrirModalMovimientos();"/>
+                                <p:remoteCommand name="filtrarInforme" actionListener="#{rotacionMBean.filtrarInforme}" update=":formRotacion:rotacion" oncomplete="cerrarModalEspera();"/>
+
+                                <div class="row">
+                                    <div class="col-xs-3 col-xs-offset-4 right-component margin-bottom-10">
+                                        <h:commandButton class="btn btn-default btn-lg noround" value="Descargar" style="margin-top: 25px">
+                                            <p:fileDownload value="#{rotacionMBean.excelDownload}"/>
+                                        </h:commandButton>
+                                    </div>
+                                    <div class="col-xs-5 margin-bottom-10">
+                                        <p:focus context="formRotacion" for="txt_parametro"/>
+
+                                        <label>Parámetro búsqueda</label>
+                                        <div class="input-group">
+                                            <h:inputText id="txt_parametro" class="form-control input-lg noround" value="#{rotacionMBean.parametroBusqueda}" autocomplete="off"
+                                                         onkeypress="if (event.keyCode === 13) {
+                                                                     abrirModalEspera();
+                                                                     filtrarInforme();
+                                                                     return false;
+                                                                 }"/>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-primary btn-lg noround" type="button" onclick="abrirModalEspera(); filtrarInforme();" style="font-size: 23px; padding: 8.5px 10px 5.5px 10px">
+                                                    <span class="glyphicon glyphicon-search"></span>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <h:panelGroup id="rotacion">
+                                        <ui:repeat value="#{rotacionMBean.datos}" var="dato">
+                                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                                <div style="border: 1px solid #DDDDDD">
+                                                    <div class="row">
+                                                        <div class="col-xs-5">
+                                                            <img class="img-responsive pointer-cursor" src="#{imagenProductoMBean.obtenerParrilla(dato.referencia)}"
+                                                                 onclick="abrirModalEspera(); mostrarImagenes([{name: 'referencia', value: '#{dato.referencia}'}]);"/>
+                                                        </div>
+                                                        <div class="col-xs-7">
+                                                            <div class="row">
+                                                                <div class="col-xs-6 center-component">
+                                                                    <b>Días promedio</b>
+                                                                    <br/>
+                                                                    <u class="pointer-cursor" style="color: #BF0039"
+                                                                       onclick="abrirModalEspera(); mostrarDetalleRotacion([{name: 'referencia', value: '#{dato.referencia}'}]);">
+                                                                        #{baruGenericMBean.getValorFormateado('Double', dato.rotacionPromedioDias, 0)}
+                                                                    </u>
+                                                                </div>
+                                                                <div class="col-xs-6 center-component">
+                                                                    <b>Días % Avanz</b>
+                                                                    <br/>
+                                                                    <u class="pointer-cursor" style="color: #BF0039"
+                                                                       onclick="abrirModalEspera(); mostrarDetalleRotacion([{name: 'referencia', value: '#{dato.referencia}'}]);">
+                                                                        #{baruGenericMBean.getValorFormateado('Double', dato.rotacionPromedioDiasAvanz, 0)}
+                                                                    </u>
+                                                                </div>
+                                                                <div class="col-xs-6 center-component">
+                                                                    <b>Utilidad mínima</b>
+                                                                    <br/>
+                                                                    <u class="pointer-cursor" style="color: #BF0039"
+                                                                       onclick="abrirModalEspera(); mostrarDetalleRotacion([{name: 'referencia', value: '#{dato.referencia}'}]);">
+                                                                        #{baruGenericMBean.getValorFormateado('Double', dato.utilidadMinima, 0)}
+                                                                    </u>
+                                                                </div>
+                                                                <div class="col-xs-6 center-component">
+                                                                    <b>Referencia</b>
+                                                                    <br/>
+                                                                    #{baruGenericMBean.convertirARefCorta(dato.referencia)}
+                                                                </div>
+                                                                <div class="col-xs-12 center-component">
+                                                                    <b>Modelo</b>
+                                                                    <br/>
+                                                                    #{dato.modelo}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-4 center-component">
+                                                            <b>Saldo venta</b>
+                                                            <br/>
+                                                            <u class="pointer-cursor" style="color: #BF0039"
+                                                               onclick="abrirModalEspera(); mostrarSaldos([{name: 'referencia', value: '#{dato.referencia}'}]);">
+                                                                #{baruGenericMBean.getValorFormateado('Double', dato.saldoVenta, 0)}
+                                                            </u>
+                                                        </div>
+                                                        <div class="col-xs-4 center-component">
+                                                            <b>Saldo taller</b>
+                                                            <br/>
+                                                            <u class="pointer-cursor" style="color: #BF0039"
+                                                               onclick="abrirModalEspera(); mostrarMovimientos([{name: 'referencia', value: '#{dato.referencia}'}, {name: 'almacen', value: '9901'}]);">
+                                                                #{baruGenericMBean.getValorFormateado('Double', dato.saldoTaller, 0)}
+                                                            </u>
+                                                        </div>
+                                                        <div class="col-xs-4 center-component">
+                                                            <b>Saldo garantía</b>
+                                                            <br/>
+                                                            <u class="pointer-cursor" style="color: #BF0039"
+                                                               onclick="abrirModalEspera(); mostrarMovimientos([{name: 'referencia', value: '#{dato.referencia}'}, {name: 'almacen', value: 'CL9901'}]);">
+                                                                #{baruGenericMBean.getValorFormateado('Double', dato.saldoGarantia, 0)}
+                                                            </u>
+                                                        </div>
+                                                        <div class="col-xs-4 center-component">
+                                                            <b>Comprado</b>
+                                                            <br/>
+                                                            <u class="pointer-cursor" style="color: #BF0039"
+                                                               onclick="abrirModalEspera(); mostrarDetalleRotacion([{name: 'referencia', value: '#{dato.referencia}'}]);">
+                                                                #{baruGenericMBean.getValorFormateado('Double', dato.cantidadComprada, 0)}
+                                                            </u>
+                                                        </div>
+                                                        <div class="col-xs-4 center-component">
+                                                            <b>Vendido</b>
+                                                            <br/>
+                                                            <u class="pointer-cursor" style="color: #BF0039"
+                                                               onclick="abrirModalEspera(); mostrarDetalleRotacion([{name: 'referencia', value: '#{dato.referencia}'}]);">
+                                                                #{baruGenericMBean.getValorFormateado('Double', dato.cantidadVendida, 0)}
+                                                            </u>
+                                                        </div>
+                                                        <div class="col-xs-4 center-component">
+                                                            <b>salidas</b>
+                                                            <br/>
+                                                            <u class="pointer-cursor" style="color: #BF0039"
+                                                               onclick="abrirModalEspera(); mostrarDetalleRotacion([{name: 'referencia', value: '#{dato.referencia}'}]);">
+                                                                #{baruGenericMBean.getValorFormateado('Double', dato.cantidadSalida, 0)}
+                                                            </u>
+                                                        </div>
+                                                        <div class="col-xs-4 center-component">
+                                                            <b>Entrada neta</b>
+                                                            <br/>
+                                                            <u class="pointer-cursor" style="color: #BF0039"
+                                                               onclick="abrirModalEspera(); mostrarDetalleRotacion([{name: 'referencia', value: '#{dato.referencia}'}]);">
+                                                                #{baruGenericMBean.getValorFormateado('Double', dato.cantidadEntradaNeta, 0)}
+                                                            </u>
+                                                        </div>
+                                                        <div class="col-xs-4 center-component">
+                                                            <b>Subgrupo</b>
+                                                            <br/>
+                                                            #{dato.nomSubGrupo}
+                                                        </div>
+                                                        <div class="col-xs-4 center-component">
+                                                            <b>Proveedor</b>
+                                                            <br/>
+                                                            #{dato.proveedor}
+                                                        </div>
+                                                        <div class="col-xs-12 center-component">
+                                                            <b>Ref. proveedor</b>
+                                                            <br/>
+                                                            #{dato.refProv}
+                                                        </div>
+                                                        <div class="col-xs-12 center-component">
+                                                            <b>Ref. aduana</b>
+                                                            <br/>
+                                                            #{dato.refAduana}
+                                                        </div>
+                                                        <div class="col-xs-12 center-component">
+                                                            <b>Descripción</b>
+                                                            <br/>
+                                                            #{dato.descripcion}
+                                                        </div>
+                                                        <div class="col-xs-6 center-component">
+                                                            <b>Utilidad promedio</b>
+                                                            <br/>
+                                                            <u class="pointer-cursor" style="color: #BF0039"
+                                                               onclick="abrirModalEspera(); mostrarDetalleRotacion([{name: 'referencia', value: '#{dato.referencia}'}]);">
+                                                                #{baruGenericMBean.getValorFormateado('Double', dato.utilidadPromedio, 0)}
+                                                            </u>
+                                                        </div>
+                                                        <div class="col-xs-6 center-component">
+                                                            <b>Utilidad avanzada</b>
+                                                            <br/>
+                                                            <u class="pointer-cursor" style="color: #BF0039"
+                                                               onclick="abrirModalEspera(); mostrarDetalleRotacion([{name: 'referencia', value: '#{dato.referencia}'}]);">
+                                                                #{baruGenericMBean.getValorFormateado('Double', dato.utilidadAvanzada, 0)}
+                                                            </u>
+                                                        </div>
+                                                        <div class="col-xs-6 center-component">
+                                                            <b>Grupo</b>
+                                                            <br/>
+                                                            #{dato.nomGrupo}
+                                                        </div>
+                                                        <div class="col-xs-6 center-component">
+                                                            <b>Total comprado</b>
+                                                            <br/>
+                                                            <u class="pointer-cursor" style="color: #BF0039"
+                                                               onclick="abrirModalEspera(); mostrarDetalleRotacion([{name: 'referencia', value: '#{dato.referencia}'}]);">
+                                                                #{baruGenericMBean.getValorFormateado('Double', dato.totalComprado, 0)}
+                                                            </u>
+                                                        </div>
+                                                        <div class="col-xs-6 center-component">
+                                                            <b>Precio sin IVA</b>
+                                                            <br/>
+                                                            <u class="pointer-cursor" style="color: #BF0039"
+                                                               onclick="abrirModalEspera(); mostrarDetalleRotacion([{name: 'referencia', value: '#{dato.referencia}'}]);">
+                                                                #{baruGenericMBean.getValorFormateado('Double', dato.precioSinIva, 0)}
+                                                            </u>
+                                                        </div>
+                                                        <div class="col-xs-6 center-component">
+                                                            <b>Última venta</b>
+                                                            <br/>
+                                                            <ui:fragment rendered="#{dato.fechaUltimaVenta eq null}">
+                                                                No aplica
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{dato.fechaUltimaVenta ne null}">
+                                                                <u class="pointer-cursor" style="color: #BF0039; height: 16px"
+                                                                   onclick="abrirModalEspera(); mostrarDetalleRotacion([{name: 'referencia', value: '#{dato.referencia}'}]);">
+                                                                    #{baruGenericMBean.getValorFormateado('Date', dato.fechaUltimaVenta, 0)}
+                                                                </u>
+                                                            </ui:fragment>
+                                                        </div>
+                                                        <div class="col-xs-6 center-component">
+                                                            <b>Rotación</b>
+                                                            <br/>
+                                                            <u class="pointer-cursor" style="color: #BF0039"
+                                                               onclick="abrirModalEspera(); mostrarDetalleRotacion([{name: 'referencia', value: '#{dato.referencia}'}]);">
+                                                                #{baruGenericMBean.getValorFormateado('Double', (dato.rotacionPorcentaje * 100), 0)}%
+                                                            </u>
+                                                        </div>
+                                                        <div class="col-xs-6 center-component">
+                                                            <b>Categoria</b>
+                                                            <br/>
+                                                            #{dato.nomDpto}
+                                                        </div>
+                                                        <div class="col-xs-4 center-component">
+                                                            <b>Cod. Categoria</b>
+                                                            <br/>
+                                                            #{dato.codDpto}
+                                                        </div>
+                                                        <div class="col-xs-4 center-component">
+                                                            <b>Cod. Grupo</b>
+                                                            <br/>
+                                                            #{dato.codGrupo}
+                                                        </div>
+                                                        <div class="col-xs-4 center-component">
+                                                            <b>Cod. Subgrupo</b>
+                                                            <br/>
+                                                            #{dato.codSubGrupo}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+
+                            <div id="proveedores" class="tab-pane">
+                                <h:panelGroup id="proveedores">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-6 col-md-4 col-md-offset-2 margin-bottom-10">
+                                            <label>Proveedor</label>
+                                            <h:inputText class="form-control input-lg noround" value="#{proveedoresMBean.proveedor}" disabled="true"/>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                            <label>Nombre</label>
+                                            <h:inputText class="form-control input-lg noround" value="#{proveedoresMBean.nombre}"/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-md-10 right-component">
+                                            <p:remoteCommand name="limpiar" actionListener="#{proveedoresMBean.limpiar}" update=":formRotacion:proveedores" oncomplete="cerrarModalEspera();"/>
+                                            <p:remoteCommand name="guardar" actionListener="#{proveedoresMBean.guardar}" update=":formRotacion:proveedores" oncomplete="cerrarModalEspera();"/>
+
+                                            <button type="button" class="btn btn-lg btn-default noround" onclick="abrirModalEspera();
+                                                    limpiar();">
+                                                Cancelar
+                                            </button>
+                                            <button type="button" class="btn btn-lg btn-primary noround" onclick="abrirModalEspera(); guardar();">
+                                                Guardar
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <p:messages id="msgProveedores" showDetail="true" showSummary="true"/>
+                                    <hr/>
+
+                                    <p:remoteCommand name="editarProveedor" actionListener="#{proveedoresMBean.editarProveedor}" update=":formRotacion:proveedores" oncomplete="cerrarModalEspera();"/>
+                                    <div class="row">
+                                        <ui:repeat value="#{proveedoresMBean.proveedores}" var="proveedor">
+                                            <div class="col-xs-12 col-sm-6 col-md-4 margin-bottom-10">
+                                                <div style="border: 1px solid #DDDDDD; padding: 10px">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 center-component" style="font-size: 20px">
+                                                            <b>#{proveedor.proveedor}</b>
+                                                        </div>
+                                                        <div class="col-xs-12 center-component margin-bottom-10">
+                                                            #{proveedor.nombreProveedor}
+                                                        </div>
+                                                        <div class="col-xs-12 right-component">
+                                                            <span class="glyphicon glyphicon-pencil pointer-cursor"
+                                                                  onclick="abrirModalEspera();
+                                                                          editarProveedor([{name: 'proveedor', value: '#{proveedor.proveedor}'}, {name: 'nombre', value: '#{proveedor.nombreProveedor}'}]);"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                    </div>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+        <br/>
+
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+        <script src="/360/js/rotacion.js"></script>
+    </h:body>
+</html>
+

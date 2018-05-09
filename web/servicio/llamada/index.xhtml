@@ -1,0 +1,1014 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <link href="/360/fonts/iconFont.css" rel="stylesheet"/>
+        <script src="/360/js/arriba.js"></script>
+        <script type="text/javascript">
+            function openRuta(window_src) {
+                ruta = window.open(window_src, 'newwindow', config = 'height=' + window.screen.availHeight + ',width=' + window.screen.availWidth
+                        + ',toolbar=no,menubar=no,resizable=no,location=no,status=no,scrollbars=yes');
+            }
+
+            function abrirModalGarantia() {
+                $('#modalGarantia').modal('show');
+            }
+
+            function cerrarModalGarantia() {
+                $('#modalGarantia').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalNuevo() {
+                $('#modalNuevo').modal('show');
+            }
+
+            function cerrarModalNuevo() {
+                $('#modalNuevo').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalLlamadas() {
+                $('#modalLlamadas').modal('show');
+            }
+
+            function cerrarModalLlamadas() {
+                $('#modalLlamadas').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function abrirModalAdjunto() {
+                $('#modalAdjunto').modal('show');
+            }
+
+            function cerrarModalAdjunto() {
+                $('#modalAdjunto').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+
+            function openRuta(window_src) {
+                ruta = window.open(window_src, '_blank');
+            }
+
+            function closeWindow() {
+                window.close();
+            }
+        </script>
+        <title>360 - Llamada de servicio</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <span class="hidden-xs ir-arriba">
+            <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+        </span>
+
+        <h:form>
+            <p:remoteCommand name="consultarLlamadasAbiertas" actionListener="#{llamadaServicioMBean.consultarLlamadasAbiertas}" update=":panelLlamadas" oncomplete="cerrarModalEspera(); abrirModalLlamadas();"/>
+
+            <span class="open-folder" onclick="abrirModalEspera(); consultarLlamadasAbiertas();">
+                <span class="glyphicon glyphicon-folder-open" style="top: -2px !important" title="Lista de llamadas"></span>
+            </span>
+        </h:form>
+
+        <h:form>
+            <p:remoteCommand name="ejecutarSondaSincronizacion" actionListener="#{llamadaServicioMBean.ejecutarSondaSincronizacion}" update=":formLlamada" oncomplete="cerrarModalEspera();"/>
+
+            <span class="open-folder" style="top: 140px" onclick="abrirModalEspera(); ejecutarSondaSincronizacion();">
+                <span class="glyphicon glyphicon-refresh" style="top: -2px !important" title="Sincronizar"></span>
+            </span>
+        </h:form>
+
+        <h:form>
+            <a href="http://360.matisses.co:8080/shared/logistica/servicio/sinGarantia.pdf" download="Fuera de garantia">
+                <span class="open-folder" style="top: 220px">
+                        <span class="glyphicon glyphicon-cloud-download" style="top: -2px !important" title="Fuera de garantia"></span>
+                </span>
+            </a> 
+        </h:form>
+
+        <div class="container">
+            <h:panelGroup id="panelGarantia">
+                <h:panelGroup rendered="#{llamadaServicioMBean.dlgGarantia}">
+                    <h:form id="formGarantia">
+                        <div id="modalGarantia" class="modal fade" tabindex="-1" role="dialog">
+                            <div class="modal-dialog modal-sm" role="document">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header-advertencia">
+                                        <h4 class="modal-title">Advertencia</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <h:outputLabel value="#{llamadaServicioMBean.msgGarantia}" escape="false" style="font-weight: normal"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <p:remoteCommand name="modal" update=":panelGarantia" oncomplete="cerrarModalGarantia(); abrirModalEspera(); guardarLlamada([{name: 'inicial', value: '#{false}'}]);"/>
+
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">No</button>
+                                        <button type="button" class="btn btn-primary btn-lg noround" onclick="modal();">Sì</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelLlamadas">
+                <h:panelGroup rendered="#{llamadaServicioMBean.dlgLlamadas}">
+                    <h:form id="formLlamadas">
+                        <div id="modalLlamadas" class="modal fade" tabindex="-1" role="dialog">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content dialog-content noround">
+                                    <div class="modal-header dialog-header">
+                                        <h4 class="modal-title">Lista de llamadas de servicio</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p:remoteCommand name="seleccionarLlamada" actionListener="#{llamadaServicioMBean.seleccionarLlamada}" update=":formLlamada :panelLlamadas" oncomplete="cerrarModalLlamadas();"/>
+
+                                        <div class="row">
+                                            <div class="col-xs-12 center-component">
+                                                <div style="max-height: 400px; overflow-y: auto">
+                                                    <table class="table table-bordered table-responsive table-striped">
+                                                        <tr>
+                                                            <th class="head-tabla">#</th>
+                                                            <th class="head-tabla">Cliente</th>
+                                                            <th class="head-tabla">Asunto</th>
+                                                            <th class="head-tabla">Estado</th>
+                                                        </tr>
+                                                        <ui:repeat value="#{llamadaServicioMBean.servicios}" var="servicio">
+                                                            <tr class="tr-tabla pointer-cursor" onclick="seleccionarLlamada([{name: 'id', value: '#{servicio.callID}'}]);">
+                                                                <td>#{servicio.docNum}</td>
+                                                                <td>#{servicio.custmrName}</td>
+                                                                <td>#{servicio.subject}</td>
+                                                                <td>#{llamadaServicioMBean.getObtenerEstadoLlamada(servicio.status)}</td>
+                                                            </tr>
+                                                        </ui:repeat>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer dialog-footer">
+                                        <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cancelar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelNuevo">
+                <h:form id="formNuevo">
+                    <div id="modalNuevo" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <h4 class="modal-title">Base de datos de soluciones</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <div class="row">
+                                                <div class="col-xs-12 margin-bottom-10">
+                                                    <div class="input-group" style="width: 100%">
+                                                        <span class="input-group-addon noround" id="basic-addon1" style="width: 31%">Artículo</span>
+                                                        <h:inputText class="form-control noround" value="#{llamadaServicioMBean.solucion.itemCode}" autocomplete="off" disabled="true"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <div class="row">
+                                                <div class="col-xs-12 margin-bottom-10">
+                                                    <div class="input-group" style="width: 100%">
+                                                        <span class="input-group-addon noround" id="basic-addon1" style="width: 40%">Estado</span>
+                                                        <h:selectOneMenu class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.solucion.estado}">
+                                                            <f:selectItems value="#{llamadaServicioMBean.estadosSolucion}" var="estadoSolucion" itemLabel="#{estadoSolucion.name}" itemValue="#{estadoSolucion.number}"/>
+                                                            <f:ajax event="change"/>
+                                                        </h:selectOneMenu>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 margin-bottom-10">
+                                                    <div class="input-group" style="width: 100%">
+                                                        <span class="input-group-addon noround" id="basic-addon1" style="width: 40%">No</span>
+                                                        <h:inputText class="form-control noround" value="#{llamadaServicioMBean.solucion.idLlamadaSolucion}" autocomplete="off" disabled="true"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 margin-bottom-10">
+                                                    <div class="input-group" style="width: 100%">
+                                                        <span class="input-group-addon noround" id="basic-addon1" style="width: 40%">Propietario</span>
+                                                        <h:inputText class="form-control noround" value="#{llamadaServicioMBean.solucion.propietario}" autocomplete="off" disabled="true"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <div class="input-group" style="width: 100%">
+                                                <span class="input-group-addon noround" id="basic-addon1" style="width: 20%">Solución</span>
+                                                <h:inputText class="form-control noround" value="#{llamadaServicioMBean.solucion.solucion}" autocomplete="off">
+                                                    <f:ajax event="change"/>
+                                                </h:inputText>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <div class="input-group" style="width: 100%">
+                                                <span class="input-group-addon noround" id="basic-addon1" style="width: 20%">Síntoma</span>
+                                                <h:inputText class="form-control noround" value="#{llamadaServicioMBean.solucion.sintoma}" autocomplete="off">
+                                                    <f:ajax event="change"/>
+                                                </h:inputText>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <label>Causa</label>
+                                            <h:inputText class="form-control noround" value="#{llamadaServicioMBean.solucion.causa}" autocomplete="off">
+                                                <f:ajax event="change"/>
+                                            </h:inputText>
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <label>Comentarios</label>
+                                            <h:inputTextarea class="form-control noround" value="#{llamadaServicioMBean.solucion.comentarios}" style="height: 100px; resize: none">
+                                                <f:ajax event="change"/>
+                                            </h:inputTextarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <p:remoteCommand name="modal" update=":panelNuevo" oncomplete="cerrarModalNuevo(); abrirModalEspera(); guardarSolucion();"/>
+                                    <p:remoteCommand name="guardarSolucion" actionListener="#{llamadaServicioMBean.guardarSolucion}" update=":formLlamada:panelSolucion" oncomplete="cerrarModalEspera();"/>
+
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="modal();">Guardar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:panelGroup id="panelAdjunto">
+                <div id="modalAdjunto" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-sm" role="document">
+                        <div class="modal-content dialog-content noround">
+                            <div class="modal-header dialog-header">
+                                <h4 class="modal-title">Adjunto</h4>
+                            </div>
+                            <div class="modal-body">
+                                <h:form id="formAdjunto" enctype="multipart/form-data">
+                                    <div class="row">
+                                        <div class="col-xs-12 center-component">
+                                            <label class="form-control btn btn-default btn-file noround">
+                                                Cargar archivo
+                                                <h:inputFile value="#{llamadaServicioMBean.adjunto}" style="display: none">
+                                                    <f:ajax listener="#{llamadaServicioMBean.agregarAdjunto}" render=":formBtn:msg"/>
+                                                </h:inputFile>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </h:form>
+                            </div>
+                            <div class="modal-footer dialog-footer">
+                                <h:form id="formBtn">
+                                    <p:remoteCommand name="guardarAdjunto" actionListener="#{llamadaServicioMBean.guardarAdjunto}" update=":panelAdjunto :formLlamada:panelDocumentacion"
+                                                     oncomplete="cerrarModalAdjunto();"/>
+
+                                    <p:messages class="center-component" id="msg" showDetail="true"/>
+
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">No</button>
+                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="guardarAdjunto();">Sí</button>
+                                </h:form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+            <h:form id="formLlamada">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>
+                                    Llamada de servicio
+                                </a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true" style="margin-top: -20px"/>
+
+                <div class="row">
+                    <p:focus context="formLlamada" for="txt_docNum"/>
+                    <p:remoteCommand name="consultarLlamada" actionListener="#{llamadaServicioMBean.consultarLlamada}" update=":formLlamada :panelLlamadas"
+                                     oncomplete="cerrarModalEspera(); abrirModalLlamadas();"/>
+                    <p:remoteCommand name="seleccionarClaseLlamada" actionListener="#{llamadaServicioMBean.seleccionarClaseLlamada}" update=":formLlamada:claseLlamada"/>
+
+                    <div class="col-xs-12 col-sm-8 margin-bottom-10">
+                        <div class="row">
+                            <h:panelGroup id="claseLlamada">
+                                <div class="col-xs-3">Clase de llamada</div>
+                                <div class="col-xs-4 center-component margin-bottom-10" style="height: 20px">
+                                    <label onclick="seleccionarClaseLlamada([{name: 'claseLlamada', value: 'srvcSales'}]);">
+                                        <span class="icon #{llamadaServicioMBean.serviceCall.serviceBPType eq 'srvcSales' ? 'icon-radio_checked' : 'icon-radio_uncheck'} pointer-cursor"
+                                              style="position: relative; font-size: 44px; color: #BF0039; top: -12px"></span><span style="position: relative; top: -26px"> Ventas</span>
+                                    </label>
+                                </div>
+                                <div class="col-xs-5 center-component margin-bottom-10" style="height: 20px">
+                                    <label onclick="seleccionarClaseLlamada([{name: 'claseLlamada', value: 'srvcPurchasing'}]);">
+                                        <span class="icon #{llamadaServicioMBean.serviceCall.serviceBPType eq 'srvcPurchasing' ? 'icon-radio_checked' : 'icon-radio_uncheck'} pointer-cursor"
+                                              style="position: relative; font-size: 44px; color: #BF0039; top: -12px"></span><span style="position: relative; top: -26px"> Compras</span>
+                                    </label>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                <label>Cliente</label>
+                                <h:inputText id="txt_cliente" class="form-control noround" value="#{llamadaServicioMBean.serviceCall.customerCode}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                            abrirModalEspera();
+                                            consultarLlamada();
+                                            return false;
+                                        }">
+                                    <f:ajax event="change" render=":formLlamada:txt_cliente :formLlamada:txt_nombreCliente :formLlamada:panelCliente" listener="#{llamadaServicioMBean.cambiarCliente}"/>
+                                </h:inputText>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                <label>Nombre</label>
+                                <h:inputText id="txt_nombreCliente" class="form-control noround" value="#{llamadaServicioMBean.serviceCall.customerName}" autocomplete="off" disabled="true"
+                                             onkeypress="if (event.keyCode === 13) {
+                                                         return false;
+                                                     }"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                <label>Referencia</label>
+                                <h:inputText id="txt_referencia" class="form-control noround" value="#{llamadaServicioMBean.serviceCall.itemCode}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                            abrirModalEspera();
+                                            consultarLlamada();
+                                            return false;
+                                        }">
+                                    <f:ajax event="change" render=":formLlamada:txt_descripcion :formLlamada:txt_referencia :formLlamada:materiales" listener="#{llamadaServicioMBean.cambiarReferencia}"/>
+                                </h:inputText>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                <label>Descripción</label>
+                                <h:inputText id="txt_descripcion" class="form-control noround" value="#{llamadaServicioMBean.serviceCall.itemDescription}" disabled="true" autocomplete="off"
+                                             onkeypress="if (event.keyCode === 13) {
+                                                         return false;
+                                                     }"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label>Asunto</label>
+                                <h:inputTextarea class="form-control noround" value="#{llamadaServicioMBean.serviceCall.subject}" style="height: 101px; resize: none"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 margin-bottom-10">
+                        <div class="row">
+                            <div class="col-xs-12 margin-bottom-10" style="font-size: 20px; color: #BF0039">
+                                <div class="input-group" style="width: 100%">
+                                    <span class="input-group-addon noround" id="basic-addon1" style="width: 40%">#</span>
+                                    <h:inputText id="txt_docNum" class="form-control noround center-component" value="#{llamadaServicioMBean.serviceCall.docNum}" autocomplete="off"
+                                                 onkeypress="if (event.keyCode === 13) {
+                                                             abrirModalEspera();
+                                                             consultarLlamada();
+                                                             return false;
+                                                         }"/>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 margin-bottom-10">
+                                <div class="input-group" style="width: 100%">
+                                    <span class="input-group-addon noround" id="basic-addon1" style="width: 40%">Estado</span>
+                                    <h:selectOneMenu class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.status}">
+                                        <f:selectItems value="#{llamadaServicioMBean.estados}" var="estado" itemLabel="#{estado.name}" itemValue="#{estado.statusId}"/>
+                                    </h:selectOneMenu>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 margin-bottom-10" style="font-size: 20px; color: #BF0039">
+                                <div class="input-group" style="width: 100%">
+                                    <span class="input-group-addon noround" id="basic-addon1" style="width: 40%">Id cliente</span>
+                                    <h:inputText class="form-control noround center-component" value="#{llamadaServicioMBean.serviceCall.serviceCallID}" autocomplete="off" disabled="true"/>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 margin-bottom-10">
+                                <div class="input-group" style="width: 100%">
+                                    <span class="input-group-addon noround" id="basic-addon1" style="width: 40%">Prioridad</span>
+                                    <h:selectOneMenu class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.priority}">
+                                        <f:selectItem itemLabel="Baja" itemValue="scp_Low"/>
+                                        <f:selectItem itemLabel="Media" itemValue="scp_Medium"/>
+                                        <f:selectItem itemLabel="Alta" itemValue="scp_High"/>
+                                    </h:selectOneMenu>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 margin-bottom-10">
+                                <div class="input-group" style="width: 100%">
+                                    <span class="input-group-addon noround" id="basic-addon1" style="width: 40%">Creación</span>
+                                    <p:calendar id="fechaCreacion" pattern="dd-MM-yy" class="input-calendar-time" value="#{llamadaServicioMBean.serviceCall.fechaCreacion}" disabled="true">
+                                        <p:ajax event="dateSelect"/>
+                                    </p:calendar>
+                                    <h:inputText class="form-control pull-right noround center-component" style="width: 40%; border-left: 0; padding: 0" value="#{llamadaServicioMBean.serviceCall.horaCreacion}"
+                                                 disabled="true"/>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 margin-bottom-10">
+                                <div class="input-group" style="width: 100%">
+                                    <span class="input-group-addon noround" id="basic-addon1" style="width: 40%">Cierre</span>
+                                    <p:calendar id="fechaCierre" pattern="dd-MM-yy" class="input-calendar-time" value="#{llamadaServicioMBean.serviceCall.fechaCierre}" disabled="true">
+                                        <p:ajax event="dateSelect"/>
+                                    </p:calendar>
+                                    <h:inputText class="form-control pull-right noround center-component" style="width: 40%; border-left: 0; padding: 0" value="#{llamadaServicioMBean.serviceCall.horaCierre}"
+                                                 disabled="true"/>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 margin-bottom-10">
+                                <div class="input-group" style="width: 100%">
+                                    <span class="input-group-addon noround" id="basic-addon1" style="width: 40%">Finalizado</span>
+                                    <p:calendar id="fechaFin" pattern="dd-MM-yy" class="input-calendar" value="#{llamadaServicioMBean.serviceCall.fechaFinalizado}" disabled="true">
+                                        <p:ajax event="dateSelect"/>
+                                    </p:calendar>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ul class="nav nav-tabs margin-bottom-10">
+                            <li class="active"><a data-toggle="tab" href="#causa">Causas</a></li>
+                            <li><a data-toggle="tab" href="#general">General</a></li>
+                            <li><a data-toggle="tab" href="#socio">Cliente</a></li>
+                            <li><a data-toggle="tab" href="#comentario">Comentarios</a></li>
+                            <li class="disabled"><a>Operaciones</a></li>
+                            <li><a data-toggle="tab" href="#solucion">Soluciones</a></li>
+                            <li><a data-toggle="tab" href="#resolucion">Resolución</a></li>
+                            <li><a data-toggle="tab" href="#programacion">Programación</a></li>
+                            <li><a data-toggle="tab" href="#documentacion">Anexos</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div id="causa" class="tab-pane fade in active">
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Causa garantía</label>
+                                                <h:selectOneMenu class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.UCausa}">
+                                                    <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                    <f:selectItems value="#{llamadaServicioMBean.causasGarantia}" var="causa" itemLabel="#{causa.descr}" itemValue="#{causa.fldValue}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Categorías de reparación</label>
+                                                <h:selectOneMenu class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.UCateGa}">
+                                                    <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                    <f:selectItems value="#{llamadaServicioMBean.categoriasReparacion}" var="categoria" itemLabel="#{categoria.descr}" itemValue="#{categoria.fldValue}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Tipo de servicio</label>
+                                                <h:selectOneMenu class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.UTipoServ}">
+                                                    <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                    <f:selectItems value="#{llamadaServicioMBean.tiposServicio}" var="tipo" itemLabel="#{tipo.descr}" itemValue="#{tipo.fldValue}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Customer's SO #</label>
+                                                <h:inputText class="form-control noround" value="#{llamadaServicioMBean.serviceCall.UNWRPO}"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Comentario</label>
+                                                <h:inputTextarea class="form-control noround" value="#{llamadaServicioMBean.serviceCall.UComentSoporte}" style="resize: none; height: 104px"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Proveedor externo</label>
+                                                <h:inputText class="form-control noround" value="#{llamadaServicioMBean.serviceCall.UProExt}"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Número de factura</label>
+                                                <h:inputText class="form-control noround" value="#{llamadaServicioMBean.serviceCall.UNumFactura}"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>RMA</label>
+                                                <h:selectOneMenu class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.UNWRRMA}">
+                                                    <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                    <f:selectItems value="#{llamadaServicioMBean.rmas}" var="rma" itemLabel="#{rma.descr}" itemValue="#{rma.fldValue}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>RMA type</label>
+                                                <h:selectOneMenu class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.UNWRRMAType}">
+                                                    <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                    <f:selectItems value="#{llamadaServicioMBean.rmasTipos}" var="rmaTipo" itemLabel="#{rmaTipo.descr}" itemValue="#{rmaTipo.fldValue}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Material</label>
+                                                <h:selectOneMenu id="materiales" class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.UMaterial}">
+                                                    <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                    <f:selectItems value="#{llamadaServicioMBean.materiales}" var="material" itemLabel="#{material.name}" itemValue="#{material.code}"/>
+                                                    <f:ajax event="change" render=":formLlamada:averias" listener="#{llamadaServicioMBean.obtenerAverias}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Problema material</label>
+                                                <h:selectOneMenu id="averias" class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.UProblemaMaterial}">
+                                                    <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                    <f:selectItems value="#{llamadaServicioMBean.averias}" var="averia" itemLabel="#{averia.UProblema}" itemValue="#{averia.code}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="general" class="tab-pane">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                                <label>Origen</label>
+                                                <h:selectOneMenu class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.origin}">
+                                                    <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                    <f:selectItems value="#{llamadaServicioMBean.origenes}" var="origen" itemLabel="#{origen.name}" itemValue="#{origen.originId}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                                <label>Tipo problema</label>
+                                                <h:selectOneMenu class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.problemType}">
+                                                    <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                    <f:selectItems value="#{llamadaServicioMBean.problemas}" var="problema" itemLabel="#{problema.name}" itemValue="#{problema.problemTypeId}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                                <label>Subtipo problema</label>
+                                                <h:selectOneMenu class="form-control noround pointer-cursor select-34" disabled="#{llamadaServicioMBean.subProblemas eq null or empty llamadaServicioMBean.subProblemas}">
+                                                    <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                    <f:selectItems value="#{llamadaServicioMBean.subProblemas}" var="subProblema" itemLabel="#{subProblema.name}" itemValue="#{subProblema.proSubTyId}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                                <label>Tipo llamada</label>
+                                                <h:selectOneMenu class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.callType}">
+                                                    <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                    <f:selectItems value="#{llamadaServicioMBean.tiposLlamada}" var="tipoLlamada" itemLabel="#{tipoLlamada.name}" itemValue="#{tipoLlamada.callTypeId}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Técnico</label>
+                                                <h:inputText class="form-control noround center-component"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6 margin-bottom-10">
+                                        <p:remoteCommand name="seleccionarCola" actionListener="#{llamadaServicioMBean.seleccionarCola}" update=":formLlamada:cola" oncomplete="cerrarModalEspera();"/>
+
+                                        <h:panelGroup id="cola">
+                                            <div class="row">
+                                                <div class="col-xs-4">
+                                                    <label onclick="abrirModalEspera();
+                                                            seleccionarCola();">
+                                                        <span class="icon #{llamadaServicioMBean.serviceCall.queue eq 'tYES' ? 'icon-radio_uncheck' : 'icon-radio_checked'} pointer-cursor"
+                                                              style="position: relative; font-size: 44px; color: #BF0039"></span><span style="position: relative; top: -14px"> Tratado por</span>
+                                                    </label>
+                                                </div>
+                                                <div class="col-xs-8">
+                                                    <h:selectOneMenu class="form-control noround pointer-cursor select-34" disabled="#{llamadaServicioMBean.serviceCall.queue eq 'tYES' ? 'true' : 'false'}"
+                                                                     value="#{llamadaServicioMBean.serviceCall.assigneeCode}" style="margin-top: 9px">
+                                                        <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                        <f:selectItems value="#{llamadaServicioMBean.usuarios}" var="usuario" itemLabel="#{usuario.name}" itemValue="#{usuario.userID}"/>
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-4">
+                                                    <label onclick="abrirModalEspera();
+                                                            seleccionarCola();">
+                                                        <span class="icon #{llamadaServicioMBean.serviceCall.queue eq 'tYES' ? 'icon-radio_checked' : 'icon-radio_uncheck'} pointer-cursor"
+                                                              style="position: relative; font-size: 44px; color: #BF0039"></span><span style="position: relative; top: -14px"> Cola</span>
+                                                    </label>
+                                                </div>
+                                                <div class="col-xs-8">
+                                                    <h:inputText class="form-control noround center-component" disabled="#{llamadaServicioMBean.serviceCall.queue eq 'tYES' ? 'false' : 'true'}"/>
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <label>Respuesta</label>
+                                                <div class="row">
+                                                    <div class="col-xs-12 margin-bottom-10">
+                                                        <div class="input-group" style="width: 100%">
+                                                            <span class="input-group-addon noround" id="basic-addon1">Mediante</span>
+                                                            <h:inputText class="form-control noround center-component" disabled="true" style="width: 60%; padding: 0"/>
+                                                            <h:inputText class="form-control noround center-component" disabled="true" style="width: 40%; border-left: 0; padding: 0"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <div class="input-group" style="width: 100%">
+                                                            <span class="input-group-addon noround" id="basic-addon1" style="width: 39.4%">On</span>
+                                                            <h:inputText class="form-control noround center-component" disabled="true" style="width: 60%; padding: 0"
+                                                                         value="#{baruGenericMBean.getValorFormateado('DateShort', llamadaServicioMBean.serviceCall.fechaRespuestaOn, 0)}"/>
+                                                            <h:inputText class="form-control noround center-component" disabled="true" style="width: 40%; border-left: 0; padding: 0"
+                                                                         value="#{llamadaServicioMBean.serviceCall.horaRespuestaOn}"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <label>Resolución</label>
+                                                <div class="row">
+                                                    <div class="col-xs-12 margin-bottom-10">
+                                                        <div class="input-group" style="width: 100%">
+                                                            <span class="input-group-addon noround" id="basic-addon1">Mediante</span>
+                                                            <h:inputText class="form-control noround center-component" disabled="true" style="width: 60%; padding: 0"/>
+                                                            <h:inputText class="form-control noround center-component" disabled="true" style="width: 40%; border-left: 0; padding: 0"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <div class="input-group" style="width: 100%">
+                                                            <span class="input-group-addon noround" id="basic-addon1" style="width: 39.4%">On</span>
+                                                            <h:inputText class="form-control noround center-component" disabled="true" style="width: 60%; padding: 0"
+                                                                         value="#{baruGenericMBean.getValorFormateado('DateShort', llamadaServicioMBean.serviceCall.fechaResolucionOn, 0)}"/>
+                                                            <h:inputText class="form-control noround center-component" disabled="true" style="width: 40%; border-left: 0; padding: 0"
+                                                                         value="#{llamadaServicioMBean.serviceCall.horaResolucionOn}"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="socio" class="tab-pane">
+                                <h:panelGroup id="panelCliente">
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <div class="row">
+                                                <div class="col-xs-4 margin-bottom-10">
+                                                    <label>Destino</label>
+                                                    <h:selectOneMenu class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.BPShipToCode}">
+                                                        <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                        <f:selectItems value="#{llamadaServicioMBean.direccionesEntrega}" var="entrega" itemLabel="#{entrega}" itemValue="#{entrega}"/>
+                                                        <f:ajax event="change" render=":formLlamada:tat_entrega" listener="#{llamadaServicioMBean.seleccionarDireccion('S')}"/>
+                                                    </h:selectOneMenu>
+                                                </div>
+                                                <div class="col-xs-6 margin-bottom-10">
+                                                    <h:inputTextarea id="tat_entrega" class="form-control noround" style="resize: none; height: 100px" value="#{llamadaServicioMBean.serviceCall.BPShipToAddress}"/>
+                                                </div>
+                                                <div class="col-xs-2 margin-bottom-10">
+                                                    <button type="button" class="btn btn-warning noround disabled btn-deshabilitado" data-toggle="modal" data-target="#modalDireccion" style="margin-top: 65px">
+                                                        <span class="glyphicon glyphicon-arrow-right"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-4 margin-bottom-10">
+                                                    <label>Factura</label>
+                                                    <h:selectOneMenu class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.BPBillToCode}">
+                                                        <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                        <f:selectItems value="#{llamadaServicioMBean.direccionesFactura}" var="factura" itemLabel="#{factura}" itemValue="#{factura}"/>
+                                                        <f:ajax event="change" render=":formLlamada:tat_factura" listener="#{llamadaServicioMBean.seleccionarDireccion('B')}"/>
+                                                    </h:selectOneMenu>
+                                                </div>
+                                                <div class="col-xs-6 margin-bottom-10">
+                                                    <h:inputTextarea id="tat_factura" class="form-control noround" style="resize: none; height: 100px" value="#{llamadaServicioMBean.serviceCall.BPBillToAddress}"/>
+                                                </div>
+                                                <div class="col-xs-2 margin-bottom-10">
+                                                    <button type="button" class="btn btn-warning noround disabled btn-deshabilitado" data-toggle="modal" data-target="#modalDireccion" style="margin-top: 65px">
+                                                        <span class="glyphicon glyphicon-arrow-right"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <div class="row">
+                                                <div class="col-xs-12 margin-bottom-10">
+                                                    <label>Persona de contacto</label>
+                                                    <h:inputText class="form-control noround" value="#{llamadaServicioMBean.serviceCall.BPContactPerson}" autocomplete="off"/>
+                                                </div>
+                                                <div class="col-xs-6 margin-bottom-10">
+                                                    <label>Teléfono 1</label>
+                                                    <h:inputText class="form-control noround" value="#{llamadaServicioMBean.serviceCall.BPPhone1}" autocomplete="off"/>
+                                                </div>
+                                                <div class="col-xs-6 margin-bottom-10">
+                                                    <label>Teléfono 2</label>
+                                                    <h:inputText class="form-control noround" value="#{llamadaServicioMBean.serviceCall.BPPhone2}" autocomplete="off"/>
+                                                </div>
+                                                <div class="col-xs-6 margin-bottom-10">
+                                                    <label>Teléfono móvil</label>
+                                                    <h:inputText class="form-control noround" value="#{llamadaServicioMBean.serviceCall.BPCellular}" autocomplete="off"/>
+                                                </div>
+                                                <div class="col-xs-6 margin-bottom-10">
+                                                    <label>Fax</label>
+                                                    <h:inputText class="form-control noround" value="#{llamadaServicioMBean.serviceCall.BPFax}" autocomplete="off"/>
+                                                </div>
+                                                <div class="col-xs-6 margin-bottom-10">
+                                                    <label>Correo electrónico</label>
+                                                    <h:inputText class="form-control noround" value="#{llamadaServicioMBean.serviceCall.BPeMail}" autocomplete="off"/>
+                                                </div>
+                                                <div class="col-xs-6 margin-bottom-10">
+                                                    <label>Proyecto SN</label>
+                                                    <h:inputText class="form-control noround" autocomplete="off"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </h:panelGroup>
+                            </div>
+                            <div id="comentario" class="tab-pane">
+                                <div class="row">
+                                    <div class="col-xs-12 margin-bottom-10">
+                                        <h:inputTextarea class="form-control noround" value="#{llamadaServicioMBean.serviceCall.description}" style="height: 200px; resize: none" onkeypress="if (event.keyCode === 13) {
+                                                    abrirModalEspera();
+                                                    consultarLlamada();
+                                                    return false;
+                                                }"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="operacion" class="tab-pane">
+                                <div class="row">
+                                    <div class="col-xs-12 margin-bottom-10">
+                                        <table class="table table-bordered table-responsive table-striped">
+                                            <tr>
+                                                <th class="head-tabla">Fecha</th>
+                                                <th class="head-tabla">Hora</th>
+                                                <th class="head-tabla">Tratado por</th>
+                                                <th class="head-tabla">Fecha actividad</th>
+                                                <th class="head-tabla">Repetición</th>
+                                                <th class="head-tabla">Contenido</th>
+                                                <th class="head-tabla"><span class="glyphicon glyphicon-paperclip"></span></th>
+                                                <th class="head-tabla"><span class="glyphicon glyphicon-file"></span></th>
+                                                <th class="head-tabla"></th>
+                                            </tr>
+                                            <ui:repeat value="#{llamadaServicioMBean.operaciones}" var="operacion">
+                                                <tr>
+                                                    <td class="center-component">#{baruGenericMBean.getValorFormateado('Date', operacion.cntctDate, 0)}</td>
+                                                    <td class="center-component">#{operacion.cntctTime}</td>
+                                                    <td class="center-component">#{llamadaServicioMBean.getObtenerNombre(operacion.userSign)}</td>
+                                                    <td class="center-component">#{baruGenericMBean.getValorFormateado('Date', operacion.recontact, 0)}</td>
+                                                    <td class="center-component">#{llamadaServicioMBean.getObtenerRecurrencePatter(operacion.recurPat)}</td>
+                                                    <td>#{operacion.notes}</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="center-component"><span class="glyphicon glyphicon-eye-open pointer-cursor" data-toggle="modal" data-target="#modalActividad"></span></td>
+                                                </tr>
+                                            </ui:repeat>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 right-component margin-bottom-10">
+                                        <button type="button" class="btn btn-default btn-lg noround" data-toggle="modal" data-target="#modalActividad">Actividad</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="solucion" class="tab-pane">
+                                <h:panelGroup id="panelSolucion">
+                                    <div class="row">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <table class="table table-bordered table-responsive table-striped">
+                                                <tr>
+                                                    <th class="head-tabla">ID</th>
+                                                    <th class="head-tabla">Solución</th>
+                                                    <th class="head-tabla">Creado</th>
+                                                    <th class="head-tabla">Propietario</th>
+                                                    <th class="head-tabla">Estado</th>
+                                                    <th class="head-tabla">Tratado por</th>
+                                                    <th class="head-tabla"></th>
+                                                </tr>
+                                                <ui:repeat value="#{llamadaServicioMBean.soluciones}" var="solucion">
+                                                    <tr>
+                                                        <td class="center-component">#{solucion.idLlamadaSolucion}</td>
+                                                        <td class="center-component">#{solucion.solucion}</td>
+                                                        <td class="center-component">#{baruGenericMBean.getValorFormateado('Date', solucion.fecha, 0)}</td>
+                                                        <td class="center-component">#{llamadaServicioMBean.getObtenerNombre(solucion.propietario)}</td>
+                                                        <td class="center-component">#{llamadaServicioMBean.getObtenerEstadoSolucion(solucion.estado)}</td>
+                                                        <td class="center-component">#{llamadaServicioMBean.getObtenerNombre(solucion.propietario)}</td>
+                                                        <td class="center-component">
+                                                            <span class="glyphicon glyphicon-eye-open pointer-cursor"
+                                                                  onclick="abrirModalEspera(); obtenerDatosSolucion([{name: 'idSolucion', value: '#{solucion.idLlamadaSolucion}'}]);"></span>
+                                                        </td>
+                                                    </tr>
+                                                </ui:repeat>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 right-component margin-bottom-10">
+                                            <p:remoteCommand name="obtenerDatosSolucion" actionListener="#{llamadaServicioMBean.obtenerDatosSolucion}" update=":panelNuevo"
+                                                             oncomplete="cerrarModalEspera(); abrirModalNuevo();"/>
+
+                                            <button type="button" class="btn btn-default btn-lg noround #{llamadaServicioMBean.serviceCall.serviceCallID eq null or llamadaServicioMBean.serviceCall.serviceCallID eq 0
+                                                                                                          ? 'disabled btn-deshabilitado' : ''}"
+                                                    onclick="abrirModalEspera();
+                                                            obtenerDatosSolucion([{name: 'idSolucion', value: '#{0}'}]);">Nuevo</button>
+                                        </div>
+                                    </div>
+                                </h:panelGroup>
+                            </div>
+                            <div id="resolucion" class="tab-pane">
+                                <div class="row">
+                                    <div class="col-xs-12 margin-bottom-10">
+                                        <h:inputTextarea class="form-control noround" value="#{llamadaServicioMBean.serviceCall.resolution}" style="height: 200px; resize: none"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="programacion" class="tab-pane">
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Inicio</label>
+                                                <div class="input-group" style="width: 100%">
+                                                    <p:calendar id="fechaStart" pattern="dd-MM-yyyy" class="input-calendar-time" value="#{llamadaServicioMBean.serviceCall.fechaInicio}">
+                                                        <p:ajax event="dateSelect"/>
+                                                    </p:calendar>
+                                                    <h:inputText class="form-control pull-right noround center-component" value="#{llamadaServicioMBean.serviceCall.horaInicio}"
+                                                                 style="width: 40%; border-left: 0; padding: 0"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Fin</label>
+                                                <div class="input-group" style="width: 100%">
+                                                    <p:calendar id="fechaEnd" pattern="dd-MM-yyyy" class="input-calendar-time" value="#{llamadaServicioMBean.serviceCall.fechaFin}">
+                                                        <p:ajax event="dateSelect"/>
+                                                    </p:calendar>
+                                                    <h:inputText class="form-control pull-right noround center-component" value="#{llamadaServicioMBean.serviceCall.horaFin}"
+                                                                 style="width: 40%; border-left: 0; padding: 0"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Duración</label>
+                                                <h:inputText class="form-control noround center-component" value="#{llamadaServicioMBean.serviceCall.duracion}"/>
+                                            </div>
+                                            <div class="col-xs-5 margin-bottom-10" style="margin-top: 50px">
+                                                <p:remoteCommand name="seleccionarRecordatorio" actionListener="#{llamadaServicioMBean.seleccionarRecordatorio}" update=":formLlamada:recordatorio"/>
+
+                                                <h:panelGroup id="recordatorio">
+                                                    <span class="glyphicon #{llamadaServicioMBean.serviceCall.reminder eq 'tNO' or llamadaServicioMBean.serviceCall.reminder eq null
+                                                                             ? 'glyphicon-unchecked' : 'glyphicon-check'} margin-bottom-10 checkbox-proforma" onclick="seleccionarRecordatorio();"></span>
+                                                    <h:outputLabel value="Recordatorio" class="label-normal" style="font-size: 15px !important" onclick="seleccionarRecordatorio();"/>
+                                                </h:panelGroup>
+                                            </div>
+                                            <div class="col-xs-7 margin-bottom-10" style="margin-top: 43px">
+                                                <h:inputText class="form-control noround center-component" value="#{llamadaServicioMBean.serviceCall.recordatorio}"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <p:remoteCommand name="seleccionarMostrarCalendario" actionListener="#{llamadaServicioMBean.seleccionarMostrarCalendario}" update=":formLlamada:mostrar"/>
+
+                                                <h:panelGroup id="mostrar">
+                                                    <span class="glyphicon #{llamadaServicioMBean.serviceCall.displayInCalendar eq 'tNO' or llamadaServicioMBean.serviceCall.displayInCalendar eq null
+                                                                             ? 'glyphicon-unchecked' : 'glyphicon-check'} margin-bottom-10 checkbox-proforma" onclick="seleccionarMostrarCalendario();"></span>
+                                                    <h:outputLabel value="Mostrar en calendario" class="label-normal" style="font-size: 15px !important" onclick="seleccionarMostrarCalendario();"/>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <div class="row">
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Localidad</label>
+                                                <h:selectOneMenu class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.location}">
+                                                    <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                    <f:selectItems value="#{llamadaServicioMBean.localidades}" var="localidad" itemLabel="#{localidad.name}" itemValue="#{localidad.code}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Calle</label>
+                                                <h:inputText class="form-control noround" value="#{llamadaServicioMBean.serviceCall.street}"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Ciudad</label>
+                                                <h:inputText class="form-control noround" value="#{llamadaServicioMBean.serviceCall.city}"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Sala</label>
+                                                <h:inputText class="form-control noround" value="#{llamadaServicioMBean.serviceCall.room}"/>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>País</label>
+                                                <h:selectOneMenu class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.country}">
+                                                    <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                    <f:selectItems value="#{llamadaServicioMBean.paises}" var="pais" itemLabel="#{pais.name}" itemValue="#{pais.code}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                            <div class="col-xs-12 margin-bottom-10">
+                                                <label>Departamento</label>
+                                                <h:selectOneMenu class="form-control noround pointer-cursor select-34" value="#{llamadaServicioMBean.serviceCall.state}">
+                                                    <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                                                    <f:selectItems value="#{llamadaServicioMBean.departamentos}" var="departamento" itemLabel="#{departamento.nombre}" itemValue="#{departamento.codigo}"/>
+                                                </h:selectOneMenu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="documentacion" class="tab-pane">
+                                <h:panelGroup id="panelDocumentacion">
+                                    <p:remoteCommand name="eliminarAdjunto" actionListener="#{llamadaServicioMBean.eliminarAdjunto}" update=":formLlamada:panelDocumentacion" oncomplete="cerrarModalEspera();"/>
+
+                                    <div class="row">
+                                        <div class="col-xs-11 margin-bottom-10">
+                                            <table class="table table-bordered table-responsive table-striped">
+                                                <tr>
+                                                    <th class="head-tabla">Nombre archivo</th>
+                                                    <th class="head-tabla">Fecha</th>
+                                                    <th class="head-tabla"></th>
+                                                    <th class="head-tabla"></th>
+                                                </tr>
+                                                <ui:repeat value="#{llamadaServicioMBean.adjuntos}" var="adjunto">
+                                                    <ui:fragment rendered="#{adjunto.eliminar == false}">
+                                                        <tr>
+                                                            <td class="center-component">#{adjunto.nombre}</td>
+                                                            <td class="center-component">#{baruGenericMBean.getValorFormateado('Date', adjunto.fecha, 0)}</td>
+                                                            <td class="center-component">
+                                                                <span class="glyphicon glyphicon-eye-open pointer-cursor" onclick="#{llamadaServicioMBean.descargarDocumento(adjunto.id)}"></span>
+                                                            </td>
+                                                            <td class="center-component">
+                                                                <span class="glyphicon glyphicon-trash pointer-cursor" onclick="abrirModalEspera();
+                                                            eliminarAdjunto([{name: 'id', value: '#{adjunto.id}'}]);"></span>
+                                                            </td>
+                                                        </tr>
+                                                    </ui:fragment>
+                                                </ui:repeat>
+                                            </table>
+                                        </div>
+                                        <div class="col-xs-1 margin-bottom-10 center-component">
+                                            <button type="button" class="btn btn-default btn-lg noround" data-toggle="modal" data-target="#modalAdjunto">
+                                                <span class="glyphicon glyphicon-plus"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p:messages id="msg2" showDetail="true" showSummary="true"/>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-bottom-10 right-component">
+                        <p:remoteCommand name="cancelarLlamada" actionListener="#{llamadaServicioMBean.cancelarLlamada}" update=":formLlamada" oncomplete="cerrarModalEspera();"/>
+                        <p:remoteCommand name="guardarLlamada" actionListener="#{llamadaServicioMBean.guardarLlamada}" update=":formLlamada :panelGarantia"
+                                         oncomplete="cerrarModalEspera(); abrirModalGarantia();"/>
+
+                        <button type="button" onclick="#{llamadaServicioMBean.abrirPdf()}"
+                                class="btn btn-default btn-lg noround #{llamadaServicioMBean.serviceCall.serviceCallID eq null or llamadaServicioMBean.serviceCall.serviceCallID eq 0
+                                                                        ? 'disabled btn-deshabilitado' : ''}">
+                            PDF
+                        </button>
+                        <button type="button" class="btn btn-default btn-lg noround" onclick="abrirModalEspera();
+                                                            cancelarLlamada();">
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg noround" onclick="abrirModalEspera();
+                                guardarLlamada([{name: 'inicial', value: '#{true}'}]);">
+                            Guardar
+                        </button>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+        <br/>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>

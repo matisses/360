@@ -382,13 +382,12 @@
                                     <div class="modal-footer dialog-footer">
                                         <div class="row">
                                             <div class="col-xs-12 right-component">
-                                                <p:remoteCommand name="modal" update=":panelComentarioLinea" oncomplete="abrirModalEspera(); agregarReferencia();"/>
                                                 <p:remoteCommand name="limpiarBasico" actionListener="#{trasladoCamionMBean.limpiarBasico}" update=":panelComentarioLinea :formTrasladosCamion"/>
-                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal"
-                                                        onclick="document.getElementById('formTrasladosCamion:referencia').focus(); limpiarBasico();">
-                                                    Cancelar
+                                                <p:remoteCommand name="cerrar" update=":panelComentarioLinea" oncomplete="abrirModalEspera(); agregarReferencia();"/>
+                                                <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">
+                                                    Cerrar
                                                 </button>
-                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="modal();">
+                                                <button type="button" class="btn btn-primary btn-lg noround" onclick="agregarReferencia();">
                                                     Agregar
                                                 </button>
                                             </div>

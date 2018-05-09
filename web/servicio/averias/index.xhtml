@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:m="http://java.sun.com/jsf/composite/matisses"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link href="/360/css/bootstrap.min.css" rel="stylesheet" />
+        <!--[if lt IE 9]>
+                <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <link href="/360/css/styles.css" rel="stylesheet" />
+        <link href="/360/css/multileveldropdown.css" rel="stylesheet" />
+        <link href="/360/fonts/iconFont.css" rel="stylesheet"/>
+        <script src="/360/js/arriba.js"></script>
+        <script type="text/javascript">
+            function abrirModalAveria() {
+                $('#modalAveria').modal('show');
+            }
+
+            function cerrarModalAveria() {
+                $('modalAveria').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+            }
+        </script>
+        <title>360 - Averias</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userSessionInfoMBean.checkAlreadyLoggedin}"/>
+        <m:navbar/>
+
+        <span class="hidden-xs ir-arriba">
+            <span class="glyphicon glyphicon-chevron-up" style="top: -2px !important"></span>
+        </span>
+
+        <div class="container">
+
+            <h:panelGroup id="panelAveria">
+                <h:form id="formAveria">
+                    <div id="modalAveria" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-sm" role="document">
+                            <div class="modal-content dialog-content noround">
+                                <div class="modal-header dialog-header">
+                                    <h4 class="modal-title">Crear avería</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <label>Nombre</label>
+                                            <h:inputText class="form-control noround" value="#{averiasMaterialesMBean.nombreAveria}" autocomplete="off" onkeypress="if (event.keyCode === 13) {
+                                                        return false;
+                                                    }"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer dialog-footer">
+                                    <p:remoteCommand name="modal" update=":panelAveria" oncomplete="cerrarModalAveria(); abrirModalEspera(); guardarAveria();"/>
+                                    <p:remoteCommand name="guardarAveria" actionListener="#{averiasMaterialesMBean.guardarAveria}" update=":formAverias:panelDisponibles :formAverias:msg"
+                                                     oncomplete="cerrarModalEspera();"/>
+
+                                    <button type="button" class="btn btn-default btn-lg noround" data-dismiss="modal">Cerrar</button>
+                                    <button type="button" class="btn btn-primary btn-lg noround" onclick="modal();">Crear</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+
+            <h:form id="formAverias">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <a>
+                                    Averías materiales
+                                </a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <p:messages id="msg" showDetail="true" showSummary="true"/>
+
+                <div class="row">
+                    <div class="col-xs-12 col-md-5">
+                        <p:remoteCommand name="seleccionarMaterial" actionListener="#{averiasMaterialesMBean.seleccionarMaterial}" update=":formAverias:panelMateriales :formAverias:panelDisponibles"
+                                         oncomplete="cerrarModalEspera();"/>
+
+                        <h3 class="center-component">Materiales</h3>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div style="height: 600px; overflow: auto">
+                                    <h:panelGroup id="panelMateriales">
+                                        <table class="table table-bordered table-striped table-responsive">
+                                            <ui:repeat value="#{averiasMaterialesMBean.materiales}" var="material">
+                                                <tr class="#{material.code eq averiasMaterialesMBean.material ? 'tr-tabla-active' : 'tr-tabla'} pointer-cursor"
+                                                    onclick="abrirModalEspera(); seleccionarMaterial([{name: 'material', value: '#{material.code}'}]);">
+                                                    <td>#{material.name}</td>
+                                                    <td class="center-component"><span class="badge badge-360-original">#{material.cantidadAverias}</span></td>
+                                                </tr>
+                                            </ui:repeat>
+                                        </table>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h:panelGroup id="panelDisponibles">
+                        <h:panelGroup rendered="#{averiasMaterialesMBean.material ne null and not empty averiasMaterialesMBean.material}">
+                            <div class="col-xs-12 col-md-4">
+                                <p:remoteCommand name="asignarAveria" actionListener="#{averiasMaterialesMBean.asignarAveria}" update=":formAverias:panelMateriales :formAverias:panelDisponibles"
+                                                 oncomplete="cerrarModalEspera();"/>
+
+                                <h3 class="center-component">Averías disponibles
+                                    <span class="glyphicon glyphicon-pencil pointer-cursor color-360-original" style="margin-left: 20px; font-size: 20px" data-toggle="modal" data-target="#modalAveria"></span>
+                                </h3>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div style="height: 600px; overflow: auto">
+                                            <table class="table table-bordered table-striped table-responsive">
+                                                <ui:repeat value="#{averiasMaterialesMBean.averiasDisponibles}" var="disponible">
+                                                    <tr class="tr-tabla pointer-cursor" onclick="abrirModalEspera(); asignarAveria([{name: 'code', value: '#{disponible.code}'}]);">
+                                                        <td>#{disponible.name}</td>
+                                                    </tr>
+                                                </ui:repeat>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-3">
+                                <p:remoteCommand name="quitarAveria" actionListener="#{averiasMaterialesMBean.quitarAveria}" update=":formAverias:panelMateriales :formAverias:panelDisponibles"
+                                                 oncomplete="cerrarModalEspera();"/>
+
+                                <h3 class="center-component">Averías usadas</h3>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div style="height: 600px; overflow: auto">
+                                            <table class="table table-bordered table-striped table-responsive">
+                                                <ui:repeat value="#{averiasMaterialesMBean.averiasMaterial}" var="usada">
+                                                    <tr class="tr-tabla pointer-cursor" onclick="abrirModalEspera(); quitarAveria([{name: 'code', value: '#{usada.code}'}]);">
+                                                        <td>#{averiasMaterialesMBean.getNombreAveria(usada.UProblema)}</td>
+                                                    </tr>
+                                                </ui:repeat>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </div>
+
+            </h:form>
+        </div>
+        <br/>
+        <!-- script references -->
+        <script src="/360/js/bootstrap.min.js"></script>
+    </h:body>
+</html>
+
